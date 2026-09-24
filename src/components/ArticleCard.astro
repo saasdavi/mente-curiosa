@@ -1,0 +1,31 @@
+---
+import { SITE } from '../config/site';
+import { getCategory, categoryUrl } from '../config/categories';
+import { articleUrl, formatDate, isoDate, type Article } from '../lib/articles';
+
+interface Props {
+  article: Article;
+  showCategory?: boolean;
+}
+const { article, showCategory = true } = Astro.props;
+const d = article.data;
+const cat = getCategory(d.category);
+---
+<article class="card">
+  <a class="card__img" href={articleUrl(d.slug)} tabindex="-1" aria-hidden="true">
+    <img
+      src={d.featuredImage}
+      alt=""
+      width={SITE.image.width}
+      height={SITE.image.height}
+      loading="lazy"
+      decoding="async"
+    />
+  </a>
+  <div class="card__body">
+    {showCategory && <a class="tag" href={categoryUrl(cat.slug)}>{cat.name}</a>}
+    <h3 class="card__title"><a href={articleUrl(d.slug)}>{d.title}</a></h3>
+    <p class="card__desc">{d.description}</p>
+    <time class="muted" datetime={isoDate(d.datePublished)}>{formatDate(d.datePublished)}</time>
+  </div>
+</article>

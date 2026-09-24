@@ -1,0 +1,20 @@
+---
+// Breadcrumb visível. O JSON-LD equivalente é gerado por breadcrumbJsonLd().
+export interface Crumb {
+  name: string;
+  path: string;
+}
+interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+---
+<nav class="crumbs" aria-label="Você está em">
+  <ol>
+    {items.map((c, i) => (
+      <li>
+        {i < items.length - 1 ? <a href={c.path}>{c.name}</a> : <span aria-current="page">{c.name}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>

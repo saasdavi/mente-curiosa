@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../config/site';
+const updated = '24 de setembro de 2026';
+---
+<BaseLayout title="Política de privacidade" description={`Como o ${SITE.name} trata dados pessoais, cookies e anúncios, conforme a LGPD.`} path="/politica-de-privacidade/">
+  <article class="wrap prose page">
+    <h1>Política de privacidade</h1>
+    <p class="muted">Última atualização: {updated}</p>
+    <p>Esta política explica como o {SITE.name} ({SITE.url}) trata informações de quem visita o site, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD).</p>
+
+    <h2>Dados coletados</h2>
+    <p>O site não exige cadastro. Podemos tratar dados técnicos de navegação — como endereço IP, tipo de navegador, páginas visitadas e horário de acesso — coletados automaticamente por nossos fornecedores de hospedagem, estatísticas e publicidade. Se você nos escrever por e-mail, usaremos seu endereço apenas para responder.</p>
+
+    <h2>Cookies</h2>
+    <p>Cookies são pequenos arquivos salvos no seu navegador. Usamos cookies para medir audiência e exibir anúncios. Você pode bloqueá-los ou apagá-los nas configurações do seu navegador; alguns recursos podem deixar de funcionar.</p>
+
+    <h2>Publicidade — Google AdSense</h2>
+    <p>Este site exibe anúncios do Google AdSense. O Google e seus parceiros usam cookies para veicular anúncios com base em visitas anteriores a este e a outros sites. Você pode desativar a publicidade personalizada em <a href="https://adssettings.google.com" rel="noopener" target="_blank">Configurações de anúncios do Google</a>. Saiba mais em <a href="https://policies.google.com/technologies/ads?hl=pt-BR" rel="noopener" target="_blank">Como o Google usa cookies em publicidade</a>.</p>
+
+    <h2>Compartilhamento</h2>
+    <p>Não vendemos dados pessoais. Dados técnicos podem ser tratados pelos fornecedores citados acima, conforme as políticas de privacidade de cada um.</p>
+
+    <h2>Seus direitos</h2>
+    <p>Pela LGPD, você pode solicitar confirmação, acesso, correção ou exclusão de dados pessoais. Escreva para <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>
+
+    <h2>Alterações</h2>
+    <p>Esta política pode ser atualizada. A data da última revisão aparece no topo desta página.</p>
+  </article>
+</BaseLayout>

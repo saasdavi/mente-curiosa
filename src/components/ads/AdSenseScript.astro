@@ -1,0 +1,13 @@
+---
+// Script global da rede de anúncios. Único lugar onde o código do AdSense entra no <head>.
+import { ADS } from '../../config/ads';
+const load = ADS.enabled && ADS.provider === 'adsense' && import.meta.env.PROD;
+---
+{load && (
+  <script
+    is:inline
+    async
+    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS.client}`}
+    crossorigin="anonymous"
+  ></script>
+)}

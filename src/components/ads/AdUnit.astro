@@ -1,0 +1,26 @@
+---
+// Bloco de anúncio posicionado. Artigos e templates só conhecem a posição,
+// nunca a rede. Sem slot configurado, nada é renderizado.
+import { ADS, type AdPosition } from '../../config/ads';
+
+interface Props {
+  position: AdPosition;
+}
+const { position } = Astro.props;
+const slot = ADS.slots[position];
+const show = ADS.enabled && ADS.provider === 'adsense' && Boolean(slot) && import.meta.env.PROD;
+---
+{show && (
+  <aside class="ad" aria-label="Publicidade">
+    <span class="ad__label">Publicidade</span>
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client={ADS.client}
+      data-ad-slot={slot}
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    ></ins>
+    <script is:inline>(window.adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </aside>
+)}

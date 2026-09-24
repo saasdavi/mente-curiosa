@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../config/site';
+---
+<BaseLayout title="Contato" description={`Fale com a equipe do ${SITE.name}: correções, sugestões de temas e parcerias.`} path="/contato/">
+  <article class="wrap prose page">
+    <h1>Contato</h1>
+    <p>Para correções, sugestões de perguntas ou parcerias, escreva para <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>
+    <p>Respondemos em até 5 dias úteis.</p>
+  </article>
+</BaseLayout>

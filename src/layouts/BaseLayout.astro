@@ -1,0 +1,61 @@
+---
+import SEO, { type SEOProps } from '../components/SEO.astro';
+import AdSenseScript from '../components/ads/AdSenseScript.astro';
+import { SITE } from '../config/site';
+import { CATEGORIES, categoryUrl } from '../config/categories';
+import '../styles/global.css';
+
+type Props = SEOProps;
+const props = Astro.props;
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#031424" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/feed.xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <SEO {...props} />
+    <slot name="head" />
+    <AdSenseScript />
+  </head>
+  <body>
+    <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+    <header class="site-header">
+      <div class="wrap site-header__inner">
+        <a class="brand" href="/">
+          <img class="brand__logo" src="/brand/logo-circulo.png" alt="" width="40" height="40" />
+          <span>{SITE.name}</span>
+        </a>
+        <nav aria-label="Categorias">
+          <ul class="nav">
+            {CATEGORIES.map((c) => <li><a href={categoryUrl(c.slug)}>{c.name}</a></li>)}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="conteudo">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p class="site-footer__brand">{SITE.name} — {SITE.tagline}</p>
+        <ul class="site-footer__links">
+          <li><a href="/sobre/">Sobre</a></li>
+          <li><a href="/contato/">Contato</a></li>
+          <li><a href="/politica-de-privacidade/">Política de privacidade</a></li>
+          {SITE.social.facebook && <li><a href={SITE.social.facebook} rel="noopener me" target="_blank">Facebook</a></li>}
+          {SITE.social.instagram && <li><a href={SITE.social.instagram} rel="noopener me" target="_blank">Instagram</a></li>}
+          {SITE.social.pinterest && <li><a href={SITE.social.pinterest} rel="noopener me" target="_blank">Pinterest</a></li>}
+        </ul>
+        <p class="muted">© {year} {SITE.name}</p>
+      </div>
+    </footer>
+  </body>
+</html>

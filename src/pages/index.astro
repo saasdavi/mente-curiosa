@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { SITE } from '../config/site';
+import { CATEGORIES, categoryUrl } from '../config/categories';
+import { getArticles } from '../lib/articles';
+import { websiteJsonLd } from '../lib/schema';
+
+const articles = await getArticles();
+const latest = articles.slice(0, 12);
+---
+<BaseLayout title={SITE.name} description={SITE.description} path="/" jsonLd={[websiteJsonLd()]}>
+  <section class="wrap hero">
+    <h1>{SITE.tagline}</h1>
+    <p class="hero__lead">{SITE.description}</p>
+  </section>
+
+  <section class="wrap" aria-labelledby="recentes">
+    <h2 id="recentes">Artigos recentes</h2>
+    {latest.length ? (
+      <div class="grid">{latest.map((a) => <ArticleCard article={a} />)}</div>
+    ) : (
+      <p class="muted">Os primeiros artigos chegam em breve.</p>
+    )}
+  </section>
+
+  <section class="wrap" aria-labelledby="categorias">
+    <h2 id="categorias">Explore por tema</h2>
+    <ul class="cats">
+      {CATEGORIES.map((c) => (
+        <li>
+          <a href={categoryUrl(c.slug)}>
+            <strong>{c.name}</strong>
+            <span class="muted">{c.description}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

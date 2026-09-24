@@ -1,0 +1,101 @@
+---
+// Template de artigo: URL /<slug>/
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import AdUnit from '../components/ads/AdUnit.astro';
+import { SITE } from '../config/site';
+import { getCategory, categoryUrl } from '../config/categories';
+import { getArticles, getRelated, articleUrl, formatDate, isoDate, readingTime, type Article } from '../lib/articles';
+import { articleJsonLd, breadcrumbJsonLd, articleCrumbs } from '../lib/schema';
+
+export async function getStaticPaths() {
+  const all = await getArticles();
+  return all.map((article) => ({ params: { slug: article.data.slug }, props: { article, all } }));
+}
+
+interface Props {
+  article: Article;
+  all: Article[];
+}
+const { article, all } = Astro.props;
+const d = article.data;
+const { Content } = await render(article);
+const cat = getCategory(d.category);
+const crumbs = articleCrumbs(article);
+const related = getRelated(article, all);
+const updated = d.dateModified.getTime() !== d.datePublished.getTime();
+---
+<BaseLayout
+  title={d.seoTitle ?? d.title}
+  description={d.description}
+  path={articleUrl(d.slug)}
+  image={d.featuredImage}
+  imageAlt={d.featuredImageAlt}
+  type="article"
+  noindex={d.draft}
+  publishedTime={d.datePublished}
+  modifiedTime={d.dateModified}
+  jsonLd={[articleJsonLd(article), breadcrumbJsonLd(crumbs)]}
+>
+  <link slot="head" rel="preload" as="image" href={d.featuredImage} fetchpriority="high" />
+  <article class="wrap article">
+    <Breadcrumbs items={crumbs} />
+    <header class="article__header">
+      <a class="tag" href={categoryUrl(cat.slug)}>{cat.name}</a>
+      <h1>{d.title}</h1>
+      <p class="article__lead">{d.description}</p>
+      <p class="article__meta muted">
+        Por {d.author} · Publicado em <time datetime={isoDate(d.datePublished)}>{formatDate(d.datePublished)}</time>
+        {updated && <>{' · '}Atualizado em <time datetime={isoDate(d.dateModified)}>{formatDate(d.dateModified)}</time></>}
+        {' · '}{readingTime(article.body)} min de leitura
+      </p>
+    </header>
+
+    <figure class="article__hero">
+      <img
+        src={d.featuredImage}
+        alt={d.featuredImageAlt}
+        width={SITE.image.width}
+        height={SITE.image.height}
+        fetchpriority="high"
+        decoding="async"
+      />
+      {d.imageCredit && (
+        <figcaption class="muted">
+          Imagem: {d.imageCredit.url ? <a href={d.imageCredit.url} rel="noopener nofollow" target="_blank">{d.imageCredit.author}</a> : d.imageCredit.author}
+          {' / '}{d.imageCredit.source} ({d.imageCredit.license})
+        </figcaption>
+      )}
+    </figure>
+
+    <AdUnit position="articleTop" />
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <AdUnit position="articleBottom" />
+
+    {d.sources?.length && (
+      <section class="sources" aria-labelledby="fontes">
+        <h2 id="fontes">Fontes</h2>
+        <ul>
+          {d.sources.map((s) => (
+            <li><a href={s.url} rel="noopener" target="_blank">{s.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </article>
+
+  {related.length > 0 && (
+    <section class="wrap related" aria-labelledby="relacionados">
+      <h2 id="relacionados">Continue curioso</h2>
+      <div class="grid">
+        {related.map((a) => <ArticleCard article={a} />)}
+      </div>
+    </section>
+  )}
+</BaseLayout>

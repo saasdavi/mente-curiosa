@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../config/site';
+---
+<BaseLayout title="Sobre" description={`Conheça o ${SITE.name}: curiosidades explicadas de forma simples, com base na ciência.`} path="/sobre/">
+  <article class="wrap prose page">
+    <h1>Sobre o {SITE.name}</h1>
+    <p>O {SITE.name} existe para responder, de forma simples e confiável, às perguntas que aparecem no dia a dia: por que bocejamos, por que o céu é azul, como os gatos enxergam, como funciona a inteligência artificial.</p>
+    <h2>Como produzimos os artigos</h2>
+    <p>Cada artigo parte de uma pergunta real, é escrito em linguagem acessível e se apoia em fontes confiáveis — instituições científicas, universidades e publicações especializadas —, sempre listadas ao final do texto. Revisamos e atualizamos os conteúdos quando surgem informações novas; a data de atualização aparece no topo de cada artigo.</p>
+    <p>Usamos ferramentas de inteligência artificial como apoio na pesquisa e na redação. Todo conteúdo passa por revisão editorial antes de ser publicado.</p>
+    <h2>Aviso importante</h2>
+    <p>Nossos artigos têm caráter informativo e educativo. Eles não substituem a orientação de médicos, psicólogos ou outros profissionais.</p>
+    <h2>Fale com a gente</h2>
+    <p>Encontrou um erro ou tem uma sugestão de pergunta? <a href="/contato/">Entre em contato</a>.</p>
+  </article>
+</BaseLayout>

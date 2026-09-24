@@ -1,0 +1,6 @@
+# Redirects de mudanças de URL do próprio site (slug trocado, artigos mesclados)
+# e, no futuro, da migração Astro → WordPress.
+#   to = /slug-novo/   → 301 para o conteúdo equivalente
+#   to = 410           → conteúdo removido de propósito, sem equivalente
+#   to vazio           → pendente (vira 404; o build avisa)
+from,to,note

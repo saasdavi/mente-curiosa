@@ -1,0 +1,41 @@
+---
+// URL: /categoria/<slug>/
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { CATEGORIES, categoryUrl } from '../../../config/categories';
+import { getArticles } from '../../../lib/articles';
+import { breadcrumbJsonLd } from '../../../lib/schema';
+
+export async function getStaticPaths() {
+  const all = await getArticles();
+  return CATEGORIES.map((category) => ({
+    params: { category: category.slug },
+    props: { category, articles: all.filter((a) => a.data.category === category.slug) },
+  }));
+}
+
+const { category, articles } = Astro.props;
+const crumbs = [
+  { name: 'Início', path: '/' },
+  { name: category.name, path: categoryUrl(category.slug) },
+];
+---
+<BaseLayout
+  title={category.name}
+  description={`${category.description} Artigos do Mente Curiosa sobre ${category.name.toLowerCase()}.`}
+  path={categoryUrl(category.slug)}
+  noindex={articles.length === 0}
+  jsonLd={[breadcrumbJsonLd(crumbs)]}
+>
+  <section class="wrap">
+    <Breadcrumbs items={crumbs} />
+    <h1>{category.name}</h1>
+    <p class="hero__lead">{category.description}</p>
+    {articles.length ? (
+      <div class="grid">{articles.map((a) => <ArticleCard article={a} showCategory={false} />)}</div>
+    ) : (
+      <p class="muted">Ainda não há artigos nesta categoria.</p>
+    )}
+  </section>
+</BaseLayout>
