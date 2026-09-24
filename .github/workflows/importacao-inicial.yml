@@ -1,0 +1,22 @@
+name: importacao-inicial
+on:
+  push:
+    paths: ['bootstrap.tar.gz']
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extrair projeto e baixar fontes (Poppins, licença OFL)
+        run: |
+          tar -xzf bootstrap.tar.gz
+          git rm -q bootstrap.tar.gz
+          mkdir -p scripts/imagens/fonts
+          for f in Bold Medium Regular; do
+            curl -sSfL -o scripts/imagens/fonts/Poppins-$f.ttf https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-$f.ttf
+          done
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Projeto Mente Curiosa: importação inicial"
+          git push
