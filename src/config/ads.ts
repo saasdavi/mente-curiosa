@@ -7,7 +7,7 @@ export const ADS = {
   // Com true o script do AdSense entra no <head> (é também o que o AdSense usa
   // para verificar o site). Com false nenhum script de anúncio é carregado.
   enabled: true,
-  client: 'ca-pub-2857316264642215',
+  client: 'ca-pub-5043795253193229',
   // IDs de bloco (data-ad-slot) criados no painel do AdSense.
   // Vazio = o bloco não é renderizado (Anúncios automáticos continuam funcionando).
   slots: {
