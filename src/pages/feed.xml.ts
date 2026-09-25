@@ -3,6 +3,7 @@ import type { APIRoute } from 'astro';
 import { SITE } from '../config/site';
 import { getCategory } from '../config/categories';
 import { getArticles, articleUrl } from '../lib/articles';
+import { socialPack } from '../lib/social';
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -14,6 +15,14 @@ export const GET: APIRoute = async () => {
     .map((a) => {
       const d = a.data;
       const url = abs(articleUrl(d.slug));
+      const s = socialPack(a);
+      const media = [
+        `      <media:content url="${abs(d.featuredImage)}" medium="image" type="image/webp" width="1200" height="675"><media:title>${esc(d.featuredImageAlt)}</media:title></media:content>`,
+        `      <media:content url="${s.facebook.image}" medium="image" type="image/jpeg"><media:title>facebook</media:title></media:content>`,
+        ...s.pinterest.map(
+          (p) => `      <media:content url="${p.image}" medium="image" type="image/jpeg" width="1000" height="1500"><media:title>pin-${p.n}: ${esc(p.angle)}</media:title></media:content>`,
+        ),
+      ].join('\n');
       return `    <item>
       <title>${esc(d.title)}</title>
       <link>${url}</link>
@@ -21,13 +30,15 @@ export const GET: APIRoute = async () => {
       <pubDate>${d.datePublished.toUTCString()}</pubDate>
       <category>${esc(getCategory(d.category).name)}</category>
       <description>${esc(d.description)}</description>
-      <enclosure url="${abs(d.featuredImage)}" type="image/webp" length="0" />
+      <enclosure url="${s.facebook.image}" type="image/jpeg" length="0" />
+      <media:thumbnail url="${s.facebook.image}" />
+${media}
     </item>`;
     })
     .join('\n');
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>${esc(SITE.name)}</title>
     <link>${abs('/')}</link>
