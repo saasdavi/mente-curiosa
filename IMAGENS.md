@@ -27,8 +27,11 @@ images:
     credit: { author: "Nome", source: Pexels, url: https://www.pexels.com/photo/..., license: "Licença Pexels", licenseUrl: https://www.pexels.com/license/ }
 ```
 
-Não precisa escrever isso à mão: o workflow **Imagens do artigo** (GitHub Actions) busca as fotos, gera os arquivos,
-preenche o frontmatter e publica. Entradas:
+Não precisa escrever isso à mão. **Regra automática:** o artigo sobe com o bloco `imagensPlano`
+(ver ARTIGO_FORMATO.md) e o workflow **Imagens automáticas** roda sozinho no push: busca as fotos, gera os
+arquivos, preenche o frontmatter, apaga o plano e publica. Sem capa o artigo não vai ao ar.
+
+Para refazer as imagens de um artigo já publicado, use o workflow manual **Imagens do artigo**. Entradas:
 
 - `slug` · `capa_busca` (inglês) · `capa_alt` (português)
 - `fotos`: `busca | alt | legenda | seção`, várias separadas por `;;`
