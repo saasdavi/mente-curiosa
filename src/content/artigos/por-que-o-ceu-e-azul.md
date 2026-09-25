@@ -39,6 +39,18 @@ images:
     url: https://www.pexels.com/photo/sea-and-orange-sky-at-dusk-19337853/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
+- src: /images/por-que-o-ceu-e-azul/montanhas-distantes-cobertas-veu-azulado-ar.webp
+  alt: Montanhas distantes cobertas por um véu azulado de ar
+  caption: Quanto mais longe a montanha, mais ar espalhando luz azul entre ela e você
+  section: 5
+  width: 1200
+  height: 800
+  credit:
+    author: Sergio Zhukov
+    source: Pexels
+    url: https://www.pexels.com/photo/stunning-alpine-mountain-view-at-sunrise-29034976/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
 ---
 
 O céu é azul porque **a atmosfera da Terra espalha a luz azul do Sol muito mais do que as outras cores**. Quando olhamos para qualquer ponto do céu, estamos vendo essa luz azul que foi desviada pelas moléculas do ar e chegou aos nossos olhos vinda de todas as direções.
