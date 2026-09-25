@@ -110,6 +110,7 @@ function audit(a, all) {
   rule('I04', 'ALERTA', imgs.every((i) => i.credit && i.caption && norm(i.alt) !== norm(d.featuredImageAlt)) && Boolean(d.imageCredit),
     'Toda imagem com crédito/licença, legenda e alt próprio', 2);
   rule('I05', 'ALERTA', wc < 1200 || imgs.length >= 2, 'Artigo longo (≥ 1200 palavras) com ≥ 2 fotos no corpo', 1);
+  rule('I06', 'ALERTA', d.altConferido !== false, 'Alt das fotos conferido olhando a foto (altConferido: true)', 2);
   const similar = all.filter((o) => o !== a && jaccard(contentWords(o.data.title), contentWords(d.title)) >= 0.75);
   rule('X01', 'ALERTA', similar.length === 0, `Título não quase-duplicado${similar.length ? ' (parecido com: ' + similar.map((s) => s.data.slug).join(', ') + ')' : ''}`, 3);
 
@@ -117,7 +118,7 @@ function audit(a, all) {
   const got = R.filter((r) => r.ok).reduce((s, r) => s + r.pts, 0);
   const score = Math.round((got / max) * 100);
   const blocked = R.some((r) => r.level === 'BLOQUEANTE' && !r.ok);
-  return { slug: d.slug, id: d.id, words: wc, score, blocked, rules: R };
+  return { slug: d.slug, id: d.id, words: wc, score, blocked, waiting: !d.featuredImage, draft: d.draft === true, rules: R };
 }
 
 const only = process.argv.slice(2);
@@ -129,7 +130,7 @@ const results = targets.map((a) => audit(a, all));
 const today = new Date().toISOString().slice(0, 10);
 const csv = [['DATA', 'ID_ARTIGO', 'SLUG', 'SCORE', 'SITUACAO', 'PALAVRAS', 'REGRA', 'NIVEL', 'PROBLEMA'].join(',')];
 for (const r of results) {
-  const status = r.blocked ? 'BLOQUEADO' : r.score >= MIN_SCORE ? 'APROVADO' : 'REVISAR';
+  const status = r.blocked ? 'BLOQUEADO' : r.waiting ? 'AGUARDANDO_IMAGENS' : r.score >= MIN_SCORE ? 'APROVADO' : 'REVISAR';
   console.log(`\n${status.padEnd(9)} ${String(r.score).padStart(3)}/100  ${r.id}  ${r.slug}  (${r.words} palavras)`);
   for (const f of r.rules.filter((x) => !x.ok)) {
     console.log(`   ${f.level === 'BLOQUEANTE' ? '✖' : '•'} ${f.id} ${f.msg}`);
@@ -139,6 +140,7 @@ for (const r of results) {
 }
 mkdirSync('reports', { recursive: true });
 writeFileSync('reports/auditoria-seo.csv', csv.join('\n') + '\n');
-const blocked = results.filter((r) => r.blocked).length;
+// Só derruba o build o que iria ao ar: rascunho e artigo esperando imagens aparecem no relatório, mas não bloqueiam.
+const blocked = results.filter((r) => r.blocked && !r.waiting && !r.draft).length;
 console.log(`\n${results.length} artigo(s) · ${blocked} bloqueado(s) · nota mínima para publicar: ${MIN_SCORE} · relatório: reports/auditoria-seo.csv`);
 process.exit(blocked ? 1 : 0);
