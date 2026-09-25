@@ -9,22 +9,32 @@ export const GET: APIRoute = async () => {
   const abs = (p: string) => new URL(p, SITE.url).href;
   const latest = articles[0]?.data.dateModified;
 
-  const urls: { loc: string; lastmod?: string }[] = [
+  const urls: { loc: string; lastmod?: string; images?: string[] }[] = [
     { loc: abs('/'), lastmod: latest && isoDate(latest) },
     ...CATEGORIES.filter((c) => articles.some((a) => a.data.category === c.slug)).map((c) => ({
       loc: abs(categoryUrl(c.slug)),
     })),
-    ...articles.map((a) => ({ loc: abs(articleUrl(a.data.slug)), lastmod: isoDate(a.data.dateModified) })),
+    ...articles.map((a) => ({
+      loc: abs(articleUrl(a.data.slug)),
+      lastmod: isoDate(a.data.dateModified),
+      images: [a.data.featuredImage, ...(a.data.images ?? []).map((i) => i.src)].map(abs),
+    })),
     { loc: abs('/sobre/') },
     { loc: abs('/contato/') },
     { loc: abs('/politica-de-privacidade/') },
+    { loc: abs('/termos-de-uso/') },
   ];
 
   const body =
     '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
     urls
-      .map((u) => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`)
+      .map(
+        (u) =>
+          `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}` +
+          (u.images ?? []).map((i) => `<image:image><image:loc>${i}</image:loc></image:image>`).join('') +
+          '</url>',
+      )
       .join('\n') +
     '\n</urlset>\n';
 
