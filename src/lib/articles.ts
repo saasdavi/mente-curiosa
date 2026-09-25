@@ -8,6 +8,8 @@ let cache: Article[] | undefined;
 
 /**
  * Artigos publicáveis, do mais novo para o mais antigo.
+ * Artigo sem capa (ainda com imagensPlano, esperando a automação de imagens) nunca vai ao ar,
+ * nem em desenvolvimento: todo artigo publicado sobe com imagem.
  * Em produção ficam de fora: rascunhos (draft: true) e artigos com
  * datePublished no futuro — é assim que o agendamento funciona:
  * o artigo entra no repositório antes e aparece no primeiro build após a data.
@@ -18,6 +20,7 @@ export async function getArticles(): Promise<Article[]> {
   const all = await getCollection('artigos');
   assertUnique(all);
   cache = all
+    .filter((a) => Boolean(a.data.featuredImage))
     .filter((a) => import.meta.env.DEV || (!a.data.draft && a.data.datePublished <= now))
     .sort((a, b) => b.data.datePublished.getTime() - a.data.datePublished.getTime());
   return cache;
