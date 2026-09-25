@@ -32,6 +32,8 @@ export const RESERVED_SLUGS = [
   'sobre',
   'contato',
   'politica-de-privacidade',
+  'termos-de-uso',
+  'social',
   'images',
   'feed',
   'sitemap',
