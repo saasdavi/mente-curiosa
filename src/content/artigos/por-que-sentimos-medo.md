@@ -14,7 +14,7 @@ author: Equipe Mente Curiosa
 datePublished: 2026-09-24
 dateModified: 2026-09-24
 featuredImage: /images/por-que-sentimos-medo/por-que-sentimos-medo.webp
-featuredImageAlt: Floresta escura coberta de neblina ao anoitecer, sem pessoas
+featuredImageAlt: Silhueta de uma pessoa diante dos faróis de um carro em uma floresta escura com neblina
 sources:
 - title: Smithsonian Magazine — What Happens in the Brain When We Feel Fear
   url: https://www.smithsonianmag.com/science-nature/what-happens-brain-feel-fear-180966992/
@@ -29,8 +29,8 @@ imageCredit:
   license: Licença Pexels
   licenseUrl: https://www.pexels.com/license/
 images:
-- src: /images/por-que-sentimos-medo/modelo-anatomico-cerebro-humano-visto-lado.webp
-  alt: Modelo anatômico do cérebro humano visto de lado
+- src: /images/por-que-sentimos-medo/modelo-cerebro-humano-visto-cima-prato-azul.webp
+  alt: Modelo de cérebro humano visto de cima sobre um prato azul
   caption: A amígdala, no interior do cérebro, dispara o alarme do medo em frações de segundo
   section: 2
   width: 1200
@@ -41,8 +41,8 @@ images:
     url: https://www.pexels.com/photo/brain-model-on-plate-15410078/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-- src: /images/por-que-sentimos-medo/montanha-russa-plena-descida-vista-baixo.webp
-  alt: Montanha-russa em plena descida vista de baixo
+- src: /images/por-que-sentimos-medo/trilho-verde-montanha-russa-contra-ceu-azul.webp
+  alt: Trilho verde de montanha-russa contra o céu azul, visto de baixo
   caption: 'Em um ambiente seguro, o susto vira diversão: é o medo sob controle'
   section: 5
   width: 1200
