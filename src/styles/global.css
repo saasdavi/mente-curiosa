@@ -84,6 +84,10 @@ h2 { font-size: 1.45rem; margin-top: 2em; }
 .article__header { margin-top: 16px; }
 .article__lead { font-size: 1.15rem; color: var(--muted); margin: 0 0 12px; }
 .article__hero { margin: 24px 0; }
+.article-figure { margin: 28px 0; }
+.article-figure img { border-radius: var(--radius); width: 100%; height: auto; }
+.article-figure figcaption { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+.article-figure__credit { display: block; font-size: .8rem; opacity: .85; }
 .article__hero img { border-radius: var(--radius); width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
 .prose { font-family: var(--serif); font-size: 1.12rem; line-height: 1.75; }
 .prose h2, .prose h3 { font-family: var(--font); }
