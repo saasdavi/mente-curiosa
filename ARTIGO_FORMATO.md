@@ -5,7 +5,10 @@ breadcrumbs, sitemap, anúncios e links relacionados. Não escrever HTML de SEO 
 
 ## Arquivo
 
-`src/content/artigos/<slug>.md` + capa `public/images/<slug>/<slug>.webp` (1200×675) + 1–3 fotos no corpo (`images`, ver IMAGENS.md).
+Só `src/content/artigos/<slug>.md`. **Regra: todo artigo sobe com imagem** — quem escreve não gera imagem,
+escreve o **plano de imagens** (`imagensPlano`). No push, a automação *Imagens automáticas* (GitHub Actions)
+busca as fotos grátis, cria capa + 5 Pins + fotos do corpo, preenche `featuredImage`/`images`, apaga o plano
+e publica. Sem imagem o artigo não aparece no site.
 
 ```markdown
 ---
@@ -20,8 +23,15 @@ keyword: por que sentimos medo   # palavra-chave principal da planilha
 author: Equipe Mente Curiosa
 datePublished: 2026-10-01        # data futura = agendado
 dateModified: 2026-10-01         # atualizar sempre que o conteúdo mudar
-featuredImage: /images/por-que-sentimos-medo/por-que-sentimos-medo.webp
-featuredImageAlt: "Descrição real do que aparece na imagem"
+imagensPlano:                    # OBRIGATÓRIO em artigo novo (a automação transforma em imagens)
+  capa:                          # foto de fundo da capa (o título entra por cima)
+    busca: "dark forest fog night"                        # em inglês, cena concreta e sem pessoas se possível
+    alt: "Floresta escura coberta de neblina ao anoitecer"  # ≥ 25 caracteres, o que se espera ver
+  fotos:                         # 1 a 3 fotos no corpo (2 se o artigo passar de 1.200 palavras)
+    - busca: "human brain model"
+      alt: "Modelo de cérebro humano sobre uma mesa"
+      legenda: "A amígdala dispara o alarme do medo em frações de segundo"  # liga a foto ao texto
+      secao: 2                   # a foto entra no fim do 2º H2
 sources:                         # fontes confiáveis e verificadas
   - title: "Nome da fonte — título"
     url: https://...
@@ -35,6 +45,14 @@ Primeiro parágrafo: responde a pergunta direto, em 2–3 frases.
 
 Categorias válidas: `psicologia-e-comportamento`, `corpo-humano`, `universo-e-espaco`,
 `animais`, `ciencia-e-fenomenos`, `tecnologia-ia-e-ciencia`.
+
+## Regras de imagem
+
+- Busca em inglês, concreta e fotografável ("roller coaster", não "adrenaline"); nada de marcas, logos ou pessoas famosas.
+- Uma foto por seção relevante, nunca duas seguidas; a capa não repete foto do corpo (a automação garante).
+- O alt é escrito antes de ver a foto → a automação marca `altConferido: false`. Depois de publicado, alguém
+  olha cada foto (o resumo da execução no GitHub mostra o que a fonte diz de cada uma), corrige o alt se
+  preciso e marca `altConferido: true`. Enquanto isso a auditoria desconta pontos (I06).
 
 ## Regras de conteúdo
 
