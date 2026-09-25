@@ -65,7 +65,7 @@ const updated = d.dateModified.getTime() !== d.datePublished.getTime();
       {d.imageCredit && (
         <figcaption class="muted">
           Imagem: {d.imageCredit.url ? <a href={d.imageCredit.url} rel="noopener nofollow" target="_blank">{d.imageCredit.author}</a> : d.imageCredit.author}
-          {' / '}{d.imageCredit.source} ({d.imageCredit.license})
+          {' / '}{d.imageCredit.source} ({d.imageCredit.licenseUrl ? <a href={d.imageCredit.licenseUrl} rel="noopener nofollow" target="_blank">{d.imageCredit.license}</a> : d.imageCredit.license})
         </figcaption>
       )}
     </figure>
