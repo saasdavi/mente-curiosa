@@ -5,7 +5,7 @@ breadcrumbs, sitemap, anúncios e links relacionados. Não escrever HTML de SEO 
 
 ## Arquivo
 
-`src/content/artigos/<slug>.md` + imagem `public/images/<slug>/capa.webp` (1200×675).
+`src/content/artigos/<slug>.md` + capa `public/images/<slug>/<slug>.webp` (1200×675) + 1–3 fotos no corpo (`images`, ver IMAGENS.md).
 
 ```markdown
 ---
@@ -20,7 +20,7 @@ keyword: por que sentimos medo   # palavra-chave principal da planilha
 author: Equipe Mente Curiosa
 datePublished: 2026-10-01        # data futura = agendado
 dateModified: 2026-10-01         # atualizar sempre que o conteúdo mudar
-featuredImage: /images/por-que-sentimos-medo/capa.webp
+featuredImage: /images/por-que-sentimos-medo/por-que-sentimos-medo.webp
 featuredImageAlt: "Descrição real do que aparece na imagem"
 sources:                         # fontes confiáveis e verificadas
   - title: "Nome da fonte — título"
