@@ -65,7 +65,7 @@ function audit(a, all) {
 
   // --- Bloqueantes (o artigo não vai ao ar) ---
   rule('B01', 'BLOQUEANTE', !headings.some((h) => h.level === 1), 'Sem H1 no corpo (o H1 é o title)', 0);
-  rule('B02', 'BLOQUEANTE', wc >= 600, `Mínimo de 600 palavras — abaixo disso o AdSense vê conteúdo raso (tem ${wc})`, 0);
+  rule('B02', 'BLOQUEANTE', wc >= 1000, `Mínimo de 1.000 palavras — abaixo disso é conteúdo raso para Google e AdSense (tem ${wc})`, 0);
   rule('B03', 'BLOQUEANTE', Array.isArray(d.sources) && d.sources.length >= 1, 'Ao menos 1 fonte em sources', 0);
   rule('B04', 'BLOQUEANTE', !all.some((o) => o !== a && norm(o.data.keyword) === kw), 'Keyword principal única no acervo (canibalização)', 0);
   rule('B05', 'BLOQUEANTE', !HEALTH.has(d.category) || /substitui|profissional de saude|orientacao medica/.test(lower),
@@ -80,7 +80,7 @@ function audit(a, all) {
   rule('T05', 'ALERTA', kwWords.every((w) => d.slug.includes(w.slice(0, 5))), 'Slug contém a keyword', 3);
   rule('C01', 'ALERTA', hasKw(firstP), 'Primeiro parágrafo contém a keyword', 7);
   rule('C02', 'ALERTA', words(firstP).length <= 50, `Primeiro parágrafo responde direto (≤ 50 palavras; tem ${words(firstP).length})`, 8);
-  rule('C03', 'ALERTA', wc >= 800, `Profundidade: ≥ 800 palavras (tem ${wc})`, 6);
+  rule('C03', 'ALERTA', wc >= 1200, `Profundidade: ideal ≥ 1.200 palavras (tem ${wc})`, 6);
   rule('C04', 'ALERTA', headings.filter((h) => h.level === 2).length >= 4, `≥ 4 seções H2 (tem ${headings.filter((h) => h.level === 2).length})`, 6);
   rule('C05', 'ALERTA', headings.every((h, i) => i === 0 || h.level <= headings[i - 1].level + 1), 'Hierarquia de títulos sem pular nível', 3);
   rule('C06', 'ALERTA', /mitos?|verdade|perguntas|curiosidades|exemplos/.test(norm(headings.map((h) => h.text).join(' '))),
