@@ -49,6 +49,7 @@ export async function onRequest({ request, next }) {
 const vercel = {
   $schema: 'https://openapi.vercel.sh/vercel.json',
   framework: 'astro',
+  installCommand: 'npm install',
   buildCommand: 'npm run build',
   outputDirectory: 'dist',
   trailingSlash: true,
