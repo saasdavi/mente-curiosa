@@ -20,7 +20,7 @@ const year = new Date().getFullYear();
     <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/feed.xml" />
     <link rel="sitemap" href="/sitemap.xml" />
     <SEO {...props} />
-<script is:inline defer src="/_vercel/insights/script.js"></script>
+    <script is:inline defer src="/_vercel/insights/script.js"></script>
     <slot name="head" />
     <AdSenseScript />
   </head>
@@ -51,6 +51,7 @@ const year = new Date().getFullYear();
           <li><a href="/sobre/">Sobre</a></li>
           <li><a href="/contato/">Contato</a></li>
           <li><a href="/politica-de-privacidade/">Política de privacidade</a></li>
+          <li><a href="/termos-de-uso/">Termos de uso</a></li>
           {SITE.social.facebook && <li><a href={SITE.social.facebook} rel="noopener me" target="_blank">Facebook</a></li>}
           {SITE.social.instagram && <li><a href={SITE.social.instagram} rel="noopener me" target="_blank">Instagram</a></li>}
           {SITE.social.pinterest && <li><a href={SITE.social.pinterest} rel="noopener me" target="_blank">Pinterest</a></li>}
