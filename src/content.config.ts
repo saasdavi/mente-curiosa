@@ -10,6 +10,19 @@ import { RESERVED_SLUGS } from './config/site';
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+const imagePath = z
+  .string()
+  .regex(/^\/images\/[a-z0-9-]+\/[a-z0-9-]+\.webp$/, 'imagem: /images/<slug>/<nome-descritivo>.webp')
+  .refine((p) => existsSync(`public${p}`), 'arquivo da imagem não encontrado em public/');
+
+const credit = z.object({
+  author: z.string(),
+  source: z.enum(['Pexels', 'Pixabay', 'Unsplash', 'NASA', 'Openverse', 'IA', 'Próprio']),
+  url: z.url().optional(),
+  license: z.string(),
+  licenseUrl: z.url().optional(),
+});
+
 const artigos = defineCollection({
   loader: glob({
     pattern: '**/*.md',
@@ -35,19 +48,24 @@ const artigos = defineCollection({
       author: z.string().default('Equipe Mente Curiosa'),
       datePublished: z.coerce.date(),
       dateModified: z.coerce.date(),
-      featuredImage: z
-        .string()
-        .regex(/^\/images\/[a-z0-9-]+\/[a-z0-9-]+\.webp$/, 'imagem: /images/<slug>/<nome>.webp')
-        .refine((p) => existsSync(`public${p}`), 'arquivo da imagem não encontrado em public/'),
+      featuredImage: imagePath,
       featuredImageAlt: z.string().min(10),
       // Origem da foto de fundo da capa (licença rastreável). Vazio = arte só com a marca.
-      imageCredit: z
-        .object({
-          author: z.string(),
-          source: z.enum(['Pexels', 'Pixabay', 'Unsplash', 'NASA', 'Openverse', 'IA', 'Próprio']),
-          url: z.url().optional(),
-          license: z.string(),
-        })
+      imageCredit: credit.optional(),
+      // Fotos no corpo do artigo — inseridas ao fim da seção H2 indicada (ver IMAGENS.md).
+      images: z
+        .array(
+          z.object({
+            src: imagePath,
+            alt: z.string().min(25, 'alt: descreva o que aparece na foto (≥ 25 caracteres)'),
+            caption: z.string().min(10),
+            section: z.number().int().min(1),
+            width: z.number().int().positive(),
+            height: z.number().int().positive(),
+            credit,
+          }),
+        )
+        .max(4)
         .optional(),
       sources: z
         .array(z.object({ title: z.string().min(3), url: z.url() }))
@@ -59,9 +77,13 @@ const artigos = defineCollection({
       message: 'dateModified não pode ser anterior a datePublished',
       path: ['dateModified'],
     })
-    .refine((d) => d.featuredImage.startsWith(`/images/${d.slug}/`), {
-      message: 'a imagem deve ficar na pasta do próprio artigo: /images/<slug>/',
+    .refine((d) => [d.featuredImage, ...(d.images ?? []).map((i) => i.src)].every((p) => p.startsWith(`/images/${d.slug}/`)), {
+      message: 'as imagens devem ficar na pasta do próprio artigo: /images/<slug>/',
       path: ['featuredImage'],
+    })
+    .refine((d) => new Set([d.featuredImage, ...(d.images ?? []).map((i) => i.src)]).size === 1 + (d.images?.length ?? 0), {
+      message: 'imagem repetida no artigo',
+      path: ['images'],
     }),
 });
 
