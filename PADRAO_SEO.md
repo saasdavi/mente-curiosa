@@ -1,5 +1,7 @@
 # Padrão de qualidade SEO — Mente Curiosa
 
+> Resumo operacional para quem escreve (Claude/n8n): **REGRAS_OURO.md**.
+
 Todo artigo passa por 3 filtros antes de ir ao ar, e é revisado de novo depois de publicado.
 
 ```
@@ -11,7 +13,7 @@ Claude escreve → AUDITORIA AUTOMÁTICA → Claude corrige → REVISÃO HUMANA 
 
 1. **Responde a pergunta no primeiro parágrafo**, em até 50 palavras, com a keyword.
 2. **Uma intenção por URL.** As variações de cauda longa viram seções H2, não artigos novos.
-3. **Profundidade útil:** 800–1.500 palavras, 4+ seções H2, sem enchimento.
+3. **Profundidade útil:** 1.000–1.500 palavras (mínimo 1.000), 4+ seções H2, sem enchimento.
 4. **Estrutura fixa:** resposta direta → explicação simples → como acontece → o que a ciência sabe → exemplos/curiosidades → mitos e verdades → resumo.
 5. **Fontes primárias** (instituições científicas, universidades, periódicos, órgãos públicos): mínimo 2.
 6. **Links internos:** mínimo 2, com pelo menos 1 para outro artigo relacionado.
@@ -27,7 +29,7 @@ Nota de 0 a 100. **Publica com nota ≥ 80 e nenhum bloqueante.** O build falha 
 | Regra | O que verifica |
 |---|---|
 | B01 | Sem H1 no corpo (o H1 é o title) |
-| B02 | Mínimo de 600 palavras (conteúdo raso é o principal motivo de recusa no AdSense) |
+| B02 | Mínimo de 1.000 palavras (conteúdo raso é o principal motivo de recusa no AdSense) |
 | B03 | Ao menos 1 fonte |
 | B04 | Keyword principal única no acervo (canibalização) |
 | B05 | Aviso de saúde nos clusters Corpo humano e Psicologia |
@@ -38,7 +40,7 @@ Nota de 0 a 100. **Publica com nota ≥ 80 e nenhum bloqueante.** O build falha 
 | Grupo | Regras |
 |---|---|
 | Title e description (T) | title ≤ 60 caracteres no Google · keyword no title · description 120–160 · keyword na description · keyword no slug |
-| Conteúdo (C) | keyword no 1º parágrafo · 1º parágrafo ≤ 50 palavras · ≥ 800 palavras (ideal 800–1.200) · ≥ 4 H2 · subtítulo a cada ≤ 300 palavras · hierarquia correta · seção de valor extra · resumo final |
+| Conteúdo (C) | keyword no 1º parágrafo · 1º parágrafo ≤ 50 palavras · ideal ≥ 1.200 palavras · ≥ 4 H2 · subtítulo a cada ≤ 300 palavras · hierarquia correta · seção de valor extra · resumo final |
 | Links (L) | ≥ 2 links internos · ≥ 1 para outro artigo |
 | Fontes (F) | ≥ 2 fontes · sem Wikipédia/blogs/fóruns |
 | Qualidade (Q) | sem enchimento · frases ≤ 22 palavras em média · parágrafos ≤ 50 palavras (2–4 linhas no celular) · densidade de keyword ≤ 3% |
