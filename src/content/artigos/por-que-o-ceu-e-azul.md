@@ -27,8 +27,8 @@ imageCredit:
   license: Licença Pexels
   licenseUrl: https://www.pexels.com/license/
 images:
-- src: /images/por-que-o-ceu-e-azul/sol-alaranjado-sol-baixo-horizonte.webp
-  alt: Pôr do sol alaranjado com o Sol baixo no horizonte
+- src: /images/por-que-o-ceu-e-azul/ceu-alaranjado-mar-logo-depois-sol.webp
+  alt: Céu alaranjado sobre o mar logo depois do pôr do sol
   caption: Perto do pôr do sol a luz atravessa mais ar e o azul se espalha antes de chegar até nós
   section: 4
   width: 1200
