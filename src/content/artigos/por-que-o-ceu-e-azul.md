@@ -1,25 +1,44 @@
 ---
 id: ART0751
-title: "Por que o céu é azul?"
+title: Por que o céu é azul?
 slug: por-que-o-ceu-e-azul
-description: "O céu é azul porque a atmosfera espalha mais a luz azul do Sol do que as outras cores. Entenda o espalhamento de Rayleigh e por que o pôr do sol é laranja."
+description: O céu é azul porque a atmosfera espalha mais a luz azul do Sol do que as outras cores. Entenda o espalhamento de Rayleigh e por que o pôr do sol é laranja.
 category: ciencia-e-fenomenos
 tags:
-  - céu
-  - luz
-  - atmosfera
-  - física
+- céu
+- luz
+- atmosfera
+- física
 keyword: por que o céu é azul
 author: Equipe Mente Curiosa
 datePublished: 2026-09-24
 dateModified: 2026-09-24
-featuredImage: /images/por-que-o-ceu-e-azul/capa.webp
-featuredImageAlt: "Capa do Mente Curiosa com a pergunta Por que o céu é azul? sobre céu estrelado azul-noite"
+featuredImage: /images/por-que-o-ceu-e-azul/por-que-o-ceu-e-azul.webp
+featuredImageAlt: Céu azul claro com nuvens brancas em um dia de sol
 sources:
-  - title: "NASA Space Place — Why Is the Sky Blue?"
-    url: https://spaceplace.nasa.gov/blue-sky/en/
-  - title: "NOAA NESDIS — Why Is the Sky Blue?"
-    url: https://www.nesdis.noaa.gov/about/k-12-education/atmosphere/why-the-sky-blue
+- title: NASA Space Place — Why Is the Sky Blue?
+  url: https://spaceplace.nasa.gov/blue-sky/en/
+- title: NOAA NESDIS — Why Is the Sky Blue?
+  url: https://www.nesdis.noaa.gov/about/k-12-education/atmosphere/why-the-sky-blue
+imageCredit:
+  author: Van Mailian
+  source: Pexels
+  url: https://www.pexels.com/photo/vibrant-blue-sky-with-fluffy-clouds-32047220/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/por-que-o-ceu-e-azul/sol-alaranjado-sol-baixo-horizonte.webp
+  alt: Pôr do sol alaranjado com o Sol baixo no horizonte
+  caption: Perto do pôr do sol a luz atravessa mais ar e o azul se espalha antes de chegar até nós
+  section: 4
+  width: 1200
+  height: 800
+  credit:
+    author: David Kanigan
+    source: Pexels
+    url: https://www.pexels.com/photo/sea-and-orange-sky-at-dusk-19337853/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
 ---
 
 O céu é azul porque **a atmosfera da Terra espalha a luz azul do Sol muito mais do que as outras cores**. Quando olhamos para qualquer ponto do céu, estamos vendo essa luz azul que foi desviada pelas moléculas do ar e chegou aos nossos olhos vinda de todas as direções.
