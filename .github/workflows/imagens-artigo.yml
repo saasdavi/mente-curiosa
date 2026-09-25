@@ -59,8 +59,9 @@ jobs:
         env:
           SLUG: ${{ inputs.slug }}
         run: |
-          git config user.name "mente-curiosa-bot"
-          git config user.email "actions@users.noreply.github.com"
+          # Commit em nome de quem disparou o workflow: a Vercel (plano Hobby) só publica commits de autores do time.
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           git add -A "public/images/$SLUG" "public/social/$SLUG" "src/content/artigos/$SLUG.md"
           git diff --cached --quiet && { echo "nada mudou"; exit 0; }
           git commit -m "Imagens com SEO: $SLUG"
