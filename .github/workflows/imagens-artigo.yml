@@ -52,7 +52,7 @@ jobs:
             while IFS= read -r f; do
               f="$(echo "$f" | sed 's/^ *//;s/ *$//')"
               [ -n "$f" ] && args+=(--foto "$f")
-            done < <(printf '%s' "$FOTOS" | sed 's/;;/\n/g')
+            done < <(printf '%s\n' "$FOTOS" | sed 's/;;/\n/g')  # \n final: sem ele o read perde a última foto
           fi
           python3 scripts/imagens/imagens_artigo.py "${args[@]}"
       - name: Publicar
