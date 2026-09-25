@@ -48,8 +48,29 @@ const artigos = defineCollection({
       author: z.string().default('Equipe Mente Curiosa'),
       datePublished: z.coerce.date(),
       dateModified: z.coerce.date(),
-      featuredImage: imagePath,
-      featuredImageAlt: z.string().min(10),
+      // Capa. Fica vazia só enquanto o artigo espera a automação de imagens (imagensPlano).
+      featuredImage: imagePath.optional(),
+      featuredImageAlt: z.string().min(10).optional(),
+      // Plano de imagens escrito junto com o artigo. A automação (GitHub Actions) busca as fotos
+      // grátis, gera capa + Pins + fotos do corpo, preenche os campos acima e apaga este bloco.
+      imagensPlano: z
+        .object({
+          capa: z.object({ busca: z.string().min(3), alt: z.string().min(25) }).optional(),
+          fotos: z
+            .array(
+              z.object({
+                busca: z.string().min(3),
+                alt: z.string().min(25),
+                legenda: z.string().min(10),
+                secao: z.number().int().min(1),
+              }),
+            )
+            .min(1, 'plano de imagens: ao menos 1 foto no corpo')
+            .max(3),
+        })
+        .optional(),
+      // false = o alt foi escrito antes de ver a foto; alguém precisa conferir (auditoria I06).
+      altConferido: z.boolean().optional(),
       // Origem da foto de fundo da capa (licença rastreável). Vazio = arte só com a marca.
       imageCredit: credit.optional(),
       // Fotos no corpo do artigo — inseridas ao fim da seção H2 indicada (ver IMAGENS.md).
@@ -77,7 +98,15 @@ const artigos = defineCollection({
       message: 'dateModified não pode ser anterior a datePublished',
       path: ['dateModified'],
     })
-    .refine((d) => [d.featuredImage, ...(d.images ?? []).map((i) => i.src)].every((p) => p.startsWith(`/images/${d.slug}/`)), {
+    .refine((d) => d.featuredImage || d.imagensPlano?.capa, {
+      message: 'sem capa: informe featuredImage ou imagensPlano.capa (busca + alt)',
+      path: ['featuredImage'],
+    })
+    .refine((d) => !d.featuredImage || Boolean(d.featuredImageAlt), {
+      message: 'featuredImageAlt é obrigatório quando há capa',
+      path: ['featuredImageAlt'],
+    })
+    .refine((d) => [d.featuredImage, ...(d.images ?? []).map((i) => i.src)].filter(Boolean).every((p) => p!.startsWith(`/images/${d.slug}/`)), {
       message: 'as imagens devem ficar na pasta do próprio artigo: /images/<slug>/',
       path: ['featuredImage'],
     })
