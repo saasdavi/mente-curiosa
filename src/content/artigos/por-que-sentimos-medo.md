@@ -41,6 +41,18 @@ images:
     url: https://www.pexels.com/photo/brain-model-on-plate-15410078/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
+- src: /images/por-que-sentimos-medo/montanha-russa-plena-descida-vista-baixo.webp
+  alt: Montanha-russa em plena descida vista de baixo
+  caption: 'Em um ambiente seguro, o susto vira diversão: é o medo sob controle'
+  section: 5
+  width: 1200
+  height: 800
+  credit:
+    author: Lluis Albin Busto Gancedo
+    source: Pexels
+    url: https://www.pexels.com/photo/thrilling-roller-coaster-under-clear-blue-sky-38686463/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
 ---
 
 Sentimos medo porque o cérebro humano foi moldado para **detectar perigos e reagir a eles antes que seja tarde demais**. O medo funciona como um alarme: ele interrompe o que estamos fazendo, concentra a atenção na ameaça e prepara o corpo para lutar, fugir ou ficar imóvel. Sem esse alarme, nossos ancestrais dificilmente teriam sobrevivido a predadores, quedas e outros riscos.
