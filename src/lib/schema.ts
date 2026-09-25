@@ -24,6 +24,32 @@ export const websiteJsonLd = () => ({
   publisher: organizationJsonLd(),
 });
 
+type Credit = { author: string; source: string; url?: string; license: string; licenseUrl?: string };
+
+// ImageObject com crédito e licença: habilita o selo "Licenciável" e ajuda o Google Imagens.
+const imageObject = (src: string, width: number, height: number, alt: string, credit?: Credit, caption?: string) => ({
+  '@type': 'ImageObject',
+  url: abs(src),
+  contentUrl: abs(src),
+  width,
+  height,
+  ...(caption || alt ? { caption: caption || alt } : {}),
+  ...(credit
+    ? {
+        creditText: `${credit.author} / ${credit.source}`,
+        creator: { '@type': credit.source === 'NASA' ? 'Organization' : 'Person', name: credit.author },
+        copyrightNotice: credit.license,
+        ...(credit.licenseUrl ? { license: credit.licenseUrl } : {}),
+        ...(credit.url ? { acquireLicensePage: credit.url } : {}),
+      }
+    : {}),
+});
+
+export const articleImages = (a: Article) => [
+  imageObject(a.data.featuredImage, SITE.image.width, SITE.image.height, a.data.featuredImageAlt, a.data.imageCredit),
+  ...(a.data.images ?? []).map((i) => imageObject(i.src, i.width, i.height, i.alt, i.credit, i.caption)),
+];
+
 export function articleJsonLd(a: Article) {
   const d = a.data;
   const url = abs(articleUrl(d.slug));
@@ -34,7 +60,7 @@ export function articleJsonLd(a: Article) {
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     headline: d.title,
     description: d.description,
-    image: { '@type': 'ImageObject', url: abs(d.featuredImage), width: SITE.image.width, height: SITE.image.height },
+    image: articleImages(a),
     datePublished: d.datePublished.toISOString(),
     dateModified: d.dateModified.toISOString(),
     author: { '@type': 'Organization', name: d.author, url: abs('/sobre/') },
