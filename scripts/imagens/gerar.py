@@ -1,8 +1,10 @@
 """Gerador de imagens da marca Mente Curiosa (gratuito, roda local ou no n8n).
 
 Cria, a partir do título e (opcional) de uma foto de fundo:
-  public/images/<slug>/capa.webp          1200×675  capa do artigo / Open Graph / Facebook
-  social/<slug>/pin-1.png … pin-5.png     1000×1500 Pins do Pinterest (um ângulo por Pin)
+  public/images/<slug>/<slug>.webp        1200×675  capa do artigo / Open Graph / Facebook
+  public/images/<slug>/<nome>.webp        1200×800  fotos do corpo do artigo (foto_corpo)
+  public/social/<slug>/pin-1.jpg … pin-5.jpg  1000×1500 Pins do Pinterest (um ângulo por Pin)
+  public/social/<slug>/facebook.jpg       1200×675  post da fan page (JPEG: aceito por Facebook/Pinterest/n8n)
 
 Uso:
   python3 scripts/imagens/gerar.py --slug por-que-o-ceu-e-azul \
@@ -118,10 +120,22 @@ def capa(slug, titulo, categoria, fundo=None, credito=None):
     if credito:
         fc = FONT('Regular', 16)
         d.text((W - m - d.textlength(credito, font=fc), H - 40), credito, font=fc, fill=SOFT)
-    out = os.path.join(RAIZ, 'public', 'images', slug, 'capa.webp')
+    out = os.path.join(RAIZ, 'public', 'images', slug, f'{slug}.webp')  # nome descritivo = SEO de imagem
     os.makedirs(os.path.dirname(out), exist_ok=True)
     img.convert('RGB').save(out, 'WEBP', quality=82, method=6)
+    fb = os.path.join(RAIZ, 'public', 'social', slug, 'facebook.jpg')
+    os.makedirs(os.path.dirname(fb), exist_ok=True)
+    img.convert('RGB').save(fb, 'JPEG', quality=86, optimize=True, progressive=True)
     return out
+
+
+def foto_corpo(slug, fundo, nome, W=1200, H=800):
+    """Foto do corpo do artigo: recorte 3:2, WebP leve, sem texto por cima (o texto fica no alt/legenda)."""
+    img = ImageOps.fit(Image.open(fundo).convert('RGB'), (W, H), Image.LANCZOS, centering=(0.5, 0.5))
+    out = os.path.join(RAIZ, 'public', 'images', slug, f'{nome}.webp')
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    img.save(out, 'WEBP', quality=80, method=6)
+    return out, W, H
 
 
 def pin(slug, titulo, categoria, angulo, n, fundo=None, credito=None):
@@ -147,9 +161,9 @@ def pin(slug, titulo, categoria, angulo, n, fundo=None, credito=None):
     d.text((W // 2, H - 62), 'Leia em mentecuriosa.blog', font=FONT('Bold', 30), fill=GOLD, anchor='mm')
     if credito:
         d.text((W - 24, topo_h - 24), credito, font=FONT('Regular', 18), fill=SOFT, anchor='rd')
-    out = os.path.join(RAIZ, 'social', slug, f'pin-{n}.png')
+    out = os.path.join(RAIZ, 'public', 'social', slug, f'pin-{n}.jpg')
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    img.convert('RGB').save(out, 'PNG', optimize=True)
+    img.convert('RGB').save(out, 'JPEG', quality=86, optimize=True, progressive=True)
     return out
 
 
