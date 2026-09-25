@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../config/site';
+const updated = '24 de setembro de 2026';
+---
+<BaseLayout title="Termos de uso" description={`Regras de uso do ${SITE.name}: conteúdo informativo, direitos autorais, imagens, links externos e anúncios.`} path="/termos-de-uso/">
+  <article class="wrap prose page">
+    <h1>Termos de uso</h1>
+    <p class="muted">Última atualização: {updated}</p>
+    <p>Ao acessar o {SITE.name} ({SITE.url}) você concorda com estes termos. Se não concordar, por favor não utilize o site.</p>
+
+    <h2>Conteúdo informativo</h2>
+    <p>Os artigos têm finalidade educativa e de divulgação científica. Procuramos basear cada texto em fontes confiáveis, citadas no fim do artigo, e revisá-lo quando surgem informações novas. Ainda assim, o conteúdo não substitui orientação de médicos, psicólogos, advogados ou outros profissionais.</p>
+
+    <h2>Direitos autorais</h2>
+    <p>Textos, marca e artes do {SITE.name} são protegidos por direitos autorais. Você pode citar trechos curtos com link para o artigo original. A reprodução integral sem autorização não é permitida.</p>
+
+    <h2>Imagens</h2>
+    <p>As fotos usadas no site vêm de bancos gratuitos (como Pexels, NASA e Openverse) ou são produzidas por nós. Cada imagem traz o crédito do autor e a licença. Para reutilizar uma foto de terceiros, siga a licença indicada na fonte original.</p>
+
+    <h2>Links externos</h2>
+    <p>Indicamos sites de terceiros como fonte ou leitura complementar. Não controlamos esses sites e não respondemos pelo conteúdo ou pelas políticas deles.</p>
+
+    <h2>Anúncios</h2>
+    <p>O site é mantido por publicidade, inclusive do Google AdSense. Os anúncios são identificados e não representam recomendação do {SITE.name}. Saiba como tratamos dados na <a href="/politica-de-privacidade/">Política de privacidade</a>.</p>
+
+    <h2>Correções e contato</h2>
+    <p>Encontrou um erro ou tem uma sugestão? Escreva para <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a> ou use a página de <a href="/contato/">contato</a>.</p>
+
+    <h2>Alterações</h2>
+    <p>Estes termos podem ser atualizados. A data da última revisão aparece no topo desta página.</p>
+  </article>
+</BaseLayout>
