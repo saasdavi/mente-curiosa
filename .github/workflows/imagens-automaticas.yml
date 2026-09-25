@@ -1,0 +1,50 @@
+# REGRA: artigo novo sobe com imagem.
+# Todo push que traz um artigo com o bloco `imagensPlano` dispara esta automação: ela busca as fotos
+# grátis (Pexels → NASA → Openverse), gera capa + 5 Pins + fotos do corpo, preenche o frontmatter,
+# apaga o plano e publica. Enquanto isso não acontece, o artigo não aparece no site.
+name: Imagens automáticas
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/content/artigos/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: imagens-artigo
+  cancel-in-progress: false
+
+jobs:
+  imagens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Há artigo esperando imagens?
+        id: plano
+        run: |
+          if grep -l '^imagensPlano:' src/content/artigos/*.md; then echo "tem=1" >> "$GITHUB_OUTPUT"; else echo "Nenhum artigo com imagensPlano."; fi
+      - uses: actions/setup-python@v5
+        if: steps.plano.outputs.tem == '1'
+        with:
+          python-version: '3.12'
+      - if: steps.plano.outputs.tem == '1'
+        run: pip install pillow pyyaml
+      - name: Gerar imagens
+        if: steps.plano.outputs.tem == '1'
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: python3 scripts/imagens/imagens_artigo.py --pendentes
+      - name: Publicar
+        if: steps.plano.outputs.tem == '1'
+        run: |
+          # Commit em nome de quem fez o push: a Vercel (plano Hobby) só publica commits de autores do time.
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git pull --rebase --autostash origin main
+          git add -A public/images public/social src/content/artigos
+          git diff --cached --quiet && { echo "nada mudou"; exit 0; }
+          git commit -m "Imagens automáticas: $(git diff --cached --name-only src/content/artigos | xargs -n1 basename | sed 's/\.md$//' | paste -sd, -)"
+          git push
