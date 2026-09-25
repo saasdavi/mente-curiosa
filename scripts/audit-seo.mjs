@@ -65,7 +65,7 @@ function audit(a, all) {
 
   // --- Bloqueantes (o artigo não vai ao ar) ---
   rule('B01', 'BLOQUEANTE', !headings.some((h) => h.level === 1), 'Sem H1 no corpo (o H1 é o title)', 0);
-  rule('B02', 'BLOQUEANTE', wc >= 500, `Mínimo de 500 palavras (tem ${wc})`, 0);
+  rule('B02', 'BLOQUEANTE', wc >= 600, `Mínimo de 600 palavras — abaixo disso o AdSense vê conteúdo raso (tem ${wc})`, 0);
   rule('B03', 'BLOQUEANTE', Array.isArray(d.sources) && d.sources.length >= 1, 'Ao menos 1 fonte em sources', 0);
   rule('B04', 'BLOQUEANTE', !all.some((o) => o !== a && norm(o.data.keyword) === kw), 'Keyword principal única no acervo (canibalização)', 0);
   rule('B05', 'BLOQUEANTE', !HEALTH.has(d.category) || /substitui|profissional de saude|orientacao medica/.test(lower),
@@ -79,7 +79,7 @@ function audit(a, all) {
   rule('T04', 'ALERTA', hasKw(d.description), 'Keyword (ou suas palavras) na description', 4);
   rule('T05', 'ALERTA', kwWords.every((w) => d.slug.includes(w.slice(0, 5))), 'Slug contém a keyword', 3);
   rule('C01', 'ALERTA', hasKw(firstP), 'Primeiro parágrafo contém a keyword', 7);
-  rule('C02', 'ALERTA', words(firstP).length <= 70, `Primeiro parágrafo responde direto (≤ 70 palavras; tem ${words(firstP).length})`, 8);
+  rule('C02', 'ALERTA', words(firstP).length <= 50, `Primeiro parágrafo responde direto (≤ 50 palavras; tem ${words(firstP).length})`, 8);
   rule('C03', 'ALERTA', wc >= 800, `Profundidade: ≥ 800 palavras (tem ${wc})`, 6);
   rule('C04', 'ALERTA', headings.filter((h) => h.level === 2).length >= 4, `≥ 4 seções H2 (tem ${headings.filter((h) => h.level === 2).length})`, 6);
   rule('C05', 'ALERTA', headings.every((h, i) => i === 0 || h.level <= headings[i - 1].level + 1), 'Hierarquia de títulos sem pular nível', 3);
@@ -93,10 +93,23 @@ function audit(a, all) {
     'Fontes primárias (sem Wikipédia, blogs, fóruns)', 4);
   rule('Q01', 'ALERTA', fillers.length === 0, `Sem frases de enchimento${fillers.length ? ': ' + fillers.join(', ') : ''}`, 5);
   rule('Q02', 'ALERTA', avgSentence <= 22, `Frases curtas (média ≤ 22 palavras; tem ${avgSentence.toFixed(1)})`, 3);
-  rule('Q03', 'ALERTA', paragraphs.every((p) => words(p).length <= 120), 'Parágrafos ≤ 120 palavras', 3);
+  const longP = paragraphs.filter((p) => words(p).length > 50).length;
+  rule('Q03', 'ALERTA', longP === 0, `Parágrafos curtos para celular (≤ 50 palavras; ${longP} acima)`, 3);
+  // Um subtítulo (H2/H3) a cada ≤ 300 palavras: leitura escaneável e espaço natural para anúncios.
+  const secWords = body.split(/^#{2,3}\s.*$/m).map((t) => words(t.replace(/!\[[^\]]*\]\([^)]*\)/g, '')).length);
+  const maxSec = Math.max(...secWords);
+  rule('C08', 'ALERTA', maxSec <= 300, `Subtítulo a cada ≤ 300 palavras (maior trecho sem subtítulo: ${maxSec})`, 3);
   rule('Q04', 'ALERTA', density <= 0.03, `Sem excesso de keyword (densidade ${(density * 100).toFixed(1)}%)`, 3);
   rule('I01', 'ALERTA', (d.featuredImageAlt || '').length >= 25 && !/^(imagem|foto|ilustracao) de\b/.test(norm(d.featuredImageAlt)),
     'Alt da imagem descritivo (≥ 25 caracteres, sem “imagem de”)', 3);
+  const imgs = d.images || [];
+  const generic = /\/(capa|image|imagem|img|foto|photo|pexels|dsc|screenshot)[-_]?\d*\.webp$/i;
+  rule('I02', 'ALERTA', imgs.length >= 1, `≥ 1 foto no corpo do artigo (tem ${imgs.length}; ideal 2 em artigos longos)`, 5);
+  rule('I03', 'ALERTA', ![d.featuredImage, ...imgs.map((i) => i.src)].some((p) => generic.test(p || '')),
+    'Nomes de arquivo descritivos (sem capa.webp, img1.webp…)', 2);
+  rule('I04', 'ALERTA', imgs.every((i) => i.credit && i.caption && norm(i.alt) !== norm(d.featuredImageAlt)) && Boolean(d.imageCredit),
+    'Toda imagem com crédito/licença, legenda e alt próprio', 2);
+  rule('I05', 'ALERTA', wc < 1200 || imgs.length >= 2, 'Artigo longo (≥ 1200 palavras) com ≥ 2 fotos no corpo', 1);
   const similar = all.filter((o) => o !== a && jaccard(contentWords(o.data.title), contentWords(d.title)) >= 0.75);
   rule('X01', 'ALERTA', similar.length === 0, `Título não quase-duplicado${similar.length ? ' (parecido com: ' + similar.map((s) => s.data.slug).join(', ') + ')' : ''}`, 3);
 
