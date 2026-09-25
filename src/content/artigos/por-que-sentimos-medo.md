@@ -1,27 +1,46 @@
 ---
 id: ART0001
-title: "Por que sentimos medo?"
+title: Por que sentimos medo?
 slug: por-que-sentimos-medo
-description: "O medo é um alarme de sobrevivência do cérebro. Entenda o que acontece no corpo, o papel da amígdala e por que algumas pessoas gostam de sentir medo."
+description: O medo é um alarme de sobrevivência do cérebro. Entenda o que acontece no corpo, o papel da amígdala e por que algumas pessoas gostam de sentir medo.
 category: psicologia-e-comportamento
 tags:
-  - medo
-  - cérebro
-  - emoções
-  - amígdala
+- medo
+- cérebro
+- emoções
+- amígdala
 keyword: por que sentimos medo
 author: Equipe Mente Curiosa
 datePublished: 2026-09-24
 dateModified: 2026-09-24
-featuredImage: /images/por-que-sentimos-medo/capa.webp
-featuredImageAlt: "Capa do Mente Curiosa com a pergunta Por que sentimos medo? sobre céu estrelado azul-noite"
+featuredImage: /images/por-que-sentimos-medo/por-que-sentimos-medo.webp
+featuredImageAlt: Floresta escura coberta de neblina ao anoitecer, sem pessoas
 sources:
-  - title: "Smithsonian Magazine — What Happens in the Brain When We Feel Fear"
-    url: https://www.smithsonianmag.com/science-nature/what-happens-brain-feel-fear-180966992/
-  - title: "Texas A&M Today — Why Do We Enjoy Fear?"
-    url: https://stories.tamu.edu/news/2019/10/29/why-do-we-enjoy-fear
-  - title: "NBC News — Brain-damaged woman feels no fear"
-    url: https://www.nbcnews.com/news/amp/wbna40702031
+- title: Smithsonian Magazine — What Happens in the Brain When We Feel Fear
+  url: https://www.smithsonianmag.com/science-nature/what-happens-brain-feel-fear-180966992/
+- title: Texas A&M Today — Why Do We Enjoy Fear?
+  url: https://stories.tamu.edu/news/2019/10/29/why-do-we-enjoy-fear
+- title: NBC News — Brain-damaged woman feels no fear
+  url: https://www.nbcnews.com/news/amp/wbna40702031
+imageCredit:
+  author: Bradley De Melo
+  source: Pexels
+  url: https://www.pexels.com/photo/man-in-the-forest-in-the-fog-lights-of-a-car-18816229/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/por-que-sentimos-medo/modelo-anatomico-cerebro-humano-visto-lado.webp
+  alt: Modelo anatômico do cérebro humano visto de lado
+  caption: A amígdala, no interior do cérebro, dispara o alarme do medo em frações de segundo
+  section: 2
+  width: 1200
+  height: 800
+  credit:
+    author: Amel Uzunovic
+    source: Pexels
+    url: https://www.pexels.com/photo/brain-model-on-plate-15410078/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
 ---
 
 Sentimos medo porque o cérebro humano foi moldado para **detectar perigos e reagir a eles antes que seja tarde demais**. O medo funciona como um alarme: ele interrompe o que estamos fazendo, concentra a atenção na ameaça e prepara o corpo para lutar, fugir ou ficar imóvel. Sem esse alarme, nossos ancestrais dificilmente teriam sobrevivido a predadores, quedas e outros riscos.
