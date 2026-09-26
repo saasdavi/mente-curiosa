@@ -54,7 +54,7 @@ images:
     url: https://www.pexels.com/photo/a-man-holding-a-smartphone-5447314/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 A inteligência artificial funciona **aprendendo padrões a partir de muitos exemplos e usando esses padrões para prever respostas**. Em vez de receber uma regra para cada situação, o sistema é treinado com dados e ajusta seus próprios parâmetros até acertar mais. Assim ele reconhece fotos, traduz e conversa.

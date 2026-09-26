@@ -22,7 +22,7 @@ sources:
   url: https://doi.org/10.1017/S0140525X00004015
 draft: false
 featuredImage: /images/por-que-temos-sonhos/por-que-temos-sonhos.webp
-featuredImageAlt: Pessoa dormindo na cama em um quarto escuro iluminado por luz azulada
+featuredImageAlt: Quarto escuro à noite com a cidade iluminada vista pela janela
 imageCredit:
   author: Cristian Manieri
   source: Pexels
@@ -54,7 +54,7 @@ images:
     url: https://www.pexels.com/photo/a-blank-notebook-beside-cup-of-black-coffee-10060450/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 Por que temos sonhos? A ciência ainda não tem uma resposta final, mas as principais teorias ligam os sonhos a **organizar memórias, processar emoções e treinar reações a situações difíceis**. A maior parte dos sonhos vívidos acontece no sono REM, quando o cérebro fica quase tão ativo quanto acordado.

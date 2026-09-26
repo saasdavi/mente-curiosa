@@ -52,7 +52,7 @@ images:
     url: https://www.pexels.com/photo/starry-night-sky-over-terlingua-desert-landscape-37470910/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 No centro da Via Láctea existe **um buraco negro supermassivo chamado Sagitário A\***, com cerca de 4 milhões de vezes a massa do Sol. Ele fica a aproximadamente 27 mil anos-luz da Terra, escondido atrás de nuvens de poeira. Em volta dele, estrelas giram em alta velocidade.

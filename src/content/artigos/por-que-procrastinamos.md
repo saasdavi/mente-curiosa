@@ -22,7 +22,7 @@ sources:
   url: https://doi.org/10.1016/j.paid.2010.01.029
 draft: false
 featuredImage: /images/por-que-procrastinamos/por-que-procrastinamos.webp
-featuredImageAlt: Pessoa distraída com o celular diante de uma mesa cheia de papéis
+featuredImageAlt: Pessoa sentada à mesa segurando papéis, com uma planta ao fundo
 imageCredit:
   author: https://kaboompics.com/
   source: Pexels
@@ -43,7 +43,7 @@ images:
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
 - src: /images/por-que-procrastinamos/caderno-aberto-lista-tarefas-caneta-ao-lado.webp
-  alt: Caderno aberto com uma lista de tarefas e uma caneta ao lado
+  alt: Bloco de anotações, canetas e uma planta sobre uma mesa branca
   caption: Dividir a tarefa em passos pequenos reduz o desconforto de começar
   section: 6
   width: 1200
@@ -54,7 +54,7 @@ images:
     url: https://www.pexels.com/photo/materials-on-a-gray-surface-with-a-potted-plant-8581034/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 Por que procrastinamos? Na maioria das vezes, **adiamos para fugir de uma emoção desagradável ligada à tarefa**, como tédio, ansiedade ou medo de errar. O alívio de deixar para depois é imediato, e o custo fica para o "eu do futuro". Por isso procrastinar tem pouco a ver com preguiça.

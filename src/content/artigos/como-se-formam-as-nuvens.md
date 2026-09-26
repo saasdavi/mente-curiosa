@@ -54,7 +54,7 @@ images:
     url: https://www.pexels.com/photo/a-field-under-a-cloudy-sky-8738464/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 As nuvens se formam quando **o ar úmido sobe, esfria e o vapor de água vira gotinhas ou cristais de gelo**. Essas gotas se juntam em volta de partículas minúsculas de poeira, sal ou fumaça que flutuam no ar. Bilhões delas reunidas formam a nuvem que você vê no céu.

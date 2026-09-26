@@ -20,7 +20,7 @@ sources:
   url: https://www.pnas.org/doi/10.1073/pnas.0909493107
 draft: false
 featuredImage: /images/por-que-os-passaros-migram/por-que-os-passaros-migram.webp
-featuredImageAlt: Bando de pássaros voando em formação contra o céu alaranjado do entardecer
+featuredImageAlt: Bando de pássaros voando contra um céu acinzentado
 imageCredit:
   author: paul voie
   source: Pexels
@@ -52,7 +52,7 @@ images:
     url: https://www.pexels.com/photo/via-lattea-a-baiano-28309276/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 Os pássaros migram **para ir aonde há mais comida e melhores condições para criar os filhotes**. Quando uma região fica fria ou pobre em alimento, muitas espécies viajam para lugares mais favoráveis e voltam quando a estação muda. É uma troca de endereço guiada pela sobrevivência.

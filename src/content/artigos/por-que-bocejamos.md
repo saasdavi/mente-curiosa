@@ -31,7 +31,7 @@ imageCredit:
   licenseUrl: https://www.pexels.com/license/
 images:
 - src: /images/por-que-bocejamos/termometro-rua-marcando-temperatura-alta-dia-ensolarado.webp
-  alt: Termômetro de rua marcando temperatura alta em um dia ensolarado
+  alt: Termômetro de vidro sobre um fundo azul
   caption: Estudos sugerem que a temperatura do ambiente influencia quanto bocejamos
   section: 3
   width: 1200
@@ -54,7 +54,7 @@ images:
     url: https://www.pexels.com/photo/close-up-of-a-brown-dog-yawning-5834389/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 Por que bocejamos? A resposta mais aceita hoje é que **o bocejo ajuda a esfriar o cérebro e a mudar o nível de alerta**, como na hora de acordar ou de dormir. A ciência ainda não fechou a questão, e o bocejo contagioso segue como um grande mistério.

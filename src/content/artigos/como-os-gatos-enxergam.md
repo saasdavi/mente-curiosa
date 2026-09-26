@@ -29,7 +29,7 @@ imageCredit:
   licenseUrl: https://www.pexels.com/license/
 images:
 - src: /images/como-os-gatos-enxergam/gato-escuro-os-olhos-refletindo-luz-brilhando.webp
-  alt: Gato no escuro com os olhos refletindo luz e brilhando
+  alt: Gato sentado em um ambiente escuro iluminado por luz azul
   caption: O brilho dos olhos do gato no escuro vem de uma camada que reflete a luz dentro do olho
   section: 2
   width: 1200
@@ -41,7 +41,7 @@ images:
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
 - src: /images/como-os-gatos-enxergam/gato-agachado-pronto-dar-bote-brinquedo-chao.webp
-  alt: Gato agachado pronto para dar o bote em um brinquedo no chão
+  alt: Filhote de gato laranja brincando com um brinquedo no chão
   caption: A visão felina é afiada para detectar movimentos rápidos a curta distância
   section: 5
   width: 1200
@@ -52,7 +52,7 @@ images:
     url: https://www.pexels.com/photo/playful-kitten-with-toy-mouse-on-soft-blue-blanket-34418130/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 Os gatos enxergam **muito bem no escuro e são ótimos em perceber movimentos**, mas veem menos cores e menos detalhes do que nós. O olho felino funciona como uma câmera ajustada para a pouca luz do amanhecer e do anoitecer, os horários em que os gatos costumam caçar.

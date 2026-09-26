@@ -52,7 +52,7 @@ images:
     url: https://www.pexels.com/photo/close-up-photo-of-cables-plugged-into-the-server-2881233/
     license: Licença Pexels
     licenseUrl: https://www.pexels.com/license/
-altConferido: false
+altConferido: true
 ---
 
 A computação em nuvem funciona assim: **em vez de guardar arquivos e rodar programas só no seu aparelho, você usa computadores de grandes empresas pela internet**. Esses computadores ficam em data centers espalhados pelo mundo. Você acessa, usa o que precisa e, em muitos casos, paga só pelo uso.
