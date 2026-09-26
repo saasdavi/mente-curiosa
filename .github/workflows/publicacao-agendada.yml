@@ -1,0 +1,35 @@
+# REGRA: artigo com datePublished futuro só aparece no primeiro build depois da data.
+# Todo dia, às 06:10 (horário de Brasília), este fluxo confere se algum artigo tem data de hoje.
+# Se tiver, faz um commit vazio em nome do dono do repositório, e a Vercel publica o site de novo.
+name: Publicação agendada
+
+on:
+  schedule:
+    - cron: '10 9 * * *'   # 09:10 UTC = 06:10 BRT
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: imagens-artigo
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tem artigo com data de hoje?
+        id: hoje
+        run: |
+          HOJE=$(TZ=America/Sao_Paulo date +%F)
+          if grep -l "^datePublished: ${HOJE}" src/content/artigos/*.md; then echo "tem=1" >> "$GITHUB_OUTPUT"; else echo "Nenhum artigo agendado para ${HOJE}."; fi
+      - name: Disparar novo deploy
+        if: steps.hoje.outputs.tem == '1' || github.event_name == 'workflow_dispatch'
+        run: |
+          # Commit em nome do dono do repositório: a Vercel (plano Hobby) só publica commits de autores do time.
+          git config user.name "${{ github.repository_owner }}"
+          git config user.email "${{ github.repository_owner_id }}+${{ github.repository_owner }}@users.noreply.github.com"
+          git commit --allow-empty -m "Publicação agendada: $(TZ=America/Sao_Paulo date +%F)"
+          git push
