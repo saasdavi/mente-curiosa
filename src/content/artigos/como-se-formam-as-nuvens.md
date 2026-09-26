@@ -2,7 +2,7 @@
 id: ART0755
 title: Como se formam as nuvens?
 slug: como-se-formam-as-nuvens
-description: "Como se formam as nuvens? O ar sobe, esfria e o vapor de água vira gotinhas em volta de partículas de poeira e sal. Entenda os tipos e por que elas flutuam."
+description: Como se formam as nuvens? O ar sobe, esfria e o vapor de água vira gotinhas em volta de partículas de poeira e sal. Entenda os tipos e por que elas flutuam.
 category: ciencia-e-fenomenos
 tags:
 - nuvens
@@ -13,27 +13,48 @@ keyword: como se formam as nuvens
 author: Equipe Mente Curiosa
 datePublished: 2026-10-02
 dateModified: 2026-10-02
-imagensPlano:
-  capa:
-    busca: "cumulus clouds blue sky"
-    alt: "Nuvens brancas e fofas do tipo cúmulo espalhadas pelo céu azul"
-  fotos:
-    - busca: "steam rising from hot coffee cup"
-      alt: "Vapor subindo de uma xícara de café quente sobre a mesa"
-      legenda: "O vapor que vira névoa sobre o café segue a mesma lógica das nuvens: vapor que esfria e condensa"
-      secao: 2
-    - busca: "dark storm clouds over field"
-      alt: "Nuvens escuras e carregadas de tempestade sobre um campo aberto"
-      legenda: "Nuvens muito espessas bloqueiam a luz do Sol e por isso parecem cinzentas por baixo"
-      secao: 5
 sources:
-- title: "UCAR Center for Science Education — Clouds Form Due to Surface Heating"
+- title: UCAR Center for Science Education — Clouds Form Due to Surface Heating
   url: https://scied.ucar.edu/learning-zone/clouds/clouds-form-surface-heating
-- title: "UCAR Center for Science Education — How Clouds Form"
+- title: UCAR Center for Science Education — How Clouds Form
   url: https://scied.ucar.edu/learning-zone/clouds/how-clouds-form
-- title: "NASA Science — Clouds"
+- title: NASA Science — Clouds
   url: https://science.nasa.gov/earth/clouds/
 draft: false
+featuredImage: /images/como-se-formam-as-nuvens/como-se-formam-as-nuvens.webp
+featuredImageAlt: Nuvens brancas e fofas do tipo cúmulo espalhadas pelo céu azul
+imageCredit:
+  author: Van Mailian
+  source: Pexels
+  url: https://www.pexels.com/photo/vibrant-blue-sky-with-fluffy-clouds-32047220/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/como-se-formam-as-nuvens/vapor-subindo-xicara-cafe-quente-mesa.webp
+  alt: Vapor subindo de uma xícara de café quente sobre a mesa
+  caption: 'O vapor que vira névoa sobre o café segue a mesma lógica das nuvens: vapor que esfria e condensa'
+  section: 2
+  width: 1200
+  height: 800
+  credit:
+    author: Omar Ramadan
+    source: Pexels
+    url: https://www.pexels.com/photo/white-ceramic-mug-12799305/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/como-se-formam-as-nuvens/nuvens-escuras-carregadas-tempestade-campo-aberto.webp
+  alt: Nuvens escuras e carregadas de tempestade sobre um campo aberto
+  caption: Nuvens muito espessas bloqueiam a luz do Sol e por isso parecem cinzentas por baixo
+  section: 5
+  width: 1200
+  height: 800
+  credit:
+    author: Marek Piwnicki
+    source: Pexels
+    url: https://www.pexels.com/photo/a-field-under-a-cloudy-sky-8738464/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 As nuvens se formam quando **o ar úmido sobe, esfria e o vapor de água vira gotinhas ou cristais de gelo**. Essas gotas se juntam em volta de partículas minúsculas de poeira, sal ou fumaça que flutuam no ar. Bilhões delas reunidas formam a nuvem que você vê no céu.

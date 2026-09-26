@@ -2,7 +2,7 @@
 id: ART0006
 title: Por que procrastinamos?
 slug: por-que-procrastinamos
-description: "Por que procrastinamos? Adiar é uma forma de fugir de emoções ruins ligadas à tarefa, não só preguiça. Veja o que diz a ciência e o que ajuda a sair do ciclo."
+description: Por que procrastinamos? Adiar é uma forma de fugir de emoções ruins ligadas à tarefa, não só preguiça. Veja o que diz a ciência e o que ajuda a sair do ciclo.
 category: psicologia-e-comportamento
 tags:
 - procrastinação
@@ -13,27 +13,48 @@ keyword: por que procrastinamos
 author: Equipe Mente Curiosa
 datePublished: 2026-10-05
 dateModified: 2026-10-05
-imagensPlano:
-  capa:
-    busca: "person looking at phone desk papers"
-    alt: "Pessoa distraída com o celular diante de uma mesa cheia de papéis"
-  fotos:
-    - busca: "calendar deadline circled"
-      alt: "Calendário de papel com uma data circulada em vermelho"
-      legenda: "Quanto mais distante o prazo, mais fácil fica empurrar a tarefa para depois"
-      secao: 3
-    - busca: "to do list notebook pen"
-      alt: "Caderno aberto com uma lista de tarefas e uma caneta ao lado"
-      legenda: "Dividir a tarefa em passos pequenos reduz o desconforto de começar"
-      secao: 6
 sources:
-- title: "Steel — The nature of procrastination: a meta-analytic and theoretical review (Psychological Bulletin, 2007)"
+- title: 'Steel — The nature of procrastination: a meta-analytic and theoretical review (Psychological Bulletin, 2007)'
   url: https://doi.org/10.1037/0033-2909.133.1.65
-- title: "Sirois & Pychyl — Procrastination and the priority of short-term mood regulation (Social and Personality Psychology Compass, 2013)"
+- title: Sirois & Pychyl — Procrastination and the priority of short-term mood regulation (Social and Personality Psychology Compass, 2013)
   url: https://doi.org/10.1111/spc3.12011
-- title: "Wohl, Pychyl & Bennett — I forgive myself, now I can study (Personality and Individual Differences, 2010)"
+- title: Wohl, Pychyl & Bennett — I forgive myself, now I can study (Personality and Individual Differences, 2010)
   url: https://doi.org/10.1016/j.paid.2010.01.029
 draft: false
+featuredImage: /images/por-que-procrastinamos/por-que-procrastinamos.webp
+featuredImageAlt: Pessoa distraída com o celular diante de uma mesa cheia de papéis
+imageCredit:
+  author: https://kaboompics.com/
+  source: Pexels
+  url: https://www.pexels.com/photo/woman-looking-at-the-documents-7681330/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/por-que-procrastinamos/calendario-papel-data-circulada-vermelho.webp
+  alt: Calendário de papel com uma data circulada em vermelho
+  caption: Quanto mais distante o prazo, mais fácil fica empurrar a tarefa para depois
+  section: 3
+  width: 1200
+  height: 800
+  credit:
+    author: SHVETS production
+    source: Pexels
+    url: https://www.pexels.com/photo/person-encircling-the-date-on-the-calendar-9052846/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/por-que-procrastinamos/caderno-aberto-lista-tarefas-caneta-ao-lado.webp
+  alt: Caderno aberto com uma lista de tarefas e uma caneta ao lado
+  caption: Dividir a tarefa em passos pequenos reduz o desconforto de começar
+  section: 6
+  width: 1200
+  height: 800
+  credit:
+    author: RDNE Stock project
+    source: Pexels
+    url: https://www.pexels.com/photo/materials-on-a-gray-surface-with-a-potted-plant-8581034/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 Por que procrastinamos? Na maioria das vezes, **adiamos para fugir de uma emoção desagradável ligada à tarefa**, como tédio, ansiedade ou medo de errar. O alívio de deixar para depois é imediato, e o custo fica para o "eu do futuro". Por isso procrastinar tem pouco a ver com preguiça.

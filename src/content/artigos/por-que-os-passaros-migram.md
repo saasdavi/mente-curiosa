@@ -2,7 +2,7 @@
 id: ART0605
 title: Por que os pássaros migram?
 slug: por-que-os-passaros-migram
-description: "Os pássaros migram para achar comida e bons lugares para criar os filhotes. Veja como sabem a hora de partir e como se orientam em viagens de milhares de km."
+description: Os pássaros migram para achar comida e bons lugares para criar os filhotes. Veja como sabem a hora de partir e como se orientam em viagens de milhares de km.
 category: animais
 tags:
 - aves
@@ -13,25 +13,46 @@ keyword: por que os pássaros migram
 author: Equipe Mente Curiosa
 datePublished: 2026-10-01
 dateModified: 2026-10-01
-imagensPlano:
-  capa:
-    busca: "flock of birds flying sunset sky"
-    alt: "Bando de pássaros voando em formação contra o céu alaranjado do entardecer"
-  fotos:
-    - busca: "swallows perched on wire"
-      alt: "Andorinhas pousadas lado a lado em um fio contra o céu claro"
-      legenda: "Antes das grandes viagens, muitas aves se reúnem e comem mais para acumular energia"
-      secao: 2
-    - busca: "starry night sky field"
-      alt: "Céu noturno cheio de estrelas sobre um campo aberto"
-      legenda: "Muitas aves migram à noite e usam as estrelas como uma das referências de rota"
-      secao: 4
 sources:
-- title: "Cornell Lab of Ornithology (All About Birds) — The Basics: How, Why, and Where of Bird Migration"
+- title: 'Cornell Lab of Ornithology (All About Birds) — The Basics: How, Why, and Where of Bird Migration'
   url: https://www.allaboutbirds.org/news/the-basics-how-why-and-where-of-bird-migration/
-- title: "Egevang et al. — Tracking of Arctic terns reveals longest animal migration (PNAS, 2010)"
+- title: Egevang et al. — Tracking of Arctic terns reveals longest animal migration (PNAS, 2010)
   url: https://www.pnas.org/doi/10.1073/pnas.0909493107
 draft: false
+featuredImage: /images/por-que-os-passaros-migram/por-que-os-passaros-migram.webp
+featuredImageAlt: Bando de pássaros voando em formação contra o céu alaranjado do entardecer
+imageCredit:
+  author: paul voie
+  source: Pexels
+  url: https://www.pexels.com/photo/flock-of-birds-flying-9864849/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/por-que-os-passaros-migram/andorinhas-pousadas-lado-lado-fio-contra-ceu.webp
+  alt: Andorinhas pousadas lado a lado em um fio contra o céu claro
+  caption: Antes das grandes viagens, muitas aves se reúnem e comem mais para acumular energia
+  section: 2
+  width: 1200
+  height: 800
+  credit:
+    author: Roy Muriithi
+    source: Pexels
+    url: https://www.pexels.com/photo/swallows-perched-on-electric-wires-under-blue-sky-30591578/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/por-que-os-passaros-migram/ceu-noturno-cheio-estrelas-campo-aberto.webp
+  alt: Céu noturno cheio de estrelas sobre um campo aberto
+  caption: Muitas aves migram à noite e usam as estrelas como uma das referências de rota
+  section: 4
+  width: 1200
+  height: 800
+  credit:
+    author: Marco Milanesi
+    source: Pexels
+    url: https://www.pexels.com/photo/via-lattea-a-baiano-28309276/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 Os pássaros migram **para ir aonde há mais comida e melhores condições para criar os filhotes**. Quando uma região fica fria ou pobre em alimento, muitas espécies viajam para lugares mais favoráveis e voltam quando a estação muda. É uma troca de endereço guiada pela sobrevivência.

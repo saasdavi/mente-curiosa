@@ -2,7 +2,7 @@
 id: ART0456
 title: O que existe no centro da Via Láctea?
 slug: o-que-existe-no-centro-da-via-lactea
-description: "O que existe no centro da Via Láctea? Um buraco negro supermassivo, Sagitário A*, com cerca de 4 milhões de sóis. Veja como foi descoberto e fotografado."
+description: O que existe no centro da Via Láctea? Um buraco negro supermassivo, Sagitário A*, com cerca de 4 milhões de sóis. Veja como foi descoberto e fotografado.
 category: universo-e-espaco
 tags:
 - via láctea
@@ -13,25 +13,46 @@ keyword: o que existe no centro da Via Láctea
 author: Equipe Mente Curiosa
 datePublished: 2026-10-07
 dateModified: 2026-10-07
-imagensPlano:
-  capa:
-    busca: "milky way galactic center night sky"
-    alt: "Faixa brilhante da Via Láctea atravessando o céu noturno estrelado"
-  fotos:
-    - busca: "radio telescope dish night stars"
-      alt: "Antena de radiotelescópio apontada para o céu estrelado à noite"
-      legenda: "Radiotelescópios espalhados pelo planeta se uniram para fotografar o buraco negro do centro da galáxia"
-      secao: 3
-    - busca: "starry sky desert night"
-      alt: "Céu escuro repleto de estrelas sobre uma paisagem de deserto"
-      legenda: "Em lugares escuros, a região central da Via Láctea aparece como a parte mais brilhante da faixa no céu"
-      secao: 5
 sources:
-- title: "Event Horizon Telescope — Astronomers reveal first image of the black hole at the heart of our galaxy"
+- title: Event Horizon Telescope — Astronomers reveal first image of the black hole at the heart of our galaxy
   url: https://eventhorizontelescope.org/blog/astronomers-reveal-first-image-black-hole-heart-our-galaxy
-- title: "The Nobel Prize — Press release: The Nobel Prize in Physics 2020"
+- title: 'The Nobel Prize — Press release: The Nobel Prize in Physics 2020'
   url: https://www.nobelprize.org/prizes/physics/2020/press-release/
 draft: false
+featuredImage: /images/o-que-existe-no-centro-da-via-lactea/o-que-existe-no-centro-da-via-lactea.webp
+featuredImageAlt: Faixa brilhante da Via Láctea atravessando o céu noturno estrelado
+imageCredit:
+  author: Wallace Henry
+  source: Pexels
+  url: https://www.pexels.com/photo/milky-way-galaxy-captured-in-stunning-detail-39360634/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/o-que-existe-no-centro-da-via-lactea/antena-radiotelescopio-apontada-ceu-estrelado-noite.webp
+  alt: Antena de radiotelescópio apontada para o céu estrelado à noite
+  caption: Radiotelescópios espalhados pelo planeta se uniram para fotografar o buraco negro do centro da galáxia
+  section: 3
+  width: 1200
+  height: 800
+  credit:
+    author: Igor Mashkov
+    source: Pexels
+    url: https://www.pexels.com/photo/radio-telescope-against-sky-with-stars-6325001/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/o-que-existe-no-centro-da-via-lactea/ceu-escuro-repleto-estrelas-paisagem-deserto.webp
+  alt: Céu escuro repleto de estrelas sobre uma paisagem de deserto
+  caption: Em lugares escuros, a região central da Via Láctea aparece como a parte mais brilhante da faixa no céu
+  section: 5
+  width: 1200
+  height: 800
+  credit:
+    author: Phil Evenden
+    source: Pexels
+    url: https://www.pexels.com/photo/starry-night-sky-over-terlingua-desert-landscape-37470910/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 No centro da Via Láctea existe **um buraco negro supermassivo chamado Sagitário A\***, com cerca de 4 milhões de vezes a massa do Sol. Ele fica a aproximadamente 27 mil anos-luz da Terra, escondido atrás de nuvens de poeira. Em volta dele, estrelas giram em alta velocidade.

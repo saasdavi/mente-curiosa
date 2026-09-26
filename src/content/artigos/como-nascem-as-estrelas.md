@@ -2,7 +2,7 @@
 id: ART0451
 title: Como nascem as estrelas?
 slug: como-nascem-as-estrelas
-description: "Como nascem as estrelas? Nuvens de gás e poeira desabam sob a própria gravidade até o centro ficar quente o bastante para a fusão começar. Entenda cada etapa."
+description: Como nascem as estrelas? Nuvens de gás e poeira desabam sob a própria gravidade até o centro ficar quente o bastante para a fusão começar. Entenda cada etapa.
 category: universo-e-espaco
 tags:
 - estrelas
@@ -13,27 +13,48 @@ keyword: como nascem as estrelas
 author: Equipe Mente Curiosa
 datePublished: 2026-10-03
 dateModified: 2026-10-03
-imagensPlano:
-  capa:
-    busca: "nebula stars space telescope"
-    alt: "Nebulosa colorida de gás e poeira cheia de estrelas brilhantes no espaço"
-  fotos:
-    - busca: "pillars of creation eagle nebula"
-      alt: "Colunas de gás e poeira da Nebulosa da Águia vistas por telescópio espacial"
-      legenda: "Os Pilares da Criação são berçários onde novas estrelas estão se formando"
-      secao: 2
-    - busca: "sun surface solar flare"
-      alt: "Superfície do Sol em close com erupções de plasma brilhante"
-      legenda: "O Sol é uma estrela comum que nasceu de uma nuvem de gás há bilhões de anos"
-      secao: 5
 sources:
-- title: "NASA Science — Stars"
+- title: NASA Science — Stars
   url: https://science.nasa.gov/universe/stars/
-- title: "NASA Science — Webb: Pillars of Creation"
+- title: 'NASA Science — Webb: Pillars of Creation'
   url: https://science.nasa.gov/asset/webb/pillars-of-creation-nircam-image/
-- title: "NASA Science — Our Sun: Facts"
+- title: 'NASA Science — Our Sun: Facts'
   url: https://science.nasa.gov/sun/facts/
 draft: false
+featuredImage: /images/como-nascem-as-estrelas/como-nascem-as-estrelas.webp
+featuredImageAlt: Nebulosa colorida de gás e poeira cheia de estrelas brilhantes no espaço
+imageCredit:
+  author: Jeremy Müller
+  source: Pexels
+  url: https://www.pexels.com/photo/a-nebula-in-space-6074272/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/como-nascem-as-estrelas/colunas-gas-poeira-nebulosa-aguia-vistas-telescopio.webp
+  alt: Colunas de gás e poeira da Nebulosa da Águia vistas por telescópio espacial
+  caption: Os Pilares da Criação são berçários onde novas estrelas estão se formando
+  section: 2
+  width: 1200
+  height: 800
+  credit:
+    author: Erick Crowne
+    source: Pexels
+    url: https://www.pexels.com/photo/captivating-view-of-the-orion-nebula-in-space-35287894/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/como-nascem-as-estrelas/superficie-sol-close-erupcoes-plasma-brilhante.webp
+  alt: Superfície do Sol em close com erupções de plasma brilhante
+  caption: O Sol é uma estrela comum que nasceu de uma nuvem de gás há bilhões de anos
+  section: 5
+  width: 1200
+  height: 800
+  credit:
+    author: Giona Mason
+    source: Pexels
+    url: https://www.pexels.com/photo/view-of-a-sunset-19269644/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 As estrelas nascem dentro de **nuvens gigantes de gás e poeira que desabam sob a própria gravidade**. Conforme o material se concentra, o centro fica cada vez mais denso e quente. Quando a temperatura chega a milhões de graus, começa a fusão nuclear, e uma nova estrela acende.

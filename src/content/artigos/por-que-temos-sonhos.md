@@ -2,7 +2,7 @@
 id: ART0256
 title: Por que temos sonhos?
 slug: por-que-temos-sonhos
-description: "Por que temos sonhos? A ciência liga os sonhos ao sono REM, à memória e às emoções, mas ainda não tem resposta final. Veja as principais teorias e os mitos."
+description: Por que temos sonhos? A ciência liga os sonhos ao sono REM, à memória e às emoções, mas ainda não tem resposta final. Veja as principais teorias e os mitos.
 category: corpo-humano
 tags:
 - sonhos
@@ -13,27 +13,48 @@ keyword: por que temos sonhos
 author: Equipe Mente Curiosa
 datePublished: 2026-10-06
 dateModified: 2026-10-06
-imagensPlano:
-  capa:
-    busca: "person sleeping bed night blue light"
-    alt: "Pessoa dormindo na cama em um quarto escuro iluminado por luz azulada"
-  fotos:
-    - busca: "alarm clock bedside night"
-      alt: "Despertador sobre a mesa de cabeceira em um quarto à noite"
-      legenda: "Os sonhos mais vívidos costumam acontecer no sono REM, que fica mais longo perto do amanhecer"
-      secao: 2
-    - busca: "notebook bed morning writing"
-      alt: "Caderno aberto sobre a cama com uma caneta, pela manhã"
-      legenda: "Anotar o sonho logo ao acordar ajuda a lembrar detalhes que somem em minutos"
-      secao: 6
 sources:
-- title: "NINDS (NIH) — Brain Basics: Understanding Sleep"
+- title: 'NINDS (NIH) — Brain Basics: Understanding Sleep'
   url: https://www.ninds.nih.gov/health-information/public-education/brain-basics/brain-basics-understanding-sleep
-- title: "Walker & van der Helm — Overnight therapy? The role of sleep in emotional brain processing (Psychological Bulletin, 2009)"
+- title: Walker & van der Helm — Overnight therapy? The role of sleep in emotional brain processing (Psychological Bulletin, 2009)
   url: https://doi.org/10.1037/a0016570
-- title: "Revonsuo — The reinterpretation of dreams: an evolutionary hypothesis of the function of dreaming (Behavioral and Brain Sciences, 2000)"
+- title: 'Revonsuo — The reinterpretation of dreams: an evolutionary hypothesis of the function of dreaming (Behavioral and Brain Sciences, 2000)'
   url: https://doi.org/10.1017/S0140525X00004015
 draft: false
+featuredImage: /images/por-que-temos-sonhos/por-que-temos-sonhos.webp
+featuredImageAlt: Pessoa dormindo na cama em um quarto escuro iluminado por luz azulada
+imageCredit:
+  author: Cristian Manieri
+  source: Pexels
+  url: https://www.pexels.com/photo/bedroom-facing-a-city-during-night-time-11849146/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/por-que-temos-sonhos/despertador-mesa-cabeceira-quarto-noite.webp
+  alt: Despertador sobre a mesa de cabeceira em um quarto à noite
+  caption: Os sonhos mais vívidos costumam acontecer no sono REM, que fica mais longo perto do amanhecer
+  section: 2
+  width: 1200
+  height: 800
+  credit:
+    author: Ron Lach
+    source: Pexels
+    url: https://www.pexels.com/photo/books-bed-stack-standing-9615255/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/por-que-temos-sonhos/caderno-aberto-cama-caneta-pela-manha.webp
+  alt: Caderno aberto sobre a cama com uma caneta, pela manhã
+  caption: Anotar o sonho logo ao acordar ajuda a lembrar detalhes que somem em minutos
+  section: 6
+  width: 1200
+  height: 800
+  credit:
+    author: Nataliya Vaitkevich
+    source: Pexels
+    url: https://www.pexels.com/photo/a-blank-notebook-beside-cup-of-black-coffee-10060450/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 Por que temos sonhos? A ciência ainda não tem uma resposta final, mas as principais teorias ligam os sonhos a **organizar memórias, processar emoções e treinar reações a situações difíceis**. A maior parte dos sonhos vívidos acontece no sono REM, quando o cérebro fica quase tão ativo quanto acordado.

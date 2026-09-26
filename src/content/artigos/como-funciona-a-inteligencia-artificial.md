@@ -2,7 +2,7 @@
 id: ART0901
 title: Como funciona a inteligência artificial?
 slug: como-funciona-a-inteligencia-artificial
-description: "Como funciona a inteligência artificial? Ela aprende padrões a partir de muitos exemplos e usa esses padrões para prever respostas. Entenda sem complicação."
+description: Como funciona a inteligência artificial? Ela aprende padrões a partir de muitos exemplos e usa esses padrões para prever respostas. Entenda sem complicação.
 category: tecnologia-ia-e-ciencia
 tags:
 - inteligência artificial
@@ -13,27 +13,48 @@ keyword: como funciona a inteligência artificial
 author: Equipe Mente Curiosa
 datePublished: 2026-10-07
 dateModified: 2026-10-07
-imagensPlano:
-  capa:
-    busca: "circuit board macro blue light"
-    alt: "Placa de circuito eletrônico em close iluminada por luz azul"
-  fotos:
-    - busca: "stack of books library shelf"
-      alt: "Prateleiras de biblioteca cheias de livros enfileirados"
-      legenda: "Modelos de IA aprendem padrões a partir de enormes quantidades de exemplos, como textos e imagens"
-      secao: 2
-    - busca: "person using voice assistant smartphone"
-      alt: "Pessoa falando perto da tela de um celular com assistente de voz"
-      legenda: "Assistentes de voz, tradutores e filtros de spam são usos cotidianos da inteligência artificial"
-      secao: 6
 sources:
-- title: "Turing — Computing Machinery and Intelligence (Mind, 1950)"
+- title: Turing — Computing Machinery and Intelligence (Mind, 1950)
   url: https://doi.org/10.1093/mind/LIX.236.433
-- title: "McCarthy, Minsky, Rochester & Shannon — A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence (1955)"
+- title: McCarthy, Minsky, Rochester & Shannon — A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence (1955)
   url: http://jmc.stanford.edu/articles/dartmouth/dartmouth.pdf
-- title: "NIST — AI Risk Management Framework"
+- title: NIST — AI Risk Management Framework
   url: https://www.nist.gov/itl/ai-risk-management-framework
 draft: false
+featuredImage: /images/como-funciona-a-inteligencia-artificial/como-funciona-a-inteligencia-artificial.webp
+featuredImageAlt: Placa de circuito eletrônico em close iluminada por luz azul
+imageCredit:
+  author: Ivan Chumak
+  source: Pexels
+  url: https://www.pexels.com/photo/close-up-of-electronic-circuit-board-with-components-34924858/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/como-funciona-a-inteligencia-artificial/prateleiras-biblioteca-cheias-livros-enfileirados.webp
+  alt: Prateleiras de biblioteca cheias de livros enfileirados
+  caption: Modelos de IA aprendem padrões a partir de enormes quantidades de exemplos, como textos e imagens
+  section: 2
+  width: 1200
+  height: 800
+  credit:
+    author: aboodi vesakaran
+    source: Pexels
+    url: https://www.pexels.com/photo/books-on-metal-shelves-in-a-library-18620023/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/como-funciona-a-inteligencia-artificial/pessoa-falando-perto-tela-celular-assistente-voz.webp
+  alt: Pessoa falando perto da tela de um celular com assistente de voz
+  caption: Assistentes de voz, tradutores e filtros de spam são usos cotidianos da inteligência artificial
+  section: 6
+  width: 1200
+  height: 800
+  credit:
+    author: Theo  Decker
+    source: Pexels
+    url: https://www.pexels.com/photo/a-man-holding-a-smartphone-5447314/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 A inteligência artificial funciona **aprendendo padrões a partir de muitos exemplos e usando esses padrões para prever respostas**. Em vez de receber uma regra para cada situação, o sistema é treinado com dados e ajusta seus próprios parâmetros até acertar mais. Assim ele reconhece fotos, traduz e conversa.

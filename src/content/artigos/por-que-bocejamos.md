@@ -2,7 +2,7 @@
 id: ART0251
 title: Por que bocejamos?
 slug: por-que-bocejamos
-description: "Por que bocejamos? A ciência aponta o resfriamento do cérebro e a mudança de estado de alerta. Veja por que o bocejo é contagioso e o que ainda é mistério."
+description: Por que bocejamos? A ciência aponta o resfriamento do cérebro e a mudança de estado de alerta. Veja por que o bocejo é contagioso e o que ainda é mistério.
 category: corpo-humano
 tags:
 - bocejo
@@ -13,27 +13,48 @@ keyword: por que bocejamos
 author: Equipe Mente Curiosa
 datePublished: 2026-10-02
 dateModified: 2026-10-02
-imagensPlano:
-  capa:
-    busca: "cat yawning close up"
-    alt: "Gato de boca bem aberta no meio de um bocejo, em close"
-  fotos:
-    - busca: "thermometer hot summer day"
-      alt: "Termômetro de rua marcando temperatura alta em um dia ensolarado"
-      legenda: "Estudos sugerem que a temperatura do ambiente influencia quanto bocejamos"
-      secao: 3
-    - busca: "dog yawning"
-      alt: "Cachorro de pelo claro bocejando com a língua para fora"
-      legenda: "Cães e outros animais também bocejam, e alguns chegam a pegar o bocejo dos humanos"
-      secao: 5
 sources:
-- title: "Gallup & Eldakar — Contagious yawning and seasonal climate variation (Frontiers in Evolutionary Neuroscience, 2011)"
+- title: Gallup & Eldakar — Contagious yawning and seasonal climate variation (Frontiers in Evolutionary Neuroscience, 2011)
   url: https://doi.org/10.3389/fnevo.2011.00003
-- title: "Gallup et al. — Yawn duration predicts brain weight and cortical neuron number in mammals (Biology Letters, 2016)"
+- title: Gallup et al. — Yawn duration predicts brain weight and cortical neuron number in mammals (Biology Letters, 2016)
   url: https://doi.org/10.1098/rsbl.2016.0545
-- title: "Bartholomew & Cirulli — Individual variation in contagious yawning susceptibility is highly stable (PLOS ONE, 2014)"
+- title: Bartholomew & Cirulli — Individual variation in contagious yawning susceptibility is highly stable (PLOS ONE, 2014)
   url: https://doi.org/10.1371/journal.pone.0091773
 draft: false
+featuredImage: /images/por-que-bocejamos/por-que-bocejamos.webp
+featuredImageAlt: Gato de boca bem aberta no meio de um bocejo, em close
+imageCredit:
+  author: Janessa Pretorius
+  source: Pexels
+  url: https://www.pexels.com/photo/brown-tabby-cat-yawning-8758530/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/por-que-bocejamos/termometro-rua-marcando-temperatura-alta-dia-ensolarado.webp
+  alt: Termômetro de rua marcando temperatura alta em um dia ensolarado
+  caption: Estudos sugerem que a temperatura do ambiente influencia quanto bocejamos
+  section: 3
+  width: 1200
+  height: 800
+  credit:
+    author: Maksim Goncharenok
+    source: Pexels
+    url: https://www.pexels.com/photo/yellow-and-white-thermometer-5995230/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/por-que-bocejamos/cachorro-pelo-claro-bocejando-lingua-fora.webp
+  alt: Cachorro de pelo claro bocejando com a língua para fora
+  caption: Cães e outros animais também bocejam, e alguns chegam a pegar o bocejo dos humanos
+  section: 5
+  width: 1200
+  height: 800
+  credit:
+    author: Ayaan Sulaiman
+    source: Pexels
+    url: https://www.pexels.com/photo/close-up-of-a-brown-dog-yawning-5834389/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 Por que bocejamos? A resposta mais aceita hoje é que **o bocejo ajuda a esfriar o cérebro e a mudar o nível de alerta**, como na hora de acordar ou de dormir. A ciência ainda não fechou a questão, e o bocejo contagioso segue como um grande mistério.

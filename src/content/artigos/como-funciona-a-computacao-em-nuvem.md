@@ -2,7 +2,7 @@
 id: ART0905
 title: Como funciona a computação em nuvem?
 slug: como-funciona-a-computacao-em-nuvem
-description: "Como funciona a computação em nuvem? Seus arquivos e apps rodam em data centers acessados pela internet. Entenda os tipos, os usos no dia a dia e os mitos."
+description: Como funciona a computação em nuvem? Seus arquivos e apps rodam em data centers acessados pela internet. Entenda os tipos, os usos no dia a dia e os mitos.
 category: tecnologia-ia-e-ciencia
 tags:
 - nuvem
@@ -13,25 +13,46 @@ keyword: como funciona a computação em nuvem
 author: Equipe Mente Curiosa
 datePublished: 2026-10-03
 dateModified: 2026-10-03
-imagensPlano:
-  capa:
-    busca: "data center server racks"
-    alt: "Corredor de data center com fileiras de servidores e luzes azuis"
-  fotos:
-    - busca: "smartphone photos gallery hand"
-      alt: "Mão segurando um celular com uma galeria de fotos aberta na tela"
-      legenda: "Backup automático de fotos é um dos usos mais comuns da nuvem no dia a dia"
-      secao: 2
-    - busca: "network cables server close up"
-      alt: "Cabos de rede coloridos conectados a um servidor em close"
-      legenda: "Por trás da nuvem existem computadores reais ligados por redes de alta velocidade"
-      secao: 4
 sources:
-- title: "NIST — SP 800-145: The NIST Definition of Cloud Computing"
+- title: 'NIST — SP 800-145: The NIST Definition of Cloud Computing'
   url: https://csrc.nist.gov/pubs/sp/800/145/final
-- title: "Microsoft Azure — What is cloud computing?"
+- title: Microsoft Azure — What is cloud computing?
   url: https://azure.microsoft.com/en-us/resources/cloud-computing-dictionary/what-is-cloud-computing
 draft: false
+featuredImage: /images/como-funciona-a-computacao-em-nuvem/como-funciona-a-computacao-em-nuvem.webp
+featuredImageAlt: Corredor de data center com fileiras de servidores e luzes azuis
+imageCredit:
+  author: Brett Sayles
+  source: Pexels
+  url: https://www.pexels.com/photo/server-racks-on-data-center-5480781/
+  license: Licença Pexels
+  licenseUrl: https://www.pexels.com/license/
+images:
+- src: /images/como-funciona-a-computacao-em-nuvem/mao-segurando-celular-galeria-fotos-aberta-tela.webp
+  alt: Mão segurando um celular com uma galeria de fotos aberta na tela
+  caption: Backup automático de fotos é um dos usos mais comuns da nuvem no dia a dia
+  section: 2
+  width: 1200
+  height: 800
+  credit:
+    author: cottonbro studio
+    source: Pexels
+    url: https://www.pexels.com/photo/person-holding-white-samsung-android-smartphone-5052876/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+- src: /images/como-funciona-a-computacao-em-nuvem/cabos-rede-coloridos-conectados-servidor-close.webp
+  alt: Cabos de rede coloridos conectados a um servidor em close
+  caption: Por trás da nuvem existem computadores reais ligados por redes de alta velocidade
+  section: 4
+  width: 1200
+  height: 800
+  credit:
+    author: Brett Sayles
+    source: Pexels
+    url: https://www.pexels.com/photo/close-up-photo-of-cables-plugged-into-the-server-2881233/
+    license: Licença Pexels
+    licenseUrl: https://www.pexels.com/license/
+altConferido: false
 ---
 
 A computação em nuvem funciona assim: **em vez de guardar arquivos e rodar programas só no seu aparelho, você usa computadores de grandes empresas pela internet**. Esses computadores ficam em data centers espalhados pelo mundo. Você acessa, usa o que precisa e, em muitos casos, paga só pelo uso.
