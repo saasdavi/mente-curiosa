@@ -1,38 +1,42 @@
-name: Generate Article Daily
+name: Generate Article (3x Daily)
 
 on:
   schedule:
-    - cron: '1 0 * * *'  # 00:01 UTC TODOS OS DIAS
+    # 3 artigos por dia: 00:01, 08:00, 16:00 UTC
+    - cron: '1 0 * * *'   # 00:01 UTC
+    - cron: '0 8 * * *'   # 08:00 UTC
+    - cron: '0 16 * * *'  # 16:00 UTC
   workflow_dispatch:
 
 jobs:
   generate:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+    timeout-minutes: 10
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
+          node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client anthropic
+        run: npm ci
 
-      - name: Generate Article
+      - name: Generate article with Claude
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GOOGLE_SHEETS_EDITOR_KEY: ${{ secrets.GOOGLE_SHEETS_EDITOR_KEY }}
+          GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-        run: |
-          python scripts/generate-article.py
+        run: npm run generate:article
 
-      - name: Commit and Push
+      - name: Commit and push
         run: |
-          git config user.email "bot@mentecuriosa.blog"
-          git config user.name "Mente Curiosa Bot"
-          git add src/content/draft/
-          git commit -m "🤖 Generate article for $(date +%Y-%m-%d)" || echo "No changes"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "chore: auto-generated article $(date +%d/%m/%Y)" || true
           git push

@@ -2,43 +2,34 @@ name: Publish Scheduled Articles
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # A cada 2 horas
+    # Publica a cada 2 horas (verifica se há drafts)
+    - cron: '0 */2 * * *'
   workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Check for articles to publish
-        run: |
-          DATE=$(date +%Y-%m-%d)
-          if grep -r "date: $DATE" src/content/draft/ 2>/dev/null; then
-            echo "PUBLISH=true" >> $GITHUB_ENV
-          else
-            echo "PUBLISH=false" >> $GITHUB_ENV
-          fi
-      
-      - name: Move articles from draft to published
-        if: env.PUBLISH == 'true'
-        run: |
-          mkdir -p src/content/articles
-          mv src/content/draft/*.md src/content/articles/ 2>/dev/null || true
-      
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish scheduled articles
+        run: npm run publish:scheduled
+
       - name: Commit and push
-        if: env.PUBLISH == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git commit -m "Publish articles $(date +%Y-%m-%d)" || echo "No changes to commit"
+          git commit -m "chore: published scheduled articles $(date +%d/%m/%Y\ %H:%M)" || true
           git push
-      
-      - name: Trigger Vercel build
-        if: env.PUBLISH == 'true'
-        run: |
-          curl -X POST https://api.vercel.com/v1/deployments \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"name": "mente-curiosa"}' || echo "Vercel deployment optional"
