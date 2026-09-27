@@ -1,8 +1,8 @@
-name: Generate Article
+name: Generate Article Daily
 
 on:
   schedule:
-    - cron: '0 1 * * *'  # 01:00 UTC diariamente
+    - cron: '1 0 * * *'  # 00:01 UTC TODOS OS DIAS
   workflow_dispatch:
 
 jobs:
@@ -10,27 +10,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
+
       - name: Install dependencies
         run: |
           pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client anthropic
-      
-      - name: Fetch sheet and generate article
+
+      - name: Generate Article
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
+          GOOGLE_SHEETS_EDITOR_KEY: ${{ secrets.GOOGLE_SHEETS_EDITOR_KEY }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
-        run: python scripts/generate-article.py
-      
-      - name: Commit and push
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git commit -m "Auto-generated article $(date +%Y-%m-%d)" || echo "No changes to commit"
+          python scripts/generate-article.py
+
+      - name: Commit and Push
+        run: |
+          git config user.email "bot@mentecuriosa.blog"
+          git config user.name "Mente Curiosa Bot"
+          git add src/content/draft/
+          git commit -m "🤖 Generate article for $(date +%Y-%m-%d)" || echo "No changes"
           git push
