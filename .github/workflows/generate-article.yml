@@ -1,1 +1,36 @@
+name: Generate Article
 
+on:
+  schedule:
+    - cron: '0 1 * * *'  # 01:00 UTC diariamente
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client anthropic
+      
+      - name: Fetch sheet and generate article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+        run: python scripts/generate-article.py
+      
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Auto-generated article $(date +%Y-%m-%d)" || echo "No changes to commit"
+          git push
