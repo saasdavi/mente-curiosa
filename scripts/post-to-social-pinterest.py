@@ -166,7 +166,8 @@ class PinterestDistributor:
 
     def post_to_pinterest(self, article: Dict) -> bool:
         """Posta artigo nos 5 perfis Pinterest"""
-        print(f"\n📌 Postando: {article['pauta']}")
+        print(f"
+📌 Postando: {article['pauta']}")
         print(f"   URL: {article['url']}")
         print(f"   Imagem: {article['image_url']}")
 
@@ -203,7 +204,11 @@ class PinterestDistributor:
                     continue
 
                 # Posta pin
-                description = f"{article['pauta']}\n\n{article['keyword']}\n\n{article['url']}"
+                description = f"{article['pauta']}
+
+{article['keyword']}
+
+{article['url']}"
 
                 pin_response = pinterest.upload_pin(
                     board_id=board_id,
@@ -287,12 +292,14 @@ class PinterestDistributor:
                     self.mark_as_posted(article["id"])
                 time.sleep(10)  # Intervalo entre artigos
 
-            print("\n" + "=" * 60)
+            print("
+" + "=" * 60)
             print("✅ Distribuição concluída!")
             print("=" * 60)
 
         except Exception as e:
-            print(f"\n❌ Erro crítico: {e}")
+            print(f"
+❌ Erro crítico: {e}")
             sys.exit(1)
 
 
@@ -317,7 +324,8 @@ def main():
     missing = [e for e in required_envs if not os.getenv(e)]
     if missing:
         print(f"❌ Variáveis de ambiente faltando: {', '.join(missing)}")
-        print("\nAdicione em GitHub Settings → Secrets and variables → Actions:")
+        print("
+Adicione em GitHub Settings → Secrets and variables → Actions:")
         for env in missing:
             print(f"  - {env}")
         sys.exit(1)
