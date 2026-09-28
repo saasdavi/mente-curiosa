@@ -1,0 +1,102 @@
+name: Publish to Pinterest
+
+on:
+  workflow_run:
+    workflows: ["Generate Pinterest CSV"]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        profile: [1, 2, 3, 4, 5]
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - run: pip install selenium webdriver-manager
+      
+      - name: Download CSV
+        uses: actions/download-artifact@v4
+        with:
+          name: pinterest-csv
+      
+      - name: Publish Pin
+        run: |
+          python3 << 'PYTHON'
+          import os
+          import json
+          from selenium import webdriver
+          from selenium.webdriver.common.by import By
+          from selenium.webdriver.support.ui import WebDriverWait
+          from selenium.webdriver.support import expected_conditions as EC
+          from webdriver_manager.chrome import ChromeDriverManager
+          from selenium.webdriver.chrome.service import Service
+          import time
+          
+          profile_num = ${{ matrix.profile }}
+          
+          creds = {
+              1: ("daviestreladamanha2@gmail.com", os.getenv("PINTEREST_PASS_1")),
+              2: ("davicafemarita@gmail.com", os.getenv("PINTEREST_PASS_2")),
+              3: ("bitcointraderdavi@gmail.com", os.getenv("PINTEREST_PASS_3")),
+              4: ("ftbbankscdiretoria@gmail.com", os.getenv("PINTEREST_PASS_4")),
+              5: ("elianamarita777@gmail.com", os.getenv("PINTEREST_PASS_5"))
+          }
+          
+          email, password = creds[profile_num]
+          
+          print(f"🔐 Publicando perfil {profile_num}: {email}")
+          
+          options = webdriver.ChromeOptions()
+          options.add_argument('--no-sandbox')
+          options.add_argument('--disable-dev-shm-usage')
+          
+          driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+          
+          try:
+              # Login
+              driver.get("https://br.pinterest.com/login/")
+              wait = WebDriverWait(driver, 15)
+              
+              email_field = wait.until(EC.presence_of_element_located((By.NAME, "id")))
+              email_field.send_keys(email)
+              
+              pwd_field = driver.find_element(By.NAME, "password")
+              pwd_field.send_keys(password)
+              
+              driver.find_element(By.XPATH, "//button[contains(@type, 'submit')]").click()
+              time.sleep(5)
+              
+              # Ir pra bulk create
+              driver.get("https://br.pinterest.com/settings/bulk-create-pins/")
+              time.sleep(2)
+              
+              # Upload CSV
+              file_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='file']")))
+              file_input.send_keys(os.path.abspath("pinterest-pins.csv"))
+              time.sleep(2)
+              
+              # Submit
+              driver.find_element(By.XPATH, "//button[contains(., 'Importar') or contains(., 'Upload') or contains(., 'Enviar')]").click()
+              time.sleep(3)
+              
+              print(f"✅ Perfil {profile_num} publicado")
+              
+          except Exception as e:
+              print(f"❌ Erro: {e}")
+              driver.save_screenshot(f"error-profile-{profile_num}.png")
+          finally:
+              driver.quit()
+          PYTHON
+        env:
+          PINTEREST_PASS_1: ${{ secrets.PINTEREST_PASS_1 }}
+          PINTEREST_PASS_2: ${{ secrets.PINTEREST_PASS_2 }}
+          PINTEREST_PASS_3: ${{ secrets.PINTEREST_PASS_3 }}
+          PINTEREST_PASS_4: ${{ secrets.PINTEREST_PASS_4 }}
+          PINTEREST_PASS_5: ${{ secrets.PINTEREST_PASS_5 }}
