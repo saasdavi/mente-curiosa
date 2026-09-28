@@ -1,6 +1,7 @@
 name: Social Distribution v3 (5 Perfis Pinterest)
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["Publicação Agendada"]
     types: [completed]
@@ -13,11 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -25,21 +21,21 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install @anthropic-ai/sdk
-          pip install requests
+          pip install py3-pinterest google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
       - name: Distribute to 5 Pinterest Profiles
         env:
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          IFTTT_PINTEREST_PROFILE_1: ${{ secrets.IFTTT_PINTEREST_PROFILE_1 }}
-          IFTTT_PINTEREST_PROFILE_2: ${{ secrets.IFTTT_PINTEREST_PROFILE_2 }}
-          IFTTT_PINTEREST_PROFILE_3: ${{ secrets.IFTTT_PINTEREST_PROFILE_3 }}
-          IFTTT_PINTEREST_PROFILE_4: ${{ secrets.IFTTT_PINTEREST_PROFILE_4 }}
-          IFTTT_PINTEREST_PROFILE_5: ${{ secrets.IFTTT_PINTEREST_PROFILE_5 }}
-        run: |
-          python scripts/post-to-social-v3.py
+          PINTEREST_PASS_1: ${{ secrets.PINTEREST_PASS_1 }}
+          PINTEREST_PASS_2: ${{ secrets.PINTEREST_PASS_2 }}
+          PINTEREST_PASS_3: ${{ secrets.PINTEREST_PASS_3 }}
+          PINTEREST_PASS_4: ${{ secrets.PINTEREST_PASS_4 }}
+          PINTEREST_PASS_5: ${{ secrets.PINTEREST_PASS_5 }}
+          GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+          WORKSHEET_NAME: "pautas-modelo_pautas"
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: python scripts/post-to-social-pinterest.py
 
       - name: Log Results
         if: always()
         run: echo "✅ Distribution completed at $(date)"
+
