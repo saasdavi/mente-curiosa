@@ -21,7 +21,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install py3-pinterest google-auth-oauthlib google-auth-httplib2 google-api-python-client
+          pip install --upgrade pip
+          pip install git+https://github.com/smamonas/py3-pinterest.git google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
       - name: Distribute to 5 Pinterest Profiles
         env:
