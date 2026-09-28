@@ -186,16 +186,20 @@ class PinterestDistributor:
                 # Busca board
                 boards = pinterest.boards(username=account["username"])
                 board_id = None
-
+                
+                print(f"  📋 Boards encontrados em {account['username']}:")
                 for board in boards:
-                    if account["board"] in board.get("name", ""):
+                    board_name = board.get("name", "")
+                    print(f"     - {board_name}")
+                    if account["board"] in board_name:
                         board_id = board.get("id")
-                        break
+                        print(f"     ✅ Match encontrado: {board_name}")
 
                 if not board_id:
                     print(
-                        f"  ⚠️  Board '{account['board']}' não encontrado para {account['username']}"
+                        f"  ❌ Board '{account['board']}' não encontrado para {account['username']}"
                     )
+                    print(f"     Procurando por: '{account['board']}'")
                     continue
 
                 # Posta pin
