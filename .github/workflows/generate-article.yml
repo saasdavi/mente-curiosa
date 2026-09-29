@@ -1,0 +1,31 @@
+name: Generate Article
+
+on:
+  schedule:
+    - cron: "0 12,15,23 * * *"
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      
+      - run: npm install --legacy-peer-deps
+      
+      - run: node scripts/generate-article.js
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_SHEETS_API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+      
+      - run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add src/content/blog/ || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "feat: publish article" && git push)
