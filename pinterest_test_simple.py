@@ -2,6 +2,7 @@
 import os
 import json
 import time
+import base64
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -92,7 +93,7 @@ def test_pinterest_post():
             )
             
             # Add test text
-            test_text = "🚀 Teste de Automação Pinterest com Selenium - Funcionando! 🎯 #pinterest #automacao #teste"
+            test_text = "🚀 Teste de Automação Pinterest com Selenium - Funcionando! 🕯️ #pinterest #automacao #teste"
             desc_field.send_keys(test_text)
             time.sleep(1)
             print(f"✓ Added text: {test_text[:50]}...")
@@ -105,7 +106,8 @@ def test_pinterest_post():
             try:
                 link_inputs = driver.find_elements(By.TAG_NAME, "input")
                 for inp in link_inputs:
-                    if "link" in inp.get_attribute("placeholder").lower() or "url" in inp.get_attribute("placeholder").lower():
+                    placeholder = inp.get_attribute("placeholder") or ""
+                    if "link" in placeholder.lower() or "url" in placeholder.lower():
                         inp.send_keys("https://mentecuriosa.blog")
                         time.sleep(1)
                         print("✓ Added link: https://mentecuriosa.blog")
