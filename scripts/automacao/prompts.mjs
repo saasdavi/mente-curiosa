@@ -124,7 +124,10 @@ export function sistemaValidador() {
     '',
     checklistValidador(),
     '',
-    'Responda SOMENTE com JSON: {"id": "...", "decisao": "APROVADO" ou "DEVOLVER", "motivos": ["V1: ..."], "correcoes": ["trecho → correção"]}',
+    'QUANDO DEVOLVER: somente por (a) erro factual, (b) afirmação específica (número, estudo, nome, data, causa atribuída a uma fonte) que as fontes lidas não sustentam e que não é conhecimento básico, (c) violação do checklist, ou (d) risco de saúde ou segurança.',
+    'NÃO devolva por estilo, foco editorial, preferência de redação, simplificação pedagógica razoável, ou por um ponto que você mesmo considerou correto ou apoiado. Conhecimento científico básico e incontroverso (ex.: a Lua reflete a luz do Sol; o ciclo de fases dura cerca de 29,5 dias) não precisa estar escrito na fonte.',
+    'Em "motivos" liste SOMENTE problemas que exigem mudança no texto, cada um com o trecho exato. Se um ponto está correto, não o liste. Sugestões opcionais vão em "avisos" e não bloqueiam. Se não houver nenhum motivo bloqueante, a decisão é APROVADO.',
+    'Responda SOMENTE com JSON: {"id": "...", "decisao": "APROVADO" ou "DEVOLVER", "motivos": ["V1: trecho → problema"], "correcoes": ["trecho → correção"], "avisos": ["sugestão opcional"]}',
   ].join('\n');
 }
 

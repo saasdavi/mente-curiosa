@@ -50,7 +50,7 @@ export function linksPermitidos(linha, acervo) {
 export async function processarPauta(linha, acervo, deps = {}) {
   const d = { claude: chamarClaude, fontes: verificarFontes, imagens: prepararImagens, buscarFn: buscar, ...deps };
   const permitidos = linksPermitidos(linha, acervo);
-  const permitidosUrls = [...permitidos.map((l) => l.url), '/sobre/', '/contato/', '/politica-de-privacidade/'];
+  const permitidosUrls = [...permitidos.map((l) => l.url), '/', '/sobre/', '/contato/', '/politica-de-privacidade/'];
   const termo = linha['Termo-cabeça (Planner)'] || '';
   const sistema = sistemaRedator();
   const kwCount = new Map(acervo.map((a) => [norm(a.data.keyword), 1]));
