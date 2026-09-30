@@ -9,7 +9,7 @@ export async function chamarClaude({ system, user, maxTokens = CFG.maxTokensReda
     method: 'POST',
     timeoutMs: 240000,
     headers: { 'x-api-key': chave, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: modelo, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] }),
+    body: JSON.stringify({ model: modelo, max_tokens: maxTokens, thinking: { type: 'disabled' }, system, messages: [{ role: 'user', content: user }] }),
   });
   const j = await r.json();
   if (!r.ok) throw new Error(`API do Claude: ${r.status} ${JSON.stringify(j).slice(0, 400)}`);
@@ -41,6 +41,7 @@ export async function chamarClaudeComImagem({ system, pergunta, imagemBase64, ma
     body: JSON.stringify({
       model: modelo,
       max_tokens: maxTokens,
+      thinking: { type: 'disabled' },
       system,
       messages: [
         {
