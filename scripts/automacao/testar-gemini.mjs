@@ -12,7 +12,7 @@ const imagem = modelos.filter((m) => /image/i.test(m.name) && (m.supportedGenera
 console.log(`modelos de imagem com generateContent: ${imagem.join(', ') || 'nenhum'}`);
 
 let gerou = false;
-for (const nome of imagem.slice(0, 3)) {
+for (const nome of imagem) {
   const r = await fetch(`${base}/models/${nome}:generateContent`, {
     method: 'POST', headers: h,
     body: JSON.stringify({
@@ -27,7 +27,7 @@ for (const nome of imagem.slice(0, 3)) {
     gerou = true;
     break;
   }
-  console.log(`${nome} → HTTP ${r.status}: ${JSON.stringify(corpo.error ?? corpo).slice(0, 500)}`);
+  console.log(`${nome} → HTTP ${r.status}: ${JSON.stringify(corpo.error?.message ?? corpo).slice(0, 160)}`);
 }
 console.log(gerou ? 'RESULTADO: a chave consegue gerar imagens.' : 'RESULTADO: nenhum modelo de imagem gerou (veja o erro acima, provavelmente cota ou plano).');
 process.exit(gerou ? 0 : 1);
