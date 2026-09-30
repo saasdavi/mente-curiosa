@@ -2,7 +2,7 @@
 
 export const SITE = {
   name: 'Mente Curiosa',
-  // Host canônico (a versão sem www redireciona para cá no Cloudflare).
+  // Host canônico (a versão sem www redireciona para cá na Vercel).
   url: 'https://www.mentecuriosa.blog',
   lang: 'pt-BR',
   locale: 'pt_BR',

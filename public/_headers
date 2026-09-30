@@ -1,8 +1,0 @@
-/migration-map.csv
-  X-Robots-Tag: noindex
-
-/images/*
-  Cache-Control: public, max-age=2592000
-
-/_astro/*
-  Cache-Control: public, max-age=31536000, immutable
