@@ -13,8 +13,8 @@ tags:
   - natureza
 keyword: o que é a cadeia alimentar
 author: Equipe Mente Curiosa
-datePublished: "2026-10-02"
-dateModified: "2026-10-02"
+datePublished: "2026-09-30"
+dateModified: "2026-09-30"
 featuredImage: /images/o-que-e-a-cadeia-alimentar/o-que-e-a-cadeia-alimentar.webp
 featuredImageAlt: Leoa dormindo com a cabeça apoiada em um tronco coberto de musgo, com zebras pastando desfocadas ao fundo
 sources:
