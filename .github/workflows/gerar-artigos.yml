@@ -63,7 +63,7 @@ jobs:
         env:
           REABRIR: ${{ inputs.reabrir }}
         run: |
-          ARGS="--max ${{ inputs.max || '4' }}"
+          ARGS="--max ${{ inputs.max || '2' }}"
           if [ -n "$REABRIR" ]; then ARGS="$ARGS --reabrir $REABRIR"; fi
           if [ -n "${{ inputs.data }}" ]; then ARGS="$ARGS --data ${{ inputs.data }}"; fi
           if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
