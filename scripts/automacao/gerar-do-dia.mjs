@@ -90,7 +90,7 @@ export async function processarPauta(linha, acervo, deps = {}) {
     );
     if (aud.block.length) problemas.push(...aud.block.map((b) => `P2: ${b}`));
     if (aud.score < NOTA_MINIMA) problemas.push(`P2: nota ${aud.score} (mínimo ${NOTA_MINIMA}): ${aud.warn.join('; ')}`);
-    if (aud.wc > 2000) problemas.push(`P2: ${aud.wc} palavras (máximo 2.000)`);
+    if (aud.wc > 1300) problemas.push(`P2: ${aud.wc} palavras (máximo 1.300)`);
 
     // P3: fontes
     const novas = (meta.sources ?? []).filter((s) => !cacheFontes.has(s.url));

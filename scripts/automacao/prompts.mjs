@@ -55,7 +55,7 @@ FORMATO DA RESPOSTA (obrigatório, nada antes nem depois):
 (texto em Markdown: começa direto no primeiro parágrafo, sem título H1; seções com ## )
 
 Regras do formato:
-- "fotos": 2 fotos (1 só se o texto ficar abaixo de 1.200 palavras). "secao" = número da seção ## após a qual a foto entra (1 = primeira seção ##). Não repita seção.
+- "fotos": exatamente 2 fotos. "secao" = número da seção ## após a qual a foto entra (1 = primeira seção ##). Não repita seção.
 - "sources": 3 fontes primárias REAIS que você conhece com segurança (URLs estáveis de instituições, universidades, periódicos, órgãos públicos). Cada URL será aberta por um robô; link que não abrir é descartado. Cada fonte deve ser uma página ESPECÍFICA do assunto do artigo, com texto explicativo (por exemplo science.nasa.gov/moon/moon-phases/, esa.int, britannica.com/science/..., scielo.br, fiocruz.br); nunca a home nem uma página geral ou de notícias: o robô lê o texto da página e reprova a fonte que não trate do tema. Se não tiver certeza do caminho exato, prefira uma página de tema amplo do mesmo assunto, nunca invente caminho.
 - Links internos: use SOMENTE os listados no pedido, no formato [texto](/slug/). Mínimo 2.
 - Não use H1 (#) no corpo.
@@ -94,7 +94,7 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
     ...linksPermitidos.map((l) => `- [${l.titulo}](${l.url})`),
     ``,
     saude ? `Assunto de saúde/mente: termine com a frase "${CFG.avisoSaude}" e não dê diagnóstico, dose ou tratamento.` : '',
-    `Tamanho: 1.400 a 1.800 palavras no corpo (o mínimo aceito é 1.200 e o máximo 2.000; conte antes de responder). Cada parágrafo com NO MÁXIMO 45 palavras; divida os maiores. Frases diretas.`,
+    `Tamanho: 1.050 a 1.200 palavras no corpo (o mínimo aceito é 1.000 e o máximo 1.300; conte antes de responder). Cada parágrafo com NO MÁXIMO 45 palavras; divida os maiores. Frases diretas.`,
     `O title deve ter no máximo 44 caracteres (com " | Mente Curiosa" nunca passa de 60).`,
     `A palavra-chave principal, exatamente como escrita acima ("${linha['Palavra-chave']}"), deve aparecer na primeira frase do primeiro parágrafo.`,
     `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,
@@ -106,7 +106,7 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
 export function pedidoReescrita({ anterior, problemas }) {
   return [
     'A versão abaixo foi reprovada. Corrija SOMENTE os problemas listados, mantendo o restante, e devolva o artigo completo no mesmo FORMATO DA RESPOSTA.',
-    'Regras da correção: (1) para cada afirmação "sem apoio nas fontes", REMOVA a afirmação ou reescreva dizendo apenas o que a fonte diz; nunca acrescente fato novo para compensar; (2) apague também as repetições dela no FAQ, nos mitos e nos pins; (3) se o texto encurtar, mantenha o mínimo de 1.250 palavras aprofundando o que as fontes trazem; (4) se faltarem fontes, cite exatamente 3 fontes específicas do tema.',
+    'Regras da correção: (1) para cada afirmação "sem apoio nas fontes", REMOVA a afirmação ou reescreva dizendo apenas o que a fonte diz; nunca acrescente fato novo para compensar; (2) apague também as repetições dela no FAQ, nos mitos e nos pins; (3) se o texto encurtar, mantenha o mínimo de 1.050 palavras aprofundando o que as fontes trazem; (4) se faltarem fontes, cite exatamente 3 fontes específicas do tema.',
     '',
     'PROBLEMAS:',
     ...problemas.map((p) => `- ${p}`),
