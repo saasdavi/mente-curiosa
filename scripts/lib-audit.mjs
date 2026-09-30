@@ -40,7 +40,7 @@ export function auditarArtigo({ data: d, body }, keywordCount = new Map()) {
   if (!norm(d.slug).includes(kw.replace(/\s+/g, '-'))) warn.push('T05 keyword fora do slug');
   if (!norm(firstPara).includes(kw)) warn.push('C01 keyword fora do 1º parágrafo');
   if (countWords(firstPara) > 50) warn.push('C02 1º parágrafo > 50 palavras');
-  if (wc < 1000) warn.push('C03 menos de 1000 palavras');
+  if (wc < 1200) warn.push('C03 menos de 1200 palavras');
   if (h2.length < 4) warn.push('C04 menos de 4 H2');
   if (internal.length < 2) warn.push('L01 menos de 2 links internos');
   if ((d.sources?.length ?? 0) < 2) warn.push('F01 menos de 2 fontes');
@@ -50,7 +50,7 @@ export function auditarArtigo({ data: d, body }, keywordCount = new Map()) {
   if (BANNED_PHRASES.test(text)) warn.push('Q04 frase proibida (REGRAS_OURO 13)');
   const occurrences = (text.match(new RegExp(kw, 'g')) ?? []).length;
   if ((occurrences * kw.split(' ').length) / Math.max(wc, 1) > 0.03) warn.push('Q03 densidade de keyword > 3%');
-  const needImgs = wc >= 1000 ? 2 : 1;
+  const needImgs = wc >= 1200 ? 2 : 1;
   if ((d.images?.length ?? 0) < needImgs && !d.imagensPlano) warn.push(`I01 menos de ${needImgs} foto(s) no corpo`);
   if (d.altConferido === false) warn.push('I06 alt não conferido');
 
