@@ -175,4 +175,4 @@ A cadeia alimentar é a sequência de quem come quem em um ambiente. Ela mostra 
 
 Produtores fazem o alimento, consumidores se alimentam de outros seres vivos e decompositores reciclam o que sobra. Quando várias cadeias se cruzam, formam a teia alimentar.
 
-Se você gosta de observar a natureza, veja também [por que os pássaros migram](/por-que-os-passaros-migram/) e explore outros assuntos na [categoria Animais](/categoria/animais/). Para entender a energia que começa tudo isso, vale ler [por que o céu é azul](/por-que-o-ceu-e-azul/), que também fala da luz do Sol.
+Se você gosta de observar a natureza, explore outros assuntos na [categoria Animais](/categoria/animais/). Para entender a energia que começa tudo isso, vale ler [por que o céu é azul](/por-que-o-ceu-e-azul/), que também fala da luz do Sol.
