@@ -116,9 +116,12 @@ export async function processarPauta(linha, acervo, deps = {}) {
         const v = await d.claude({
           system: sistemaValidador(),
           user: pedidoValidacao({ id: linha['ID Artigo'], meta, corpo, fontes }),
-          maxTokens: 1500,
+          maxTokens: 4000,
         });
-        const j = extrairJSON(v.texto);
+        let j;
+        try { j = extrairJSON(v.texto); } catch (err) {
+          throw new Error(`${err.message}; stop_reason=${v.parou}; início da resposta: "${String(v.texto).slice(0, 300).replace(/\s+/g, ' ')}"`);
+        }
         if (j.decisao !== 'APROVADO') problemas.push(...[...(j.motivos ?? []), ...(j.correcoes ?? []).map((c) => `correção: ${c}`)].map((m) => `P5: ${m}`));
       } catch (e) {
         problemas.push(`P5: validador falhou (${e.message})`);
