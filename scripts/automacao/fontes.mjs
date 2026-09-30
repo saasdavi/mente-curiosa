@@ -80,9 +80,9 @@ export async function verificarFontes(fontes, buscarFn, termos = []) {
         const completo = /html/i.test(tipo) ? htmlParaTexto(await r.text()) : '';
         if (completo.length >= 300 && termos.length) {
           const rel = relevancia(completo, termos);
-          const minimo = Math.max(1, Math.ceil(termos.length * 0.6));
-          if (rel.distintos < minimo || rel.total < 3) {
-            invalidas.push({ url: f.url, motivo: `a página não trata do assunto (só ${rel.distintos}/${termos.length} termos: ${termos.join(', ')}); use uma página ESPECÍFICA sobre o tema, não a home nem uma página geral` });
+          const minimo = Math.min(2, termos.length);
+          if (rel.distintos < minimo || rel.total < 4) {
+            invalidas.push({ url: f.url, motivo: `a página não trata do assunto (só ${rel.distintos} dos termos: ${termos.join(', ')}); use uma página ESPECÍFICA sobre o tema, não a home nem uma página geral` });
             continue;
           }
         }

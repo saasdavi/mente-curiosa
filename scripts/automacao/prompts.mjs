@@ -36,6 +36,7 @@ FORMATO DA RESPOSTA (obrigatório, nada antes nem depois):
   "seoTitle": "",
   "description": "120 a 160 caracteres, com a keyword",
   "tags": ["3 a 6 tags curtas em português"],
+  "termosFonte": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês (ex.: lua, fases, moon, phases), que uma página sobre o tema contém; o robô usa para conferir se cada fonte trata do assunto"],
   "sources": [{"title": "Instituição — título da página", "url": "https://..."}],
   "imagens": {
     "capa": {"busca": "busca em inglês, cena concreta fotografável", "alt": "português, descreve o que aparece, 25+ caracteres"},

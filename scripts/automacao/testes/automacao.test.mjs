@@ -108,8 +108,9 @@ test('validador devolve: tenta de novo e, persistindo, reprova sem publicar', as
 
 test('P3: fonte precisa tratar do assunto e o trecho enviado ao validador vem da região relevante', async () => {
   const { termosDoAssunto, relevancia, trechoRelevante, verificarFontes } = await import('../fontes.mjs');
-  const termos = termosDoAssunto('Por que a lua tem fases?', 'por que a lua tem fases');
-  assert.deepEqual(termos, ['lua', 'fases']);
+  const termos = termosDoAssunto('Por que a lua tem fases?', 'por que a lua tem fases', 'lua', 'fases', 'moon', 'phases');
+  assert.deepEqual(termos, ['lua', 'fases', 'moon', 'phases']);
+  assert.ok(relevancia('The Moon goes through phases as the moon orbits. Moon phases repeat.', termos).distintos >= 2);
   assert.equal(relevancia('Crew-13 Starliner DAVINCI menu', termos).distintos, 0);
   const lixo = 'menu '.repeat(900);
   const conteudo = `${lixo} As fases da Lua acontecem porque a Lua reflete a luz do Sol. ${'A lua muda de fase. '.repeat(10)}`;

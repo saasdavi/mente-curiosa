@@ -94,7 +94,7 @@ export async function processarPauta(linha, acervo, deps = {}) {
 
     // P3: fontes
     const novas = (meta.sources ?? []).filter((s) => !cacheFontes.has(s.url));
-    const res = await d.fontes(novas, d.buscarFn, termosDoAssunto(linha['Pauta'], linha['Palavra-chave']));
+    const res = await d.fontes(novas, d.buscarFn, termosDoAssunto(linha['Pauta'], linha['Palavra-chave'], ...(Array.isArray(meta.termosFonte) ? meta.termosFonte : [])));
     for (const v of res.validas) cacheFontes.set(v.url, v);
     for (const i of res.invalidas) { cacheFontes.set(i.url, null); motivosFonte.set(i.url, i.motivo); }
     const fontes = (meta.sources ?? []).map((s) => cacheFontes.get(s.url)).filter(Boolean);
