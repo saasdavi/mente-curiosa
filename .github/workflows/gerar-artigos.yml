@@ -18,6 +18,9 @@ on:
         description: 'Teste: escreve e valida, mas não grava nada'
         type: boolean
         default: false
+      reabrir:
+        description: 'IDs de temas em "revisar" para voltar à fila (ex.: ART0453,ART2838)'
+        required: false
 
 concurrency:
   group: gerar-artigos
@@ -57,8 +60,11 @@ jobs:
         run: npm run test:automacao
 
       - name: Gerar os artigos
+        env:
+          REABRIR: ${{ inputs.reabrir }}
         run: |
           ARGS="--max ${{ inputs.max || '4' }}"
+          if [ -n "$REABRIR" ]; then ARGS="$ARGS --reabrir $REABRIR"; fi
           if [ -n "${{ inputs.data }}" ]; then ARGS="$ARGS --data ${{ inputs.data }}"; fi
           if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
           node scripts/automacao/gerar-do-dia.mjs $ARGS

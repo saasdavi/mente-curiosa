@@ -8,7 +8,7 @@ import { CFG, FONTES_FOTO } from './config.mjs';
 import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
 import { chamarClaude, extrairJSON } from './claude.mjs';
-import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
+import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta, sistemaImagens, pedidoNovoPlanoImagens } from './prompts.mjs';
 import { verificarFontes, termosDoAssunto } from './fontes.mjs';
 import { maiorSemelhanca, titulosParecidos } from './similaridade.mjs';
 import { checarTexto, checarFatos, checarCopia } from './gates.mjs';
@@ -132,13 +132,25 @@ export async function processarPauta(linha, acervo, deps = {}) {
 
     historico.push({ volta, problemas: [...problemas] });
     if (!problemas.length) {
-      const imagens = await d
-        .imagens({
-          meta, categoria: linha['Categoria (slug)'], slug: linha['Slug'], titulo: meta.title,
-          fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'],
-          usados: urlsDeCreditoUsadas(acervo),
-        })
-        .catch((e) => ({ erro: e.message }));
+      // P7: se nenhuma foto combinar, pede ao Claude um plano de fotos mais simples e tenta de novo (até 2 vezes)
+      let imagens;
+      for (let rodada = 0; rodada <= 2; rodada++) {
+        imagens = await d
+          .imagens({
+            meta, categoria: linha['Categoria (slug)'], slug: linha['Slug'], titulo: meta.title,
+            fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'],
+            usados: urlsDeCreditoUsadas(acervo),
+          })
+          .catch((e) => ({ erro: e.message }));
+        if (!imagens.erro || rodada === 2 || /PEXELS_API_KEY|Pexels HTTP (401|403)/i.test(imagens.erro)) break;
+        try {
+          const n = await d.claude({ system: sistemaImagens(), user: pedidoNovoPlanoImagens({ meta, titulo: meta.title, motivo: imagens.erro.slice(0, 400) }), maxTokens: 1500 });
+          const novo = extrairJSON(n.texto);
+          if (!novo?.capa?.busca || !novo?.capa?.alt || !Array.isArray(novo.fotos)) break;
+          meta.imagens = { ...novo, extras: novo.extras ?? meta.imagens.extras };
+          log(`P7: novo plano de fotos (rodada ${rodada + 1}) depois de: ${imagens.erro.slice(0, 120)}`);
+        } catch { break; }
+      }
       if (imagens.erro) return { ok: false, motivo: `P7: ${imagens.erro}`, historico };
       const frontmatter = montarFrontmatter({ linha, meta, imagens, fontesValidas: fontes });
       return { ok: true, frontmatter, corpo, imagens, nota: aud.score, historico, fontes };
@@ -228,6 +240,16 @@ async function main() {
 
   if (process.env.PAUSAR === 'true') { log('PAUSAR=true: geração pausada.'); return; }
   const { linhas, colunas, token } = await lerCalendario({ sheetId: process.env.SHEET_ID, credenciais: process.env.GOOGLE_SHEETS_CREDENTIALS });
+  // --reabrir ART0453,ART2838: devolve à fila temas que estavam em "revisar" (ex.: depois de corrigir o robô)
+  const reabrir = arg('reabrir', '').split(',').map((x) => x.trim().toUpperCase()).filter(Boolean);
+  if (reabrir.length) {
+    const alvo = linhas.filter((l) => reabrir.includes(String(l['ID Artigo']).toUpperCase()) && String(l['Status']).trim().toLowerCase() === 'revisar');
+    for (const l of alvo) { l['Status'] = 'planejado'; l['PR / Log da automação'] = `Reaberto ${hoje}`; }
+    if (!dry && alvo.length) {
+      await gravarCelulas({ sheetId: process.env.SHEET_ID, token, colunas, atualizacoes: alvo.flatMap((l) => [{ linha: l._linha, coluna: 'Status', valor: 'planejado' }, { linha: l._linha, coluna: 'PR / Log da automação', valor: `Reaberto ${hoje}` }]) });
+    }
+    log(`Reabertos: ${alvo.map((l) => l['ID Artigo']).join(', ') || 'nenhum (só temas em "revisar" podem ser reabertos)'}`);
+  }
   const falhas7 = falhasRecentes(linhas, hoje);
   if (falhas7 >= 5) { log(`Freio: ${falhas7} falhas nos últimos 7 dias; geração pausada.`); abrirAviso(`Geração pausada: ${falhas7} falhas em 7 dias`, 'Veja a coluna "PR / Log da automação" da planilha.'); return; }
 
