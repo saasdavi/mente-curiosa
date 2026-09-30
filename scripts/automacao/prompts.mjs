@@ -93,7 +93,10 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
     ...linksPermitidos.map((l) => `- [${l.titulo}](${l.url})`),
     ``,
     saude ? `Assunto de saúde/mente: termine com a frase "${CFG.avisoSaude}" e não dê diagnóstico, dose ou tratamento.` : '',
-    `Tamanho: 1.150 a 1.450 palavras. Parágrafos de até 50 palavras. Frases diretas.`,
+    `Tamanho: 1.300 a 1.500 palavras no corpo (o mínimo aceito é 1.200 e o máximo 1.600; conte antes de responder). Cada parágrafo com NO MÁXIMO 45 palavras; divida os maiores. Frases diretas.`,
+    `O title deve ter no máximo 44 caracteres (com " | Mente Curiosa" nunca passa de 60).`,
+    `A palavra-chave principal, exatamente como escrita acima ("${linha['Palavra-chave']}"), deve aparecer na primeira frase do primeiro parágrafo.`,
+    `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,
     `Responda exatamente no FORMATO DA RESPOSTA.`,
   ].filter((x) => x !== '').join('\n');
 }
