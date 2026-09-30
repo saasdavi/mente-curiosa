@@ -22,6 +22,10 @@ on:
         description: 'Só testa a chave do Gemini (pede 1 imagem) e não gera artigos'
         type: boolean
         default: false
+      testar_cloudflare:
+        description: 'Só testa a Cloudflare Workers AI (pede 1 imagem) e não gera artigos'
+        type: boolean
+        default: false
 
 concurrency:
   group: gerar-artigos
@@ -66,8 +70,15 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node scripts/automacao/testar-gemini.mjs
 
+      - name: Testar Cloudflare Workers AI
+        if: ${{ inputs.testar_cloudflare }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/automacao/testar-cloudflare.mjs
+
       - name: Gerar os artigos
-        if: ${{ !inputs.testar_gemini }}
+        if: ${{ !inputs.testar_gemini && !inputs.testar_cloudflare }}
         run: |
           ARGS="--max ${{ inputs.max || '4' }}"
           if [ -n "${{ inputs.data }}" ]; then ARGS="$ARGS --data ${{ inputs.data }}"; fi
