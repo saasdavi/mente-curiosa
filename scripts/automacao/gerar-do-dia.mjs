@@ -252,6 +252,9 @@ async function main() {
     if (!dry) await gravarCelulas({ sheetId: process.env.SHEET_ID, token, colunas, atualizacoes: atualizacoes.map((a) => ({ ...a, linha: linha._linha })) });
   }
   if (falhasNaExecucao >= 3) abrirAviso('Geração parou: 3 artigos reprovados seguidos', 'Veja o resumo da execução e a coluna "PR / Log da automação".');
+  else if (falhasNaExecucao > 0 && !dry) abrirAviso(`Falha ao gerar artigo(s) em ${hoje}`, `${falhasNaExecucao} pauta(s) reprovada(s). Veja o resumo da execução e a coluna "PR / Log da automação" da planilha.`);
+  // Falha nunca pode parecer sucesso: o workflow fica vermelho e o GitHub avisa por e-mail.
+  if (falhasNaExecucao > 0) process.exitCode = 1;
   if (process.env.GITHUB_STEP_SUMMARY) {
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Artigos de ${hoje}\n\n| ID | Pauta | Resultado | PR / motivo | Auditoria |\n|---|---|---|---|---|\n${resumo.join('\n') || '| - | nenhuma pauta pendente | | | |'}\n`);
   }
