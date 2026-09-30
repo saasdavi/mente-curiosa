@@ -16,6 +16,13 @@ export function dataEfetiva(slug, dataPlanilha, info) {
   return info.get(slug)?.data || dataPlanilha;
 }
 
+/** Artigo com horário (ex.: 18:00) só é conferido depois dessa hora; sem horário, vale o dia todo. */
+export function jaPassouDoHorario(slug, info, agora = Date.now()) {
+  const q = info.get(slug)?.quando;
+  const t = q ? Date.parse(q) : NaN;
+  return Number.isNaN(t) || t <= agora;
+}
+
 const absoluto = (src, base) => { try { return new URL(src, base).href; } catch { return null; } };
 
 /**
@@ -76,9 +83,9 @@ async function main() {
   const hoje = hojeBR(CFG.fusoHorario);
   const { linhas, colunas, token } = await lerCalendario({ sheetId: process.env.SHEET_ID, credenciais: process.env.GOOGLE_SHEETS_CREDENTIALS });
   const status = (l) => String(l['Status']).trim().toLowerCase();
-  const info = new Map(lerAcervo().map((a) => [a.data.slug, { titulo: a.data.title, data: String(a.data.datePublished).slice(0, 10) }]));
+  const info = new Map(lerAcervo().map((a) => [a.data.slug, { titulo: a.data.title, data: String(a.data.datePublished).slice(0, 10), quando: a.data.datePublishedCompleta }]));
   const dataReal = (l) => dataEfetiva(l['Slug'], l.dataISO, info);
-  const alvo = linhas.filter((l) => ['agendado', 'em revisão', 'em revisao'].includes(status(l)) && l['Slug'] && dataReal(l) && dataReal(l) <= hoje);
+  const alvo = linhas.filter((l) => ['agendado', 'em revisão', 'em revisao'].includes(status(l)) && l['Slug'] && dataReal(l) && dataReal(l) <= hoje && jaPassouDoHorario(l['Slug'], info));
   log(`Hoje ${hoje} | artigos a confirmar no ar: ${alvo.length}`);
   if (!alvo.length) return;
 

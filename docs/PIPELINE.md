@@ -11,7 +11,7 @@ Tudo é automático. Cada etapa tem um responsável, um critério de "deu certo"
 | 5 | **Imagens** | Robô + Pexels | P7: fotos baixam e combinam com o texto | Tema reprovado |
 | 6 | **Trocar de tema** | Robô | Tema reprovado vira `revisar`; o robô tenta o próximo | 3 reprovações no dia: para e abre Issue |
 | 7 | **Publicar** | Robô | PR aberto (ou merge se `AUTO_MERGE=true`); status `em revisão` ou `agendado` | Status não muda; workflow vermelho |
-| 8 | **Deploy** | Workflow "Publicar no ar" (06:05 BRT) | Vercel publica o site com os artigos que chegaram na data | Workflow vermelho e e-mail |
+| 8 | **Deploy** | Workflow "Publicar no ar" (12:05 e 18:05 BRT) | Vercel publica o site; artigos saem às 12:00 (1º do dia) e 18:00 (2º do dia) | Workflow vermelho e e-mail |
 | 9 | **Confirmar no ar** | Robô, logo após o deploy | Abre o link: 200, título, texto, imagens carregam, está no sitemap | Status continua `agendado`, Issue aberta |
 | 10 | **Planilha** | Robô | Só aqui o status vira **`publicado`**, com o link na coluna "PR / Log da automação" | — |
 

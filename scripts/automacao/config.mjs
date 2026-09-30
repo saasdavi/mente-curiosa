@@ -6,6 +6,7 @@ export const CFG = {
   intervaloCalendario: 'A1:Z1200',
   horizonteDias: 2, // gera artigos com até N dias de antecedência, para dar tempo de revisar o PR
   maxPorExecucao: 2,
+  horariosPublicacao: ['12:00', '18:00'], // horário de Brasília; o site é reconstruído 5 min depois de cada um (deploy-diario.yml)
   modeloClaude: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
   maxTokensRedator: 7000,
   voltasMax: 3, // reescritas por auditoria ou validador (4 tentativas no total)

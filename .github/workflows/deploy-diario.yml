@@ -1,10 +1,11 @@
 name: Publicar no ar (deploy diário)
 
 # Artigos com data futura só entram no site quando o site é reconstruído depois da data.
-# Este fluxo reconstrói e publica todo dia cedo (06:05 no horário de Brasília), para o artigo do dia sair no horário.
+# Este fluxo reconstrói e publica 2 vezes por dia: 12:05 e 18:05 (Brasília), logo depois dos horários dos artigos (12:00 e 18:00).
 on:
   schedule:
-    - cron: '5 9 * * *'
+    - cron: '5 15 * * *' # 12:05 Brasília
+    - cron: '5 21 * * *' # 18:05 Brasília
   workflow_dispatch:
 
 concurrency:

@@ -94,7 +94,7 @@ test('fluxo completo com Claude e fotos falsos: aprova e devolve artigo', async 
   assert.equal(r.ok, true, r.motivo);
   assert.deepEqual(d.chamadas, ['redator', 'validador']);
   assert.equal(r.frontmatter.slug, 'por-que-o-gelo-flutua');
-  assert.equal(r.frontmatter.datePublished, '2026-10-08');
+  assert.equal(r.frontmatter.datePublished, '2026-10-08T12:00:00-03:00');
   assert.ok(r.nota >= 85);
   assert.equal(r.frontmatter.images.length, 2);
 });
@@ -185,4 +185,15 @@ test('no ar: vale a data real do artigo no blog, não a da planilha', async () =
   const info = new Map([['a', { titulo: 'A', data: '2026-09-30' }]]);
   assert.equal(dataEfetiva('a', '2026-10-02', info), '2026-09-30');
   assert.equal(dataEfetiva('b', '2026-10-02', info), '2026-10-02');
+});
+
+test('horário de publicação: 1º do dia 12:00, 2º 18:00', async () => {
+  const { dataHoraPublicacao } = await import('../artigo.mjs');
+  assert.equal(dataHoraPublicacao({ dataISO: '2026-10-01', 'Ordem do Dia': '1' }), '2026-10-01T12:00:00-03:00');
+  assert.equal(dataHoraPublicacao({ dataISO: '2026-10-01', 'Ordem do Dia': '2' }), '2026-10-01T18:00:00-03:00');
+  const { jaPassouDoHorario } = await import('../confirmar-no-ar.mjs');
+  const info = new Map([['a', { quando: '2026-10-01T18:00:00-03:00' }], ['b', {}]]);
+  assert.equal(jaPassouDoHorario('a', info, Date.parse('2026-10-01T17:00:00-03:00')), false);
+  assert.equal(jaPassouDoHorario('a', info, Date.parse('2026-10-01T18:05:00-03:00')), true);
+  assert.equal(jaPassouDoHorario('b', info), true);
 });
