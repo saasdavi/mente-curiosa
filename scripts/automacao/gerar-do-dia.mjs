@@ -9,7 +9,7 @@ import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
 import { chamarClaude, extrairJSON, USO, custoEstimado } from './claude.mjs';
 import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
-import { verificarFontes, termosDoAssunto } from './fontes.mjs';
+import { verificarFontes, termosDoAssunto, pesquisarFontes } from './fontes.mjs';
 import { maiorSemelhanca, titulosParecidos } from './similaridade.mjs';
 import { checarTexto, checarFatos, checarCopia } from './gates.mjs';
 import { prepararImagens } from './imagens.mjs';
@@ -48,7 +48,7 @@ export function linksPermitidos(linha, acervo) {
  * ou { ok:false, motivo, historico }.
  */
 export async function processarPauta(linha, acervo, deps = {}) {
-  const d = { claude: chamarClaude, fontes: verificarFontes, imagens: prepararImagens, buscarFn: buscar, ...deps };
+  const d = { claude: chamarClaude, fontes: verificarFontes, pesquisar: pesquisarFontes, imagens: prepararImagens, buscarFn: buscar, ...deps };
   const permitidos = linksPermitidos(linha, acervo);
   const permitidosUrls = [...permitidos.map((l) => l.url), '/', '/sobre/', '/contato/', '/politica-de-privacidade/'];
   const termo = linha['Termo-cabeça (Planner)'] || '';
@@ -62,10 +62,22 @@ export async function processarPauta(linha, acervo, deps = {}) {
   const cacheFontes = new Map();
   const motivosFonte = new Map();
 
+  // Pesquisa antes de escrever: até 2 fontes lidas (5.000 caracteres cada) que o redator usa como base.
+  let fontesLidas = [];
+  try {
+    const p = await d.pesquisar({ linha, claude: d.claude, buscarFn: d.buscarFn });
+    fontesLidas = p.lidas ?? [];
+    for (const v of fontesLidas) cacheFontes.set(v.url, v);
+    log(`Pesquisa prévia: ${fontesLidas.length} fonte(s) lida(s)${fontesLidas.length ? ': ' + fontesLidas.map((f) => f.url).join(', ') : ' (seguindo sem; o redator indica as fontes)'}`);
+  } catch (e) {
+    if (FATAL.test(String(e.message))) throw e;
+    log(`aviso: pesquisa prévia de fontes falhou (${e.message}); seguindo sem.`);
+  }
+
   for (let volta = 0; volta <= CFG.voltasMax; volta++) {
     const pedido = volta === 0 || !ultima
-      ? pedidoArtigo({ linha, linksPermitidos: permitidos, termoCabeca: termo })
-      : pedidoReescrita({ anterior: ultima.bruto, problemas });
+      ? pedidoArtigo({ linha, linksPermitidos: permitidos, termoCabeca: termo, fontesLidas })
+      : pedidoReescrita({ anterior: ultima.bruto, problemas, fontesLidas });
     let resp;
     try {
       const r = await d.claude({ system: sistema, user: pedido });

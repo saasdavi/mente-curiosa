@@ -75,7 +75,16 @@ export function sistemaRedator() {
   ].join('\n');
 }
 
-export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
+/** Bloco com o texto das fontes já lidas pelo robô (o redator escreve com base nele). */
+export function blocoFontesLidas(fontesLidas = []) {
+  if (!fontesLidas.length) return '';
+  return [
+    'FONTES JÁ LIDAS (texto real das páginas). Escreva com base no que elas dizem: cite exatamente estas fontes na lista "sources" e acrescente uma terceira fonte específica do tema. Números, nomes e datas só se aparecerem aqui.',
+    ...fontesLidas.map((f, i) => `--- FONTE ${i + 1}: ${f.title} (${f.url})\n${f.texto}`),
+  ].join('\n');
+}
+
+export function pedidoArtigo({ linha, linksPermitidos, termoCabeca, fontesLidas = [] }) {
   const caudas = String(linha['Caudas longas (seções H2)'] || '').split(';').map((s) => s.trim()).filter(Boolean);
   const saude = CFG.categoriasSaude.includes(linha['Categoria (slug)']);
   return [
@@ -99,17 +108,20 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
     `A palavra-chave principal, exatamente como escrita acima ("${linha['Palavra-chave']}"), deve aparecer na primeira frase do primeiro parágrafo.`,
     `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,
     `Afirme apenas o que as fontes citadas dizem ou o que é conhecimento científico básico e incontroverso. Não acrescente exemplos, causas, efeitos, relações ou estatísticas que a fonte não traga: um validador compara cada afirmação com o texto das fontes e reprova o que não tem apoio. Para chegar ao tamanho, aprofunde com definições, etapas e exemplos que a própria fonte traz.`,
+    blocoFontesLidas(fontesLidas),
     `Responda exatamente no FORMATO DA RESPOSTA.`,
   ].filter((x) => x !== '').join('\n');
 }
 
-export function pedidoReescrita({ anterior, problemas }) {
+export function pedidoReescrita({ anterior, problemas, fontesLidas = [] }) {
   return [
     'A versão abaixo foi reprovada. Corrija SOMENTE os problemas listados, mantendo o restante, e devolva o artigo completo no mesmo FORMATO DA RESPOSTA.',
     'Regras da correção: (1) para cada afirmação "sem apoio nas fontes", REMOVA a afirmação ou reescreva dizendo apenas o que a fonte diz; nunca acrescente fato novo para compensar; (2) apague também as repetições dela no FAQ, nos mitos e nos pins; (3) se o texto encurtar, mantenha o mínimo de 1.250 palavras aprofundando o que as fontes trazem; (4) se faltarem fontes, cite exatamente 3 fontes específicas do tema.',
     '',
     'PROBLEMAS:',
     ...problemas.map((p) => `- ${p}`),
+    '',
+    blocoFontesLidas(fontesLidas),
     '',
     'VERSÃO ANTERIOR:',
     anterior,
