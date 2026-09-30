@@ -251,7 +251,8 @@ async function main() {
     if (r.ok) {
       const pub = publicarArtigo({ resultado: r, linha, autoMerge, dry });
       if (pub.ok) {
-        const status = pub.mesclado ? (linha.dataISO > hoje ? 'agendado' : 'publicado') : 'em revisão';
+        // "publicado" só depois que o deploy termina e o link é conferido (confirmar-no-ar.mjs)
+        const status = pub.mesclado ? 'agendado' : 'em revisão';
         atualizacoes.push({ coluna: 'Status', valor: dry ? linha['Status'] : status }, { coluna: 'PR / Log da automação', valor: pub.pr ?? pub.nota });
         sucessos++;
         log(`APROVADO ${linha['ID Artigo']}: nota de auditoria ${r.nota}, ${r.corpo.split(/\s+/).length} palavras, ${(r.fontes ?? []).length} fontes, título "${r.frontmatter?.title ?? ''}"${dry ? ' (dry-run: nada gravado)' : ''}`);

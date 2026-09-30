@@ -130,3 +130,32 @@ test('anti-loop: reprovação de conteúdo tira o tema da fila; falha de API nã
   assert.equal(statusAposFalha({ tentativas: 1, motivo: 'formato: API do Claude: 529 overloaded' }), null);
   assert.equal(statusAposFalha({ tentativas: 3, motivo: 'formato: API do Claude: 529 overloaded' }), 'revisar');
 });
+
+test('no ar: só confirma se a página abre, tem título, texto, imagens que carregam e está no sitemap', async () => {
+  const { conferirPagina } = await import('../confirmar-no-ar.mjs');
+  const texto = 'palavra '.repeat(1000);
+  const html = (img) => `<html><head><meta property="og:image" content="/images/x/capa.jpg"></head><body><h1>Por que a lua tem fases?</h1><img src="${img}"><p>${texto}</p></body></html>`;
+  const resp = (status, tipo, corpo = '') => ({ ok: status < 400, status, headers: { get: () => tipo }, text: async () => corpo });
+  const site = (pagina, imagens = 200) => async (url) => {
+    if (url.endsWith('/por-que-a-lua-tem-fases/')) return pagina;
+    if (url.includes('/images/')) return resp(imagens, 'image/jpeg');
+    return resp(404, 'text/html');
+  };
+  const url = 'https://www.mentecuriosa.blog/por-que-a-lua-tem-fases/';
+  const sitemap = '<loc>https://www.mentecuriosa.blog/por-que-a-lua-tem-fases/</loc>';
+
+  const ok = await conferirPagina({ url, titulo: 'Por que a lua tem fases?', buscarFn: site(resp(200, 'text/html', html('/images/x/foto1.jpg'))), sitemapTexto: sitemap });
+  assert.equal(ok.ok, true, ok.problemas.join('|'));
+  assert.ok(ok.imagens >= 2);
+
+  const quebrada = await conferirPagina({ url, titulo: 'Por que a lua tem fases?', buscarFn: site(resp(200, 'text/html', html('/images/x/foto1.jpg')), 404), sitemapTexto: sitemap });
+  assert.equal(quebrada.ok, false);
+  assert.match(quebrada.problemas.join(' '), /imagem quebrada/);
+
+  const naoExiste = await conferirPagina({ url: 'https://www.mentecuriosa.blog/nao-existe/', titulo: 'x', buscarFn: site(resp(200, 'text/html', '')) });
+  assert.equal(naoExiste.ok, false);
+  assert.match(naoExiste.problemas[0], /HTTP 404/);
+
+  const foraSitemap = await conferirPagina({ url, titulo: 'Por que a lua tem fases?', buscarFn: site(resp(200, 'text/html', html('/images/x/foto1.jpg'))), sitemapTexto: '<loc>outra</loc>' });
+  assert.match(foraSitemap.problemas.join(' '), /sitemap/);
+});
