@@ -1,6 +1,6 @@
 # Mente Curiosa — site
 
-Astro (site estático) + Cloudflare Pages. Conteúdo em Markdown, separado do código.
+Astro (site estático) + Vercel. Conteúdo em Markdown, separado do código.
 Feito para trocar de plataforma (ex.: WordPress) sem perder URLs, conteúdo, imagens nem redirects.
 
 ## Estrutura
@@ -16,7 +16,8 @@ src/components/ads/             ← único lugar com código de anúncio
 public/ads.txt                  ← publisher do AdSense
 src/content.config.ts           ← schema: o contrato de cada artigo
 scripts/                        ← redirects (pré-build) e verificação (pós-build)
-ARTIGO_FORMATO.md               ← como Claude/n8n devem entregar um artigo
+ARTIGO_FORMATO.md               ← como Claude deve entregar um artigo
+rascunhos/                      ← ideias de artigos ainda fora do site (formato antigo)
 ```
 
 ## URLs
@@ -35,11 +36,11 @@ Sempre com barra final — igual ao permalink `/%postname%/` do WordPress.
 
 1. Criar `src/content/artigos/<slug>.md` seguindo `ARTIGO_FORMATO.md`.
 2. Colocar a capa em `public/images/<slug>/capa.webp`.
-3. Commit/PR no GitHub → Cloudflare Pages faz o build e publica.
+3. Commit/PR no GitHub → a Vercel faz o build e publica.
 
 **Agendamento:** artigo com `datePublished` no futuro fica fora do site até a data.
-Para ele aparecer sozinho, dispare um build diário (Deploy Hook do Cloudflare
-chamado por n8n ou por um cron às 06:00).
+Para ele aparecer sozinho, dispare um build diário (Deploy Hook da Vercel
+chamado por GitHub Actions ou por um cron às 06:00).
 
 ## O que trava o deploy (de propósito)
 
@@ -54,8 +55,7 @@ chamado por n8n ou por um cron às 06:00).
 
 Edite só os CSVs em `redirects/`. O pré-build gera:
 
-- `public/_redirects` → 301 (Cloudflare Pages, até 2.000 regras)
-- `vercel.json` → os mesmos 301 + cabeçalhos (Vercel). Rode `npm run build` antes do commit para mantê-lo atualizado
+- `vercel.json` → 301 + cabeçalhos. Rode `npm run build` antes do commit para mantê-lo atualizado
 - `functions/_middleware.js` + `public/_routes.json` → 410, só se houver linhas com `410`
 
 Cada URL antiga vai para o artigo **equivalente**. Sem equivalente: `410`.
@@ -70,15 +70,12 @@ npm run build     # redirects → build → verificação
 npm run preview
 ```
 
-## Cloudflare Pages (primeiro deploy)
+## Vercel (deploy)
 
-1. Subir este projeto para um repositório no GitHub.
-2. Cloudflare → Workers & Pages → Create → Pages → conectar o repositório.
-3. Build command `npm run build` · Output `dist` · variável `NODE_VERSION = 22`.
-4. Custom domains → adicionar `www.mentecuriosa.blog` e `mentecuriosa.blog`.
-5. Regra de redirecionamento (Rules → Redirect Rules): `mentecuriosa.blog/*` → `https://www.mentecuriosa.blog/$1` (301).
-   Host canônico = **www**.
-6. Cloudflare já redireciona `/slug` → `/slug/` automaticamente.
+1. Repositório no GitHub conectado ao projeto na Vercel (Import Project).
+2. Framework Astro · Build `npm run build` · Output `dist` · Node 22 (`.nvmrc`).
+3. Settings → Domains: `www.mentecuriosa.blog` (principal) e `mentecuriosa.blog` (redireciona 308 para o www).
+4. Deploy Hook (Settings → Git → Deploy Hooks) para publicar artigos agendados.
 
 ## Depois do ar
 
