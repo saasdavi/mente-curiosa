@@ -56,10 +56,6 @@ jobs:
       - name: Testes da automação
         run: npm run test:automacao
 
-      - name: Marcar como publicado o que já chegou na data
-        run: node scripts/automacao/atualizar-status.mjs
-        continue-on-error: true
-
       - name: Gerar os artigos
         run: |
           ARGS="--max ${{ inputs.max || '4' }}"

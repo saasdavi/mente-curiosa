@@ -3,12 +3,12 @@
 export const CFG = {
   fusoHorario: 'America/Sao_Paulo',
   abaCalendario: 'pautas-modelo_calendario',
-  intervaloCalendario: 'A1:V1200',
+  intervaloCalendario: 'A1:Z1200',
   horizonteDias: 2, // gera artigos com até N dias de antecedência, para dar tempo de revisar o PR
   maxPorExecucao: 4,
   modeloClaude: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
   maxTokensRedator: 7000,
-  voltasMax: 2, // reescritas por auditoria ou validador
+  voltasMax: 3, // reescritas por auditoria ou validador (4 tentativas no total)
   autorPadrao: 'Equipe Mente Curiosa',
   siteUrl: 'https://www.mentecuriosa.blog',
   // Categorias que exigem o aviso de saúde no fim do texto (REGRAS_OURO 12)

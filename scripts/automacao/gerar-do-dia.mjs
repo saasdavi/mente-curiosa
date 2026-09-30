@@ -9,7 +9,7 @@ import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
 import { chamarClaude, extrairJSON } from './claude.mjs';
 import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
-import { verificarFontes } from './fontes.mjs';
+import { verificarFontes, termosDoAssunto } from './fontes.mjs';
 import { maiorSemelhanca, titulosParecidos } from './similaridade.mjs';
 import { checarTexto, checarFatos, checarCopia } from './gates.mjs';
 import { prepararImagens } from './imagens.mjs';
@@ -50,7 +50,7 @@ export function linksPermitidos(linha, acervo) {
 export async function processarPauta(linha, acervo, deps = {}) {
   const d = { claude: chamarClaude, fontes: verificarFontes, imagens: prepararImagens, buscarFn: buscar, ...deps };
   const permitidos = linksPermitidos(linha, acervo);
-  const permitidosUrls = [...permitidos.map((l) => l.url), '/sobre/', '/contato/', '/politica-de-privacidade/'];
+  const permitidosUrls = [...permitidos.map((l) => l.url), '/', '/sobre/', '/contato/', '/politica-de-privacidade/'];
   const termo = linha['Termo-cabeça (Planner)'] || '';
   const sistema = sistemaRedator();
   const kwCount = new Map(acervo.map((a) => [norm(a.data.keyword), 1]));
@@ -60,6 +60,7 @@ export async function processarPauta(linha, acervo, deps = {}) {
   let ultima = null;
   let problemas = [];
   const cacheFontes = new Map();
+  const motivosFonte = new Map();
 
   for (let volta = 0; volta <= CFG.voltasMax; volta++) {
     const pedido = volta === 0 || !ultima
@@ -93,13 +94,14 @@ export async function processarPauta(linha, acervo, deps = {}) {
 
     // P3: fontes
     const novas = (meta.sources ?? []).filter((s) => !cacheFontes.has(s.url));
-    const res = await d.fontes(novas, d.buscarFn);
+    const res = await d.fontes(novas, d.buscarFn, termosDoAssunto(linha['Pauta'], linha['Palavra-chave'], ...(Array.isArray(meta.termosFonte) ? meta.termosFonte : [])));
     for (const v of res.validas) cacheFontes.set(v.url, v);
-    for (const i of res.invalidas) cacheFontes.set(i.url, null);
+    for (const i of res.invalidas) { cacheFontes.set(i.url, null); motivosFonte.set(i.url, i.motivo); }
     const fontes = (meta.sources ?? []).map((s) => cacheFontes.get(s.url)).filter(Boolean);
     if (fontes.length < CFG.fontesMin || (meta.sources ?? []).length < 3) {
-      const inval = (meta.sources ?? []).filter((s) => cacheFontes.get(s.url) === null).map((s) => s.url);
-      problemas.push(`P3: ${fontes.length} fonte(s) válida(s) de ${(meta.sources ?? []).length} (precisa de 3 citadas e 2 que abrem). Troque: ${inval.join(', ') || '—'}`);
+      const inval = (meta.sources ?? []).filter((s) => cacheFontes.get(s.url) === null).map((s) => `${s.url} (${motivosFonte.get(s.url) ?? 'não abriu'})`);
+      const citadas = (meta.sources ?? []).length;
+      problemas.push(`P3: você citou ${citadas} fonte(s) e ${fontes.length} servem (precisa citar EXATAMENTE 3 fontes, das quais pelo menos 2 abrem e tratam do assunto).${citadas < 3 ? ` Acrescente ${3 - citadas} fonte(s) específica(s) do tema.` : ''}${inval.length ? ` Troque: ${inval.join(', ')}` : ''}`);
     }
 
     // P4/P6: fatos e cópia
@@ -116,9 +118,12 @@ export async function processarPauta(linha, acervo, deps = {}) {
         const v = await d.claude({
           system: sistemaValidador(),
           user: pedidoValidacao({ id: linha['ID Artigo'], meta, corpo, fontes }),
-          maxTokens: 1500,
+          maxTokens: 4000,
         });
-        const j = extrairJSON(v.texto);
+        let j;
+        try { j = extrairJSON(v.texto); } catch (err) {
+          throw new Error(`${err.message}; stop_reason=${v.parou}; início da resposta: "${String(v.texto).slice(0, 300).replace(/\s+/g, ' ')}"`);
+        }
         if (j.decisao !== 'APROVADO') problemas.push(...[...(j.motivos ?? []), ...(j.correcoes ?? []).map((c) => `correção: ${c}`)].map((m) => `P5: ${m}`));
       } catch (e) {
         problemas.push(`P5: validador falhou (${e.message})`);
@@ -200,6 +205,15 @@ export function falhasRecentes(linhas, hoje, dias = 7) {
   }
   return n;
 }
+/**
+ * Regra anti-loop: uma pauta que o auditor reprovou sai da fila (status "revisar") e o robô passa para
+ * o próximo tema. Falha de infraestrutura (API fora do ar, rede) não queima o tema: ele continua "planejado".
+ */
+export const INFRA = /API do Claude: (429|5\d\d)|fetch failed|timeout|ECONN|ETIMEDOUT|não abriu|rate.?limit|overloaded/i;
+export function statusAposFalha({ tentativas, motivo }) {
+  if (INFRA.test(String(motivo))) return tentativas >= 3 ? 'revisar' : null; // null = mantém "planejado"
+  return 'revisar';
+}
 const tentativasAnteriores = (l) => Number(String(l['PR / Log da automação'] || '').match(/tentativa (\d+)/)?.[1] ?? 0);
 
 // ---------------------------------------------------------------- principal
@@ -221,11 +235,14 @@ async function main() {
   let branches = [];
   try { branches = sh('git', ['ls-remote', '--heads', 'origin', 'artigo/*']).split('\n').map((l) => l.split('\t')[1] ?? ''); } catch { /* ok */ }
   const acervo = lerAcervo();
-  const pautas = selecionarPautas({ linhas, acervo, hoje, horizonte, max, branches });
-  log(`Hoje ${hoje} | pautas selecionadas: ${pautas.length}`);
+  const RESERVA = 3; // temas extras para trocar quando um for reprovado
+  const pautas = selecionarPautas({ linhas, acervo, hoje, horizonte, max: max + RESERVA, branches });
+  log(`Hoje ${hoje} | meta: ${max} artigo(s) | candidatas (com reserva): ${pautas.length}`);
+  let sucessos = 0;
 
   let falhasNaExecucao = 0;
   for (const linha of pautas) {
+    if (sucessos >= max) break;
     if (falhasNaExecucao >= 3) { log('Freio: 3 falhas nesta execução; parando.'); break; }
     log(`\n=== ${linha['ID Artigo']} ${linha['Pauta']} (${linha.dataISO}) ===`);
     let r;
@@ -234,24 +251,33 @@ async function main() {
     if (r.ok) {
       const pub = publicarArtigo({ resultado: r, linha, autoMerge, dry });
       if (pub.ok) {
-        const status = pub.mesclado ? (linha.dataISO > hoje ? 'agendado' : 'publicado') : 'em revisão';
+        // "publicado" só depois que o deploy termina e o link é conferido (confirmar-no-ar.mjs)
+        const status = pub.mesclado ? 'agendado' : 'em revisão';
         atualizacoes.push({ coluna: 'Status', valor: dry ? linha['Status'] : status }, { coluna: 'PR / Log da automação', valor: pub.pr ?? pub.nota });
+        sucessos++;
+        log(`APROVADO ${linha['ID Artigo']}: nota de auditoria ${r.nota}, ${r.corpo.split(/\s+/).length} palavras, ${(r.fontes ?? []).length} fontes, título "${r.frontmatter?.title ?? ''}"${dry ? ' (dry-run: nada gravado)' : ''}`);
         resumo.push(`| ${linha['ID Artigo']} | ${linha['Pauta']} | ${status} | ${pub.pr ?? '-'} | nota ${r.nota} |`);
       } else { r = { ok: false, motivo: pub.motivo, historico: r.historico }; }
     }
     if (!r.ok) {
       falhasNaExecucao++;
       const n = tentativasAnteriores(linha) + 1;
+      const novoStatus = statusAposFalha({ tentativas: n, motivo: r.motivo });
       atualizacoes.push(
         { coluna: 'PR / Log da automação', valor: `FALHA ${hoje} (tentativa ${n}): ${r.motivo}`.slice(0, 480) },
-        ...(n >= 2 ? [{ coluna: 'Status', valor: 'revisar' }] : []),
+        ...(novoStatus ? [{ coluna: 'Status', valor: novoStatus }] : []),
       );
+      if (novoStatus) log(`Tema ${linha['ID Artigo']} reprovado: sai da fila (status "${novoStatus}"); passando para o próximo tema.`);
       resumo.push(`| ${linha['ID Artigo']} | ${linha['Pauta']} | FALHA | ${r.motivo.slice(0, 120)} | - |`);
       log(`FALHA: ${r.motivo}`);
     }
     if (!dry) await gravarCelulas({ sheetId: process.env.SHEET_ID, token, colunas, atualizacoes: atualizacoes.map((a) => ({ ...a, linha: linha._linha })) });
   }
   if (falhasNaExecucao >= 3) abrirAviso('Geração parou: 3 artigos reprovados seguidos', 'Veja o resumo da execução e a coluna "PR / Log da automação".');
+  else if (falhasNaExecucao > 0 && !dry) abrirAviso(`Falha ao gerar artigo(s) em ${hoje}`, `${falhasNaExecucao} pauta(s) reprovada(s). Veja o resumo da execução e a coluna "PR / Log da automação" da planilha.`);
+  // Falha nunca pode parecer sucesso: o workflow fica vermelho e o GitHub avisa por e-mail.
+  if (falhasNaExecucao > 0 && sucessos >= max) console.log(`::warning::${falhasNaExecucao} tema(s) reprovado(s) e substituído(s); meta do dia cumprida (${sucessos}/${max}).`);
+  else if (falhasNaExecucao > 0) process.exitCode = 1;
   if (process.env.GITHUB_STEP_SUMMARY) {
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Artigos de ${hoje}\n\n| ID | Pauta | Resultado | PR / motivo | Auditoria |\n|---|---|---|---|---|\n${resumo.join('\n') || '| - | nenhuma pauta pendente | | | |'}\n`);
   }

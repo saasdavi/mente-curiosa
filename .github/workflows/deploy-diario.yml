@@ -13,6 +13,7 @@ concurrency:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   deploy:
@@ -50,3 +51,12 @@ jobs:
 
       - name: Publicar
         run: npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+
+      # Só depois do deploy: abre o link de cada artigo do dia, confere texto e imagens e muda a planilha para "publicado".
+      - name: Confirmar no ar e atualizar a planilha
+        env:
+          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          GH_TOKEN: ${{ github.token }}
+          ESPERA_SEGUNDOS: '45'
+        run: node scripts/automacao/confirmar-no-ar.mjs

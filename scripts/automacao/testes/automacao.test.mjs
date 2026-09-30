@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { CFG } from '../config.mjs';
 import { hojeBR, somarDias, paraISO, slugify } from '../util.mjs';
 import { letraColuna, linhasDoCalendario } from '../sheets.mjs';
 import { checarFatos, checarCopia, checarSeguranca, checarLinksInternos, checarMeta, percentualCopiado } from '../gates.mjs';
@@ -103,5 +104,58 @@ test('validador devolve: tenta de novo e, persistindo, reprova sem publicar', as
   const r = await processarPauta(LINHA, lerAcervo(), d);
   assert.equal(r.ok, false);
   assert.match(r.motivo, /P5/);
-  assert.equal(d.chamadas.filter((c) => c === 'redator').length, 3); // 1 + 2 voltas
+  assert.equal(d.chamadas.filter((c) => c === 'redator').length, CFG.voltasMax + 1); // 1 + voltas
+});
+
+test('P3: fonte precisa tratar do assunto e o trecho enviado ao validador vem da região relevante', async () => {
+  const { termosDoAssunto, relevancia, trechoRelevante, verificarFontes } = await import('../fontes.mjs');
+  const termos = termosDoAssunto('Por que a lua tem fases?', 'por que a lua tem fases', 'lua', 'fases', 'moon', 'phases');
+  assert.deepEqual(termos, ['lua', 'fases', 'moon', 'phases']);
+  assert.ok(relevancia('The Moon goes through phases as the moon orbits. Moon phases repeat.', termos).distintos >= 2);
+  assert.equal(relevancia('Crew-13 Starliner DAVINCI menu', termos).distintos, 0);
+  const lixo = 'menu '.repeat(900);
+  const conteudo = `${lixo} As fases da Lua acontecem porque a Lua reflete a luz do Sol. ${'A lua muda de fase. '.repeat(10)}`;
+  assert.match(trechoRelevante(conteudo, termos), /fases da Lua/);
+  const fake = (texto) => async () => ({ ok: true, status: 200, headers: { get: () => 'text/html' }, text: async () => `<p>${texto}</p>` });
+  const geral = await verificarFontes([{ title: 'x', url: 'https://www.nasa.gov/' }], fake('Crew-13 Starliner '.repeat(40)), termos);
+  assert.equal(geral.validas.length, 0);
+  assert.match(geral.invalidas[0].motivo, /não trata do assunto/);
+  const boa = await verificarFontes([{ title: 'x', url: 'https://science.nasa.gov/moon/moon-phases/' }], fake(conteudo), termos);
+  assert.equal(boa.validas.length, 1);
+});
+
+test('anti-loop: reprovação de conteúdo tira o tema da fila; falha de API não queima o tema', async () => {
+  const { statusAposFalha } = await import('../gerar-do-dia.mjs');
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: nota 80 (mínimo 85)' }), 'revisar');
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'formato: API do Claude: 529 overloaded' }), null);
+  assert.equal(statusAposFalha({ tentativas: 3, motivo: 'formato: API do Claude: 529 overloaded' }), 'revisar');
+});
+
+test('no ar: só confirma se a página abre, tem título, texto, imagens que carregam e está no sitemap', async () => {
+  const { conferirPagina } = await import('../confirmar-no-ar.mjs');
+  const texto = 'palavra '.repeat(1000);
+  const html = (img) => `<html><head><meta property="og:image" content="/images/x/capa.jpg"></head><body><h1>Por que a lua tem fases?</h1><img src="${img}"><p>${texto}</p></body></html>`;
+  const resp = (status, tipo, corpo = '') => ({ ok: status < 400, status, headers: { get: () => tipo }, text: async () => corpo });
+  const site = (pagina, imagens = 200) => async (url) => {
+    if (url.endsWith('/por-que-a-lua-tem-fases/')) return pagina;
+    if (url.includes('/images/')) return resp(imagens, 'image/jpeg');
+    return resp(404, 'text/html');
+  };
+  const url = 'https://www.mentecuriosa.blog/por-que-a-lua-tem-fases/';
+  const sitemap = '<loc>https://www.mentecuriosa.blog/por-que-a-lua-tem-fases/</loc>';
+
+  const ok = await conferirPagina({ url, titulo: 'Por que a lua tem fases?', buscarFn: site(resp(200, 'text/html', html('/images/x/foto1.jpg'))), sitemapTexto: sitemap });
+  assert.equal(ok.ok, true, ok.problemas.join('|'));
+  assert.ok(ok.imagens >= 2);
+
+  const quebrada = await conferirPagina({ url, titulo: 'Por que a lua tem fases?', buscarFn: site(resp(200, 'text/html', html('/images/x/foto1.jpg')), 404), sitemapTexto: sitemap });
+  assert.equal(quebrada.ok, false);
+  assert.match(quebrada.problemas.join(' '), /imagem quebrada/);
+
+  const naoExiste = await conferirPagina({ url: 'https://www.mentecuriosa.blog/nao-existe/', titulo: 'x', buscarFn: site(resp(200, 'text/html', '')) });
+  assert.equal(naoExiste.ok, false);
+  assert.match(naoExiste.problemas[0], /HTTP 404/);
+
+  const foraSitemap = await conferirPagina({ url, titulo: 'Por que a lua tem fases?', buscarFn: site(resp(200, 'text/html', html('/images/x/foto1.jpg'))), sitemapTexto: '<loc>outra</loc>' });
+  assert.match(foraSitemap.problemas.join(' '), /sitemap/);
 });

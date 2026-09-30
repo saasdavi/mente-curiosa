@@ -9,12 +9,15 @@ export async function chamarClaude({ system, user, maxTokens = CFG.maxTokensReda
     method: 'POST',
     timeoutMs: 240000,
     headers: { 'x-api-key': chave, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: modelo, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] }),
+    body: JSON.stringify({ model: modelo, max_tokens: maxTokens, thinking: { type: 'between_tools' }, system, messages: [{ role: 'user', content: user }] }),
   });
   const j = await r.json();
   if (!r.ok) throw new Error(`API do Claude: ${r.status} ${JSON.stringify(j).slice(0, 400)}`);
   const texto = (j.content ?? []).filter((b) => b.type === 'text').map((b) => b.text).join('');
-  if (!texto) throw new Error('resposta vazia do Claude');
+  if (!texto) {
+    const tipos = (j.content ?? []).map((b) => b.type).join(',') || 'nenhum';
+    throw new Error(`resposta vazia do Claude (modelo=${modelo}, stop_reason=${j.stop_reason}, blocos=${tipos}, uso=${JSON.stringify(j.usage ?? {})})`);
+  }
   return { texto, uso: j.usage ?? {}, parou: j.stop_reason };
 }
 
@@ -38,6 +41,7 @@ export async function chamarClaudeComImagem({ system, pergunta, imagemBase64, ma
     body: JSON.stringify({
       model: modelo,
       max_tokens: maxTokens,
+      thinking: { type: 'between_tools' },
       system,
       messages: [
         {
