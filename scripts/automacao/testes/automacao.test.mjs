@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { CFG } from '../config.mjs';
 import { hojeBR, somarDias, paraISO, slugify } from '../util.mjs';
 import { letraColuna, linhasDoCalendario } from '../sheets.mjs';
 import { checarFatos, checarCopia, checarSeguranca, checarLinksInternos, checarMeta, percentualCopiado } from '../gates.mjs';
@@ -103,7 +104,7 @@ test('validador devolve: tenta de novo e, persistindo, reprova sem publicar', as
   const r = await processarPauta(LINHA, lerAcervo(), d);
   assert.equal(r.ok, false);
   assert.match(r.motivo, /P5/);
-  assert.equal(d.chamadas.filter((c) => c === 'redator').length, 3); // 1 + 2 voltas
+  assert.equal(d.chamadas.filter((c) => c === 'redator').length, CFG.voltasMax + 1); // 1 + voltas
 });
 
 test('P3: fonte precisa tratar do assunto e o trecho enviado ao validador vem da região relevante', async () => {

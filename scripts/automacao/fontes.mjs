@@ -36,8 +36,8 @@ export function relevancia(texto, termos) {
   return { distintos, total };
 }
 
-/** Janela de ~3500 caracteres em volta da região com mais termos (em vez do começo da página, cheio de menu). */
-export function trechoRelevante(texto, termos, tam = 3500) {
+/** Janela de ~9000 caracteres em volta da região com mais termos (em vez do começo da página, cheio de menu). */
+export function trechoRelevante(texto, termos, tam = 9000) {
   if (texto.length <= tam || !termos.length) return texto.slice(0, tam);
   const base = semAcento(texto);
   let melhor = 0;

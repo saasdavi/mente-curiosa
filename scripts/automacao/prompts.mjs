@@ -98,6 +98,7 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
     `O title deve ter no máximo 44 caracteres (com " | Mente Curiosa" nunca passa de 60).`,
     `A palavra-chave principal, exatamente como escrita acima ("${linha['Palavra-chave']}"), deve aparecer na primeira frase do primeiro parágrafo.`,
     `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,
+    `Afirme apenas o que as fontes citadas dizem ou o que é conhecimento científico básico e incontroverso. Não acrescente exemplos, causas, efeitos, relações ou estatísticas que a fonte não traga: um validador compara cada afirmação com o texto das fontes e reprova o que não tem apoio. Para chegar ao tamanho, aprofunde com definições, etapas e exemplos que a própria fonte traz.`,
     `Responda exatamente no FORMATO DA RESPOSTA.`,
   ].filter((x) => x !== '').join('\n');
 }
@@ -105,6 +106,7 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
 export function pedidoReescrita({ anterior, problemas }) {
   return [
     'A versão abaixo foi reprovada. Corrija SOMENTE os problemas listados, mantendo o restante, e devolva o artigo completo no mesmo FORMATO DA RESPOSTA.',
+    'Regras da correção: (1) para cada afirmação "sem apoio nas fontes", REMOVA a afirmação ou reescreva dizendo apenas o que a fonte diz; nunca acrescente fato novo para compensar; (2) apague também as repetições dela no FAQ, nos mitos e nos pins; (3) se o texto encurtar, mantenha o mínimo de 1.250 palavras aprofundando o que as fontes trazem; (4) se faltarem fontes, cite exatamente 3 fontes específicas do tema.',
     '',
     'PROBLEMAS:',
     ...problemas.map((p) => `- ${p}`),

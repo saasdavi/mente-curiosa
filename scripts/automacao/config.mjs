@@ -8,7 +8,7 @@ export const CFG = {
   maxPorExecucao: 4,
   modeloClaude: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
   maxTokensRedator: 7000,
-  voltasMax: 2, // reescritas por auditoria ou validador
+  voltasMax: 3, // reescritas por auditoria ou validador (4 tentativas no total)
   autorPadrao: 'Equipe Mente Curiosa',
   siteUrl: 'https://www.mentecuriosa.blog',
   // Categorias que exigem o aviso de saúde no fim do texto (REGRAS_OURO 12)
