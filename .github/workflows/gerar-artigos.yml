@@ -18,6 +18,10 @@ on:
         description: 'Teste: escreve e valida, mas não grava nada'
         type: boolean
         default: false
+      testar_gemini:
+        description: 'Só testa a chave do Gemini (pede 1 imagem) e não gera artigos'
+        type: boolean
+        default: false
 
 concurrency:
   group: gerar-artigos
@@ -56,7 +60,14 @@ jobs:
       - name: Testes da automação
         run: npm run test:automacao
 
+      - name: Testar chave do Gemini
+        if: ${{ inputs.testar_gemini }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/automacao/testar-gemini.mjs
+
       - name: Gerar os artigos
+        if: ${{ !inputs.testar_gemini }}
         run: |
           ARGS="--max ${{ inputs.max || '4' }}"
           if [ -n "${{ inputs.data }}" ]; then ARGS="$ARGS --data ${{ inputs.data }}"; fi
