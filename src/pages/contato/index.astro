@@ -2,10 +2,24 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { SITE } from '../../config/site';
 ---
-<BaseLayout title="Contato" description={`Fale com a equipe do ${SITE.name}: correções, sugestões de temas e parcerias.`} path="/contato/">
+<BaseLayout title="Contato" description={`Fale com a equipe do ${SITE.name}: correções, sugestões de temas, parcerias e dúvidas sobre o site.`} path="/contato/">
   <article class="wrap prose page">
     <h1>Contato</h1>
-    <p>Para correções, sugestões de perguntas ou parcerias, escreva para <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>
-    <p>Respondemos em até 5 dias úteis.</p>
+    <p>Quer falar com a equipe do {SITE.name}? Escreva para <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>. Respondemos em até 5 dias úteis.</p>
+
+    <h2>Sobre o que você pode escrever</h2>
+    <ul>
+      <li><strong>Correções:</strong> achou um erro ou uma informação desatualizada? Envie o endereço do artigo, o trecho e, se puder, uma fonte confiável. Verificamos, corrigimos e atualizamos a data do artigo.</li>
+      <li><strong>Sugestões de perguntas:</strong> tem uma curiosidade que gostaria de ver explicada? Mande sua pergunta.</li>
+      <li><strong>Parcerias e imprensa:</strong> propostas de parceria, citações e pedidos de autorização de uso de conteúdo.</li>
+      <li><strong>Privacidade:</strong> dúvidas sobre como tratamos dados, conforme a nossa <a href="/politica-de-privacidade/">Política de Privacidade</a>.</li>
+      <li><strong>Problemas no site:</strong> página que não abre, imagem quebrada ou qualquer falha técnica.</li>
+    </ul>
+
+    <h2>O que não conseguimos fazer</h2>
+    <p>O {SITE.name} é um projeto editorial e não presta atendimento médico, psicológico ou jurídico. Para dúvidas sobre a sua saúde ou a sua situação pessoal, procure um profissional habilitado.</p>
+
+    <h2>Como lidamos com os erros</h2>
+    <p>Lemos todas as mensagens. Quando um erro é confirmado, o texto é corrigido e a data de atualização do artigo muda. Você pode conhecer melhor o nosso trabalho na página <a href="/sobre/">Sobre</a>.</p>
   </article>
 </BaseLayout>
