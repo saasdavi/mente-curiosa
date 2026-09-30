@@ -1,5 +1,6 @@
 // Confere se cada fonte citada existe e extrai um trecho do texto para o validador conferir os fatos.
 import { DOMINIOS_CONFIAVEIS, DOMINIOS_BLOQUEADOS } from './config.mjs';
+import { extrairJSON } from './claude.mjs';
 
 const UA = 'Mozilla/5.0 (compatible; MenteCuriosaBot/1.0; +https://www.mentecuriosa.blog)';
 
@@ -56,7 +57,7 @@ async function abrir(url, buscarFn) {
 }
 
 /** Retorna { validas: [{title,url,texto,lido}], invalidas: [{url,motivo}] }. */
-export async function verificarFontes(fontes, buscarFn, termos = []) {
+export async function verificarFontes(fontes, buscarFn, termos = [], tam = 9000) {
   const validas = [];
   const invalidas = [];
   const vistos = new Set();
@@ -86,7 +87,7 @@ export async function verificarFontes(fontes, buscarFn, termos = []) {
             continue;
           }
         }
-        const texto = completo ? trechoRelevante(completo, termos) : '';
+        const texto = completo ? trechoRelevante(completo, termos, tam) : '';
         validas.push({ title: f.title, url: f.url, texto, lido: Boolean(texto) });
       } else if ([401, 403, 429, 999].includes(r.status) && confiavel(host)) {
         validas.push({ title: f.title, url: f.url, texto: '', lido: false });
@@ -98,4 +99,27 @@ export async function verificarFontes(fontes, buscarFn, termos = []) {
     }
   }
   return { validas, invalidas };
+}
+
+/**
+ * Pesquisa ANTES de escrever: o Claude sugere páginas (uma chamada curta), o robô abre, confere se tratam do tema
+ * e fica com as `max` mais relevantes, com até `tam` caracteres de cada. O redator escreve com base nesse texto.
+ * Devolve { lidas: [{title,url,texto,lido}], termos }. Falha de rede ou fonte ruim devolve lidas vazio (segue sem).
+ */
+export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max = 2 }) {
+  const r = await claude({
+    system: 'Você indica fontes primárias REAIS para um artigo de ciência para o grande público. Responda SOMENTE com JSON: {"termos": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês"], "fontes": [{"title": "Instituição — título da página", "url": "https://..."}]}. Dê 4 fontes: páginas ESPECÍFICAS do assunto, com texto explicativo, de instituições, universidades, periódicos ou órgãos públicos (ex.: science.nasa.gov, esa.int, britannica.com, scielo.br, fiocruz.br). Nunca a home, nunca uma página geral; se não tiver certeza do caminho exato, use uma página de tema amplo do mesmo assunto. Nunca invente caminho.',
+    user: `Assunto do artigo: ${linha['Pauta']}\nPalavra-chave: ${linha['Palavra-chave']}`,
+    maxTokens: 700,
+  });
+  let j;
+  try { j = extrairJSON(r.texto); } catch { return { lidas: [], termos: [] }; }
+  const termos = termosDoAssunto(linha['Pauta'], linha['Palavra-chave'], ...(Array.isArray(j.termos) ? j.termos.map(String) : []));
+  const candidatas = (Array.isArray(j.fontes) ? j.fontes : []).filter((f) => f && typeof f.url === 'string').slice(0, 4);
+  const res = await verificarFontes(candidatas, buscarFn, termos, tam);
+  const lidas = res.validas
+    .filter((v) => v.lido)
+    .sort((a, b) => relevancia(b.texto, termos).total - relevancia(a.texto, termos).total)
+    .slice(0, max);
+  return { lidas, termos };
 }

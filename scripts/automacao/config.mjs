@@ -7,9 +7,9 @@ export const CFG = {
   horizonteDias: 2, // gera artigos com até N dias de antecedência, para dar tempo de revisar o PR
   maxPorExecucao: 2,
   horariosPublicacao: ['12:00', '18:00'], // horário de Brasília; o site é reconstruído 5 min depois de cada um (deploy-diario.yml)
-  modeloClaude: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
+  modeloClaude: process.env.CLAUDE_MODEL || 'claude-haiku-4-5',
   maxTokensRedator: 7000,
-  voltasMax: 3, // reescritas por auditoria ou validador (4 tentativas no total)
+  voltasMax: 2, // reescritas por auditoria ou validador (3 tentativas no total; cada uma custa tokens)
   autorPadrao: 'Equipe Mente Curiosa',
   siteUrl: 'https://www.mentecuriosa.blog',
   // Categorias que exigem o aviso de saúde no fim do texto (REGRAS_OURO 12)

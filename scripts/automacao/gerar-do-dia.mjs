@@ -7,9 +7,9 @@ import { join } from 'node:path';
 import { CFG, FONTES_FOTO } from './config.mjs';
 import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
-import { chamarClaude, extrairJSON } from './claude.mjs';
-import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta, sistemaImagens, pedidoNovoPlanoImagens } from './prompts.mjs';
-import { verificarFontes, termosDoAssunto } from './fontes.mjs';
+import { chamarClaude, extrairJSON, USO, custoEstimado } from './claude.mjs';
+import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
+import { verificarFontes, termosDoAssunto, pesquisarFontes } from './fontes.mjs';
 import { maiorSemelhanca, titulosParecidos } from './similaridade.mjs';
 import { checarTexto, checarFatos, checarCopia } from './gates.mjs';
 import { prepararImagens } from './imagens.mjs';
@@ -48,7 +48,7 @@ export function linksPermitidos(linha, acervo) {
  * ou { ok:false, motivo, historico }.
  */
 export async function processarPauta(linha, acervo, deps = {}) {
-  const d = { claude: chamarClaude, fontes: verificarFontes, imagens: prepararImagens, buscarFn: buscar, ...deps };
+  const d = { claude: chamarClaude, fontes: verificarFontes, pesquisar: pesquisarFontes, imagens: prepararImagens, buscarFn: buscar, ...deps };
   const permitidos = linksPermitidos(linha, acervo);
   const permitidosUrls = [...permitidos.map((l) => l.url), '/', '/sobre/', '/contato/', '/politica-de-privacidade/'];
   const termo = linha['Termo-cabeça (Planner)'] || '';
@@ -62,10 +62,22 @@ export async function processarPauta(linha, acervo, deps = {}) {
   const cacheFontes = new Map();
   const motivosFonte = new Map();
 
+  // Pesquisa antes de escrever: até 2 fontes lidas (5.000 caracteres cada) que o redator usa como base.
+  let fontesLidas = [];
+  try {
+    const p = await d.pesquisar({ linha, claude: d.claude, buscarFn: d.buscarFn });
+    fontesLidas = p.lidas ?? [];
+    for (const v of fontesLidas) cacheFontes.set(v.url, v);
+    log(`Pesquisa prévia: ${fontesLidas.length} fonte(s) lida(s)${fontesLidas.length ? ': ' + fontesLidas.map((f) => f.url).join(', ') : ' (seguindo sem; o redator indica as fontes)'}`);
+  } catch (e) {
+    if (FATAL.test(String(e.message))) throw e;
+    log(`aviso: pesquisa prévia de fontes falhou (${e.message}); seguindo sem.`);
+  }
+
   for (let volta = 0; volta <= CFG.voltasMax; volta++) {
     const pedido = volta === 0 || !ultima
-      ? pedidoArtigo({ linha, linksPermitidos: permitidos, termoCabeca: termo })
-      : pedidoReescrita({ anterior: ultima.bruto, problemas });
+      ? pedidoArtigo({ linha, linksPermitidos: permitidos, termoCabeca: termo, fontesLidas })
+      : pedidoReescrita({ anterior: ultima.bruto, problemas, fontesLidas });
     let resp;
     try {
       const r = await d.claude({ system: sistema, user: pedido });
@@ -132,25 +144,14 @@ export async function processarPauta(linha, acervo, deps = {}) {
 
     historico.push({ volta, problemas: [...problemas] });
     if (!problemas.length) {
-      // P7: se nenhuma foto combinar, pede ao Claude um plano de fotos mais simples e tenta de novo (até 2 vezes)
-      let imagens;
-      for (let rodada = 0; rodada <= 2; rodada++) {
-        imagens = await d
-          .imagens({
-            meta, categoria: linha['Categoria (slug)'], slug: linha['Slug'], titulo: meta.title,
-            fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'],
-            usados: urlsDeCreditoUsadas(acervo),
-          })
-          .catch((e) => ({ erro: e.message }));
-        if (!imagens.erro || rodada === 2 || /PEXELS_API_KEY|Pexels HTTP (401|403)/i.test(imagens.erro)) break;
-        try {
-          const n = await d.claude({ system: sistemaImagens(), user: pedidoNovoPlanoImagens({ meta, titulo: meta.title, motivo: imagens.erro.slice(0, 400) }), maxTokens: 1500 });
-          const novo = extrairJSON(n.texto);
-          if (!novo?.capa?.busca || !novo?.capa?.alt || !Array.isArray(novo.fotos)) break;
-          meta.imagens = { ...novo, extras: novo.extras ?? meta.imagens.extras };
-          log(`P7: novo plano de fotos (rodada ${rodada + 1}) depois de: ${imagens.erro.slice(0, 120)}`);
-        } catch { break; }
-      }
+      // P7: fotos do Pexels escolhidas sem gastar tokens (busca simples → busca reduzida → busca genérica da categoria)
+      const imagens = await d
+        .imagens({
+          meta, categoria: linha['Categoria (slug)'], slug: linha['Slug'], titulo: meta.title,
+          fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'],
+          usados: urlsDeCreditoUsadas(acervo),
+        })
+        .catch((e) => ({ erro: e.message }));
       if (imagens.erro) return { ok: false, motivo: `P7: ${imagens.erro}`, historico };
       const frontmatter = montarFrontmatter({ linha, meta, imagens, fontesValidas: fontes });
       return { ok: true, frontmatter, corpo, imagens, nota: aud.score, historico, fontes };
@@ -307,11 +308,12 @@ async function main() {
   }
   if (falhasNaExecucao >= 3) abrirAviso('Geração parou: 3 artigos reprovados seguidos', 'Veja o resumo da execução e a coluna "PR / Log da automação".');
   else if (falhasNaExecucao > 0 && !dry) abrirAviso(`Falha ao gerar artigo(s) em ${hoje}`, `${falhasNaExecucao} pauta(s) reprovada(s). Veja o resumo da execução e a coluna "PR / Log da automação" da planilha.`);
+  log(`Uso da API nesta execução: ${USO.chamadas} chamada(s), ${USO.entrada} tokens lidos + ${USO.saida} escritos = US$ ${custoEstimado().toFixed(3)} (modelo ${CFG.modeloClaude})`);
   // Falha nunca pode parecer sucesso: o workflow fica vermelho e o GitHub avisa por e-mail.
   if (falhasNaExecucao > 0 && sucessos >= max) console.log(`::warning::${falhasNaExecucao} tema(s) reprovado(s) e substituído(s); meta do dia cumprida (${sucessos}/${max}).`);
   else if (falhasNaExecucao > 0) process.exitCode = 1;
   if (process.env.GITHUB_STEP_SUMMARY) {
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Artigos de ${hoje}\n\n| ID | Pauta | Resultado | PR / motivo | Auditoria |\n|---|---|---|---|---|\n${resumo.join('\n') || '| - | nenhuma pauta pendente | | | |'}\n`);
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Artigos de ${hoje}\n\nCusto estimado da API: US$ ${custoEstimado().toFixed(3)} (${USO.entrada} tokens lidos, ${USO.saida} escritos, modelo ${CFG.modeloClaude})\n\n| ID | Pauta | Resultado | PR / motivo | Auditoria |\n|---|---|---|---|---|\n${resumo.join('\n') || '| - | nenhuma pauta pendente | | | |'}\n`);
   }
 }
 

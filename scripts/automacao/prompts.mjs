@@ -39,7 +39,7 @@ FORMATO DA RESPOSTA (obrigatório, nada antes nem depois):
   "termosFonte": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês (ex.: lua, fases, moon, phases), que uma página sobre o tema contém; o robô usa para conferir se cada fonte trata do assunto"],
   "sources": [{"title": "Instituição — título da página", "url": "https://..."}],
   "imagens": {
-    "capa": {"busca": "busca em inglês, cena concreta fotografável", "alt": "português, descreve o que aparece, 25+ caracteres"},
+    "capa": {"busca": "inglês, 2 a 4 palavras, objeto ou cena concreta e comum (ex.: 'full moon night sky'); nunca conceito abstrato, pessoa, marca ou texto", "alt": "português, descreve o que aparece, 25+ caracteres"},
     "fotos": [{"busca": "inglês", "alt": "português, 25+ caracteres", "legenda": "liga a foto ao texto, 10+ caracteres", "secao": 2}],
     "extras": ["2 buscas em inglês, cenas diferentes da capa, para fundos dos pins"]
   },
@@ -55,7 +55,7 @@ FORMATO DA RESPOSTA (obrigatório, nada antes nem depois):
 (texto em Markdown: começa direto no primeiro parágrafo, sem título H1; seções com ## )
 
 Regras do formato:
-- "fotos": 2 fotos (1 só se o texto ficar abaixo de 1.200 palavras). "secao" = número da seção ## após a qual a foto entra (1 = primeira seção ##). Não repita seção.
+- "fotos": exatamente 2 fotos. "secao" = número da seção ## após a qual a foto entra (1 = primeira seção ##). Não repita seção.
 - "sources": 3 fontes primárias REAIS que você conhece com segurança (URLs estáveis de instituições, universidades, periódicos, órgãos públicos). Cada URL será aberta por um robô; link que não abrir é descartado. Cada fonte deve ser uma página ESPECÍFICA do assunto do artigo, com texto explicativo (por exemplo science.nasa.gov/moon/moon-phases/, esa.int, britannica.com/science/..., scielo.br, fiocruz.br); nunca a home nem uma página geral ou de notícias: o robô lê o texto da página e reprova a fonte que não trate do tema. Se não tiver certeza do caminho exato, prefira uma página de tema amplo do mesmo assunto, nunca invente caminho.
 - Links internos: use SOMENTE os listados no pedido, no formato [texto](/slug/). Mínimo 2.
 - Não use H1 (#) no corpo.
@@ -75,7 +75,16 @@ export function sistemaRedator() {
   ].join('\n');
 }
 
-export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
+/** Bloco com o texto das fontes já lidas pelo robô (o redator escreve com base nele). */
+export function blocoFontesLidas(fontesLidas = []) {
+  if (!fontesLidas.length) return '';
+  return [
+    'FONTES JÁ LIDAS (texto real das páginas). Escreva com base no que elas dizem: cite exatamente estas fontes na lista "sources" e acrescente uma terceira fonte específica do tema. Números, nomes e datas só se aparecerem aqui.',
+    ...fontesLidas.map((f, i) => `--- FONTE ${i + 1}: ${f.title} (${f.url})\n${f.texto}`),
+  ].join('\n');
+}
+
+export function pedidoArtigo({ linha, linksPermitidos, termoCabeca, fontesLidas = [] }) {
   const caudas = String(linha['Caudas longas (seções H2)'] || '').split(';').map((s) => s.trim()).filter(Boolean);
   const saude = CFG.categoriasSaude.includes(linha['Categoria (slug)']);
   return [
@@ -94,22 +103,25 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
     ...linksPermitidos.map((l) => `- [${l.titulo}](${l.url})`),
     ``,
     saude ? `Assunto de saúde/mente: termine com a frase "${CFG.avisoSaude}" e não dê diagnóstico, dose ou tratamento.` : '',
-    `Tamanho: 1.300 a 1.500 palavras no corpo (o mínimo aceito é 1.200 e o máximo 1.600; conte antes de responder). Cada parágrafo com NO MÁXIMO 45 palavras; divida os maiores. Frases diretas.`,
+    `Tamanho: 1.250 a 1.450 palavras no corpo (o mínimo aceito é 1.200 e o máximo 1.600; conte antes de responder). Cada parágrafo com NO MÁXIMO 45 palavras; divida os maiores. Frases diretas.`,
     `O title deve ter no máximo 44 caracteres (com " | Mente Curiosa" nunca passa de 60).`,
     `A palavra-chave principal, exatamente como escrita acima ("${linha['Palavra-chave']}"), deve aparecer na primeira frase do primeiro parágrafo.`,
     `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,
     `Afirme apenas o que as fontes citadas dizem ou o que é conhecimento científico básico e incontroverso. Não acrescente exemplos, causas, efeitos, relações ou estatísticas que a fonte não traga: um validador compara cada afirmação com o texto das fontes e reprova o que não tem apoio. Para chegar ao tamanho, aprofunde com definições, etapas e exemplos que a própria fonte traz.`,
+    blocoFontesLidas(fontesLidas),
     `Responda exatamente no FORMATO DA RESPOSTA.`,
   ].filter((x) => x !== '').join('\n');
 }
 
-export function pedidoReescrita({ anterior, problemas }) {
+export function pedidoReescrita({ anterior, problemas, fontesLidas = [] }) {
   return [
     'A versão abaixo foi reprovada. Corrija SOMENTE os problemas listados, mantendo o restante, e devolva o artigo completo no mesmo FORMATO DA RESPOSTA.',
     'Regras da correção: (1) para cada afirmação "sem apoio nas fontes", REMOVA a afirmação ou reescreva dizendo apenas o que a fonte diz; nunca acrescente fato novo para compensar; (2) apague também as repetições dela no FAQ, nos mitos e nos pins; (3) se o texto encurtar, mantenha o mínimo de 1.250 palavras aprofundando o que as fontes trazem; (4) se faltarem fontes, cite exatamente 3 fontes específicas do tema.',
     '',
     'PROBLEMAS:',
     ...problemas.map((p) => `- ${p}`),
+    '',
+    blocoFontesLidas(fontesLidas),
     '',
     'VERSÃO ANTERIOR:',
     anterior,

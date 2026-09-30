@@ -2,6 +2,16 @@
 import { buscar } from './util.mjs';
 import { CFG } from './config.mjs';
 
+/** Soma de tokens usados nesta execução (para mostrar o custo no fim). */
+export const USO = { entrada: 0, saida: 0, chamadas: 0 };
+const PRECO_POR_MILHAO = { 'claude-haiku-4-5': [1, 5], 'claude-sonnet-5-5': [2, 10] };
+export function custoEstimado(modelo = CFG.modeloClaude) {
+  const [pe, ps] = PRECO_POR_MILHAO[modelo] ?? [2, 10];
+  return (USO.entrada * pe + USO.saida * ps) / 1e6;
+}
+// Só o Sonnet 5.5 aceita/exige o parâmetro thinking between_tools; no Haiku 4.5 o raciocínio fica desligado (mais barato).
+const pensamento = (modelo) => (/sonnet-5-5/.test(modelo) ? { thinking: { type: 'between_tools' } } : {});
+
 export async function chamarClaude({ system, user, maxTokens = CFG.maxTokensRedator, modelo = CFG.modeloClaude }) {
   const chave = process.env.ANTHROPIC_API_KEY;
   if (!chave) throw new Error('ANTHROPIC_API_KEY não definida');
@@ -9,9 +19,10 @@ export async function chamarClaude({ system, user, maxTokens = CFG.maxTokensReda
     method: 'POST',
     timeoutMs: 240000,
     headers: { 'x-api-key': chave, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: modelo, max_tokens: maxTokens, thinking: { type: 'between_tools' }, system, messages: [{ role: 'user', content: user }] }),
+    body: JSON.stringify({ model: modelo, max_tokens: maxTokens, ...pensamento(modelo), system, messages: [{ role: 'user', content: user }] }),
   });
   const j = await r.json();
+  USO.entrada += j.usage?.input_tokens ?? 0; USO.saida += j.usage?.output_tokens ?? 0; USO.chamadas++;
   if (!r.ok) throw new Error(`API do Claude: ${r.status} ${JSON.stringify(j).slice(0, 400)}`);
   const texto = (j.content ?? []).filter((b) => b.type === 'text').map((b) => b.text).join('');
   if (!texto) {
@@ -41,7 +52,7 @@ export async function chamarClaudeComImagem({ system, pergunta, imagemBase64, ma
     body: JSON.stringify({
       model: modelo,
       max_tokens: maxTokens,
-      thinking: { type: 'between_tools' },
+      ...pensamento(modelo),
       system,
       messages: [
         {

@@ -203,3 +203,42 @@ test('sem crédito na API não descarta o tema', () => {
   assert.equal(statusAposFalha({ tentativas: 5, motivo: m }), null);
   assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: 1753 palavras' }), 'revisar');
 });
+
+test('fotos sem Claude: pontua pela descrição do Pexels', async () => {
+  const { pontuar } = await import('../imagens.mjs');
+  assert.equal(pontuar('full moon night sky', 'A full moon in the night sky'), 4);
+  assert.equal(pontuar('full moon', ''), 0);
+});
+
+test('custo: Haiku não envia thinking', async () => {
+  const { custoEstimado, USO } = await import('../claude.mjs');
+  USO.entrada = 1_000_000; USO.saida = 1_000_000;
+  assert.equal(custoEstimado('claude-haiku-4-5'), 6);
+  USO.entrada = 0; USO.saida = 0;
+  assert.equal(CFG.modeloClaude, 'claude-haiku-4-5');
+});
+
+test('pesquisa prévia: fica com as 2 fontes mais relevantes e limita o texto a 5.000 caracteres', async () => {
+  const { pesquisarFontes } = await import('../fontes.mjs');
+  const { blocoFontesLidas, pedidoArtigo } = await import('../prompts.mjs');
+  const longo = (t) => `<html><body><p>${(t + ' ').repeat(400)}</p></body></html>`;
+  const paginas = {
+    'https://ex.org/a': longo('ice floats because ice is less dense than water and lake ice protects life'),
+    'https://ex.org/b': longo('density of ice and water hydrogen bonds ice floats lake'),
+    'https://ex.org/c': longo('receitas de bolo e dicas de culinária sem relação nenhuma com o tema escolhido hoje'),
+    'https://ex.org/d': longo('ice floats water density ice lake'),
+  };
+  const claude = async () => ({ texto: JSON.stringify({ termos: ['gelo', 'ice', 'density', 'water'], fontes: Object.keys(paginas).map((url) => ({ title: url, url })) }) });
+  const buscarFn = async (url) => ({ ok: true, status: 200, headers: { get: () => 'text/html' }, text: async () => paginas[url] });
+  const r = await pesquisarFontes({ linha: { Pauta: 'Por que o gelo flutua?', 'Palavra-chave': 'por que o gelo flutua' }, claude, buscarFn });
+  assert.equal(r.lidas.length, 2);
+  assert.ok(r.lidas.every((f) => f.texto.length <= 5000 && !/bolo/.test(f.texto)));
+  assert.match(blocoFontesLidas(r.lidas), /FONTES JÁ LIDAS/);
+  assert.match(pedidoArtigo({ linha: LINHA, linksPermitidos: [], fontesLidas: r.lidas }), /FONTE 1/);
+});
+
+test('pesquisa prévia: resposta ilegível segue sem fontes lidas', async () => {
+  const { pesquisarFontes } = await import('../fontes.mjs');
+  const r = await pesquisarFontes({ linha: LINHA, claude: async () => ({ texto: 'sem json' }), buscarFn: async () => { throw new Error('não deveria abrir'); } });
+  assert.deepEqual(r.lidas, []);
+});
