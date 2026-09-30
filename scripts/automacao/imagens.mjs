@@ -7,21 +7,44 @@ import { extrairJSON, chamarClaudeComImagem } from './claude.mjs';
 const LICENCA_PEXELS = { license: 'Licença Pexels', licenseUrl: 'https://www.pexels.com/license/' };
 const LICENCA_NASA = { license: 'Imagem da NASA (uso público)', licenseUrl: 'https://www.nasa.gov/nasa-brand-center/images-and-media/' };
 
-/** Candidatas do Pexels: [{ id, fonte, urlImagem, autor, urlCredito, ...licença }] */
+// Sem Claude aqui: o robô só chama a API do Pexels e pontua cada foto pela descrição (alt) que o próprio Pexels informa.
+const PROIBIDAS = /\b(blood|bloody|dead|corpse|death|dying|gun|weapon|knife|war|violence|kill|killed|injur\w*|wound\w*|skull|naked|nude|logo|brand)\b/i;
+const FALLBACK_CATEGORIA = {
+  'universo-e-espaco': 'night sky stars',
+  animais: 'wildlife nature',
+  'ciencia-e-fenomenos': 'science laboratory',
+  'corpo-humano': 'human anatomy model',
+  'psicologia-e-comportamento': 'thinking mind',
+  'tecnologia-ia-e-ciencia': 'technology computer',
+};
+const palavras = (t) => String(t).toLowerCase().split(/[^a-z]+/).filter((w) => w.length >= 3);
+/** Quantas palavras da busca aparecem na descrição da foto (0 se a descrição vier vazia). */
+export function pontuar(consulta, alt) {
+  const a = new Set(palavras(alt));
+  return palavras(consulta).filter((w) => a.has(w)).length;
+}
+
+/** Candidatas do Pexels: [{ id, fonte, urlImagem, autor, urlCredito, pontos, ...licença }] ordenadas da mais à menos adequada. */
 export async function buscarPexels(consulta, { chave = process.env.PEXELS_API_KEY, pagina = 1 } = {}) {
   if (!chave) throw new Error('PEXELS_API_KEY não definida');
-  const u = `https://api.pexels.com/v1/search?query=${encodeURIComponent(consulta)}&per_page=15&page=${pagina}&orientation=landscape`;
+  // orientation=landscape (cabe na capa 16:9), size=medium (12 MP, suficiente), 30 resultados para escolher
+  const u = `https://api.pexels.com/v1/search?query=${encodeURIComponent(consulta)}&per_page=30&page=${pagina}&orientation=landscape&size=medium`;
   const r = await buscar(u, { headers: { Authorization: chave } });
   if (!r.ok) throw new Error(`Pexels HTTP ${r.status}`);
   const j = await r.json();
-  return (j.photos ?? []).map((f) => ({
-    id: `pexels:${f.id}`,
-    fonte: 'Pexels',
-    urlImagem: f.src?.large2x || f.src?.large || f.src?.original,
-    autor: f.photographer || 'Pexels',
-    urlCredito: f.url,
-    ...LICENCA_PEXELS,
-  }));
+  return (j.photos ?? [])
+    .filter((f) => !PROIBIDAS.test(f.alt ?? ''))
+    .map((f, i) => ({
+      id: `pexels:${f.id}`,
+      fonte: 'Pexels',
+      urlImagem: f.src?.large2x || f.src?.large || f.src?.original,
+      autor: f.photographer || 'Pexels',
+      urlCredito: f.url,
+      pontos: pontuar(consulta, f.alt),
+      ordem: i,
+      ...LICENCA_PEXELS,
+    }))
+    .sort((x, y) => y.pontos - x.pontos || x.ordem - y.ordem);
 }
 
 /** Candidatas da NASA Image Library (sem chave). A URL da imagem é resolvida sob demanda. */
@@ -125,7 +148,7 @@ export async function comporCapa(buffer, titulo, logoPath = 'public/brand/logo-c
  * Retorna { capa, fotos } ou lança erro com o motivo.
  */
 export async function prepararImagens({ meta, categoria, slug, titulo, fontesFoto, usados, deps = {} }) {
-  const d = { pexels: buscarPexels, nasa: buscarNasa, baixar: baixarImagem, confere: fotoConfereComAlt, ...deps };
+  const d = { pexels: buscarPexels, nasa: buscarNasa, baixar: baixarImagem, confere: async () => ({ ok: true, motivo: '', altCorrigido: '' }), ...deps };
   const usadosLocal = new Set(usados);
   const buscarCandidatas = async (consulta) => {
     const lista = [];
@@ -141,15 +164,19 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
   };
   const escolher = async (consulta, alt) => {
     const motivos = [];
-    let tentativas = 0;
-    for (const c of await buscarCandidatas(consulta)) {
-      if (tentativas++ >= 4) break;
-      try {
-        const buf = await d.baixar(c);
-        const r = await d.confere(buf, alt, undefined, consulta);
-        if (r.ok) { usadosLocal.add(c.urlCredito); usadosLocal.add(c.id); return { c, buf, alt: r.altCorrigido || alt }; }
-        motivos.push(r.motivo);
-      } catch (e) { motivos.push(e.message); }
+    // busca do plano → só as 2 primeiras palavras → busca genérica da categoria
+    const consultas = [...new Set([consulta, String(consulta).split(/\s+/).slice(0, 2).join(' '), FALLBACK_CATEGORIA[categoria]].filter(Boolean))];
+    for (const q of consultas) {
+      let tentativas = 0;
+      for (const c of await buscarCandidatas(q)) {
+        if (tentativas++ >= 3) break;
+        try {
+          const buf = await d.baixar(c);
+          const r = await d.confere(buf, alt, undefined, q);
+          if (r.ok) { usadosLocal.add(c.urlCredito); usadosLocal.add(c.id); return { c, buf, alt: r.altCorrigido || alt }; }
+          motivos.push(r.motivo);
+        } catch (e) { motivos.push(e.message); }
+      }
     }
     throw new Error(`sem foto que confira com "${alt.slice(0, 50)}" (${motivos.slice(0, 2).join('; ') || 'sem candidatas'})`);
   };

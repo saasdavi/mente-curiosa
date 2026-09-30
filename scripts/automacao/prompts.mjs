@@ -39,7 +39,7 @@ FORMATO DA RESPOSTA (obrigatório, nada antes nem depois):
   "termosFonte": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês (ex.: lua, fases, moon, phases), que uma página sobre o tema contém; o robô usa para conferir se cada fonte trata do assunto"],
   "sources": [{"title": "Instituição — título da página", "url": "https://..."}],
   "imagens": {
-    "capa": {"busca": "busca em inglês, cena concreta fotografável", "alt": "português, descreve o que aparece, 25+ caracteres"},
+    "capa": {"busca": "inglês, 2 a 4 palavras, objeto ou cena concreta e comum (ex.: 'full moon night sky'); nunca conceito abstrato, pessoa, marca ou texto", "alt": "português, descreve o que aparece, 25+ caracteres"},
     "fotos": [{"busca": "inglês", "alt": "português, 25+ caracteres", "legenda": "liga a foto ao texto, 10+ caracteres", "secao": 2}],
     "extras": ["2 buscas em inglês, cenas diferentes da capa, para fundos dos pins"]
   },
@@ -94,7 +94,7 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca }) {
     ...linksPermitidos.map((l) => `- [${l.titulo}](${l.url})`),
     ``,
     saude ? `Assunto de saúde/mente: termine com a frase "${CFG.avisoSaude}" e não dê diagnóstico, dose ou tratamento.` : '',
-    `Tamanho: 1.300 a 1.500 palavras no corpo (o mínimo aceito é 1.200 e o máximo 1.600; conte antes de responder). Cada parágrafo com NO MÁXIMO 45 palavras; divida os maiores. Frases diretas.`,
+    `Tamanho: 1.400 a 1.800 palavras no corpo (o mínimo aceito é 1.200 e o máximo 2.000; conte antes de responder). Cada parágrafo com NO MÁXIMO 45 palavras; divida os maiores. Frases diretas.`,
     `O title deve ter no máximo 44 caracteres (com " | Mente Curiosa" nunca passa de 60).`,
     `A palavra-chave principal, exatamente como escrita acima ("${linha['Palavra-chave']}"), deve aparecer na primeira frase do primeiro parágrafo.`,
     `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,

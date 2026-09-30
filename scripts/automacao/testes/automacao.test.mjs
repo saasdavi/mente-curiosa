@@ -203,3 +203,17 @@ test('sem crédito na API não descarta o tema', () => {
   assert.equal(statusAposFalha({ tentativas: 5, motivo: m }), null);
   assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: 1753 palavras' }), 'revisar');
 });
+
+test('fotos sem Claude: pontua pela descrição do Pexels', async () => {
+  const { pontuar } = await import('../imagens.mjs');
+  assert.equal(pontuar('full moon night sky', 'A full moon in the night sky'), 4);
+  assert.equal(pontuar('full moon', ''), 0);
+});
+
+test('custo: Haiku não envia thinking', async () => {
+  const { custoEstimado, USO } = await import('../claude.mjs');
+  USO.entrada = 1_000_000; USO.saida = 1_000_000;
+  assert.equal(custoEstimado('claude-haiku-4-5'), 6);
+  USO.entrada = 0; USO.saida = 0;
+  assert.equal(CFG.modeloClaude, 'claude-haiku-4-5');
+});

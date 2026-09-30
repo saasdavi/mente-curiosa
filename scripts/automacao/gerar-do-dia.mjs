@@ -7,8 +7,8 @@ import { join } from 'node:path';
 import { CFG, FONTES_FOTO } from './config.mjs';
 import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
-import { chamarClaude, extrairJSON } from './claude.mjs';
-import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta, sistemaImagens, pedidoNovoPlanoImagens } from './prompts.mjs';
+import { chamarClaude, extrairJSON, USO, custoEstimado } from './claude.mjs';
+import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
 import { verificarFontes, termosDoAssunto } from './fontes.mjs';
 import { maiorSemelhanca, titulosParecidos } from './similaridade.mjs';
 import { checarTexto, checarFatos, checarCopia } from './gates.mjs';
@@ -90,7 +90,7 @@ export async function processarPauta(linha, acervo, deps = {}) {
     );
     if (aud.block.length) problemas.push(...aud.block.map((b) => `P2: ${b}`));
     if (aud.score < NOTA_MINIMA) problemas.push(`P2: nota ${aud.score} (mínimo ${NOTA_MINIMA}): ${aud.warn.join('; ')}`);
-    if (aud.wc > 1600) problemas.push(`P2: ${aud.wc} palavras (máximo 1.600)`);
+    if (aud.wc > 2000) problemas.push(`P2: ${aud.wc} palavras (máximo 2.000)`);
 
     // P3: fontes
     const novas = (meta.sources ?? []).filter((s) => !cacheFontes.has(s.url));
@@ -132,25 +132,14 @@ export async function processarPauta(linha, acervo, deps = {}) {
 
     historico.push({ volta, problemas: [...problemas] });
     if (!problemas.length) {
-      // P7: se nenhuma foto combinar, pede ao Claude um plano de fotos mais simples e tenta de novo (até 2 vezes)
-      let imagens;
-      for (let rodada = 0; rodada <= 2; rodada++) {
-        imagens = await d
-          .imagens({
-            meta, categoria: linha['Categoria (slug)'], slug: linha['Slug'], titulo: meta.title,
-            fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'],
-            usados: urlsDeCreditoUsadas(acervo),
-          })
-          .catch((e) => ({ erro: e.message }));
-        if (!imagens.erro || rodada === 2 || /PEXELS_API_KEY|Pexels HTTP (401|403)/i.test(imagens.erro)) break;
-        try {
-          const n = await d.claude({ system: sistemaImagens(), user: pedidoNovoPlanoImagens({ meta, titulo: meta.title, motivo: imagens.erro.slice(0, 400) }), maxTokens: 1500 });
-          const novo = extrairJSON(n.texto);
-          if (!novo?.capa?.busca || !novo?.capa?.alt || !Array.isArray(novo.fotos)) break;
-          meta.imagens = { ...novo, extras: novo.extras ?? meta.imagens.extras };
-          log(`P7: novo plano de fotos (rodada ${rodada + 1}) depois de: ${imagens.erro.slice(0, 120)}`);
-        } catch { break; }
-      }
+      // P7: fotos do Pexels escolhidas sem gastar tokens (busca simples → busca reduzida → busca genérica da categoria)
+      const imagens = await d
+        .imagens({
+          meta, categoria: linha['Categoria (slug)'], slug: linha['Slug'], titulo: meta.title,
+          fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'],
+          usados: urlsDeCreditoUsadas(acervo),
+        })
+        .catch((e) => ({ erro: e.message }));
       if (imagens.erro) return { ok: false, motivo: `P7: ${imagens.erro}`, historico };
       const frontmatter = montarFrontmatter({ linha, meta, imagens, fontesValidas: fontes });
       return { ok: true, frontmatter, corpo, imagens, nota: aud.score, historico, fontes };
@@ -307,11 +296,12 @@ async function main() {
   }
   if (falhasNaExecucao >= 3) abrirAviso('Geração parou: 3 artigos reprovados seguidos', 'Veja o resumo da execução e a coluna "PR / Log da automação".');
   else if (falhasNaExecucao > 0 && !dry) abrirAviso(`Falha ao gerar artigo(s) em ${hoje}`, `${falhasNaExecucao} pauta(s) reprovada(s). Veja o resumo da execução e a coluna "PR / Log da automação" da planilha.`);
+  log(`Uso da API nesta execução: ${USO.chamadas} chamada(s), ${USO.entrada} tokens lidos + ${USO.saida} escritos = US$ ${custoEstimado().toFixed(3)} (modelo ${CFG.modeloClaude})`);
   // Falha nunca pode parecer sucesso: o workflow fica vermelho e o GitHub avisa por e-mail.
   if (falhasNaExecucao > 0 && sucessos >= max) console.log(`::warning::${falhasNaExecucao} tema(s) reprovado(s) e substituído(s); meta do dia cumprida (${sucessos}/${max}).`);
   else if (falhasNaExecucao > 0) process.exitCode = 1;
   if (process.env.GITHUB_STEP_SUMMARY) {
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Artigos de ${hoje}\n\n| ID | Pauta | Resultado | PR / motivo | Auditoria |\n|---|---|---|---|---|\n${resumo.join('\n') || '| - | nenhuma pauta pendente | | | |'}\n`);
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Artigos de ${hoje}\n\nCusto estimado da API: US$ ${custoEstimado().toFixed(3)} (${USO.entrada} tokens lidos, ${USO.saida} escritos, modelo ${CFG.modeloClaude})\n\n| ID | Pauta | Resultado | PR / motivo | Auditoria |\n|---|---|---|---|---|\n${resumo.join('\n') || '| - | nenhuma pauta pendente | | | |'}\n`);
   }
 }
 
