@@ -12,11 +12,13 @@
     "build": "node scripts/audit-seo.mjs > /dev/null && astro build && node scripts/check-build.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "audit": "node scripts/audit-seo.mjs"
+    "audit": "node scripts/audit-seo.mjs",
+    "test:automacao": "node --test scripts/automacao/testes/automacao.test.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.1",
-    "astro": "7.3.5"
+    "astro": "7.3.5",
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
     "js-yaml": "^4.3.2"

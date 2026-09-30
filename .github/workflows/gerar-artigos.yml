@@ -1,0 +1,68 @@
+name: Gerar artigos do dia
+
+# Todo dia cedo: lê o calendário na planilha, escreve as pautas dos próximos dias, valida nos 9 portões
+# (AUDITORIA_AUTOMATICA.md) e abre o PR. Com a variável AUTO_MERGE=true, o que passar em tudo é publicado sozinho.
+on:
+  schedule:
+    - cron: '30 8 * * *' # 05:30 no horário de Brasília, antes do deploy diário das 06:05
+  workflow_dispatch:
+    inputs:
+      data:
+        description: 'Data de referência (AAAA-MM-DD). Vazio = hoje.'
+        required: false
+      max:
+        description: 'Máximo de artigos nesta execução'
+        required: false
+        default: '1'
+      dry_run:
+        description: 'Teste: escreve e valida, mas não grava nada'
+        type: boolean
+        default: false
+
+concurrency:
+  group: gerar-artigos
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+      SHEET_ID: ${{ secrets.SHEET_ID }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      AUTO_MERGE: ${{ vars.AUTO_MERGE }}
+      PAUSAR: ${{ vars.PAUSAR }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Testes da automação
+        run: npm run test:automacao
+
+      - name: Marcar como publicado o que já chegou na data
+        run: node scripts/automacao/atualizar-status.mjs
+        continue-on-error: true
+
+      - name: Gerar os artigos
+        run: |
+          ARGS="--max ${{ inputs.max || '4' }}"
+          if [ -n "${{ inputs.data }}" ]; then ARGS="$ARGS --data ${{ inputs.data }}"; fi
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          node scripts/automacao/gerar-do-dia.mjs $ARGS
