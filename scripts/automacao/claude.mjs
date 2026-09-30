@@ -14,7 +14,10 @@ export async function chamarClaude({ system, user, maxTokens = CFG.maxTokensReda
   const j = await r.json();
   if (!r.ok) throw new Error(`API do Claude: ${r.status} ${JSON.stringify(j).slice(0, 400)}`);
   const texto = (j.content ?? []).filter((b) => b.type === 'text').map((b) => b.text).join('');
-  if (!texto) throw new Error('resposta vazia do Claude');
+  if (!texto) {
+    const tipos = (j.content ?? []).map((b) => b.type).join(',') || 'nenhum';
+    throw new Error(`resposta vazia do Claude (modelo=${modelo}, stop_reason=${j.stop_reason}, blocos=${tipos}, uso=${JSON.stringify(j.usage ?? {})})`);
+  }
   return { texto, uso: j.usage ?? {}, parou: j.stop_reason };
 }
 
