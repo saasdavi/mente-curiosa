@@ -5,7 +5,7 @@ export const CFG = {
   abaCalendario: 'pautas-modelo_calendario',
   intervaloCalendario: 'A1:Z1200',
   horizonteDias: 2, // gera artigos com até N dias de antecedência, para dar tempo de revisar o PR
-  maxPorExecucao: 4,
+  maxPorExecucao: 2,
   modeloClaude: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
   maxTokensRedator: 7000,
   voltasMax: 3, // reescritas por auditoria ou validador (4 tentativas no total)
