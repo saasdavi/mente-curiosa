@@ -4,7 +4,7 @@ name: Gerar artigos do dia
 # (AUDITORIA_AUTOMATICA.md) e abre o PR. Com a variável AUTO_MERGE=true, o que passar em tudo é publicado sozinho.
 on:
   schedule:
-    - cron: '30 8 * * *' # 05:30 no horário de Brasília, antes do deploy diário das 06:05
+    - cron: '30 8 * * *' # 05:30 no horário de Brasília, os deploys são às 12:05 e 18:05
   workflow_dispatch:
     inputs:
       data:

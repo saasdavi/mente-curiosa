@@ -23,8 +23,8 @@ export function montarFrontmatter({ linha, meta, imagens, fontesValidas, autor =
     tags: meta.tags,
     keyword: linha['Palavra-chave'],
     author: autor,
-    datePublished: linha.dataISO,
-    dateModified: linha.dataISO,
+    datePublished: dataHoraPublicacao(linha),
+    dateModified: dataHoraPublicacao(linha),
     featuredImage: `${dir}/${imagens.capa.arquivo}`,
     featuredImageAlt: imagens.capa.alt,
     sources: fontesValidas.map((f) => ({ title: f.title, url: f.url })),
@@ -67,6 +67,13 @@ export function gravarArtigo({ raiz = '.', frontmatter, corpo, imagens }) {
   return criados;
 }
 
+/** Horário de saída do artigo no dia (fuso de Brasília): 1º do dia às 12:00, 2º às 18:00; os demais alternam. */
+export function dataHoraPublicacao(linha) {
+  const ordem = Number(linha['Ordem do Dia']) || 1;
+  const hora = CFG.horariosPublicacao[(ordem - 1) % CFG.horariosPublicacao.length];
+  return `${linha.dataISO}T${hora}:00-03:00`;
+}
+
 /** Lê os artigos existentes: slugs, ids, keywords, datas, textos e URLs de crédito já usadas. */
 export function lerAcervo(raiz = '.') {
   const dir = join(raiz, 'src/content/artigos');
@@ -78,6 +85,7 @@ export function lerAcervo(raiz = '.') {
     if (!m) continue;
     const data = yaml.load(m[1]) ?? {};
     // O YAML entrega datas sem aspas como objeto Date; padroniza para AAAA-MM-DD.
+    if (data.datePublished) data.datePublishedCompleta = data.datePublished instanceof Date ? data.datePublished.toISOString() : String(data.datePublished);
     for (const k of ['datePublished', 'dateModified']) {
       if (data[k] instanceof Date) data[k] = data[k].toISOString().slice(0, 10);
       else if (data[k]) data[k] = String(data[k]).slice(0, 10);
