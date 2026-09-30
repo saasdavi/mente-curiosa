@@ -55,7 +55,7 @@ FORMATO DA RESPOSTA (obrigatório, nada antes nem depois):
 
 Regras do formato:
 - "fotos": 2 fotos (1 só se o texto ficar abaixo de 1.200 palavras). "secao" = número da seção ## após a qual a foto entra (1 = primeira seção ##). Não repita seção.
-- "sources": 3 fontes primárias REAIS que você conhece com segurança (URLs estáveis de instituições, universidades, periódicos, órgãos públicos). Cada URL será aberta por um robô; link que não abrir é descartado. Se não tiver certeza de um link, use a página inicial da seção da instituição sobre o assunto, nunca invente caminho.
+- "sources": 3 fontes primárias REAIS que você conhece com segurança (URLs estáveis de instituições, universidades, periódicos, órgãos públicos). Cada URL será aberta por um robô; link que não abrir é descartado. Cada fonte deve ser uma página ESPECÍFICA do assunto do artigo, com texto explicativo (por exemplo science.nasa.gov/moon/moon-phases/, esa.int, britannica.com/science/..., scielo.br, fiocruz.br); nunca a home nem uma página geral ou de notícias: o robô lê o texto da página e reprova a fonte que não trate do tema. Se não tiver certeza do caminho exato, prefira uma página de tema amplo do mesmo assunto, nunca invente caminho.
 - Links internos: use SOMENTE os listados no pedido, no formato [texto](/slug/). Mínimo 2.
 - Não use H1 (#) no corpo.
 `.trim();

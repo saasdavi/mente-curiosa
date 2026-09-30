@@ -15,13 +15,48 @@ export function htmlParaTexto(html) {
     .trim();
 }
 
+const semAcento = (t) => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const STOP = new Set(['por', 'que', 'como', 'uma', 'para', 'com', 'dos', 'das', 'tem', 'foi', 'sao', 'seu', 'sua', 'mais', 'ser', 'ter', 'nos', 'nas', 'isso', 'esse', 'essa', 'qual', 'quais', 'onde', 'quando']);
+
+/** Termos que uma fonte precisa conter para tratar do assunto (vêm da pauta e da palavra-chave). */
+export function termosDoAssunto(...textos) {
+  const t = semAcento(textos.join(' ')).replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((w) => w.length >= 3 && !STOP.has(w));
+  return [...new Set(t)];
+}
+
+/** Quantos termos distintos aparecem e quantas vezes no total. */
+export function relevancia(texto, termos) {
+  const base = semAcento(texto);
+  let distintos = 0;
+  let total = 0;
+  for (const t of termos) {
+    const n = base.split(t).length - 1;
+    if (n > 0) { distintos++; total += n; }
+  }
+  return { distintos, total };
+}
+
+/** Janela de ~3500 caracteres em volta da região com mais termos (em vez do começo da página, cheio de menu). */
+export function trechoRelevante(texto, termos, tam = 3500) {
+  if (texto.length <= tam || !termos.length) return texto.slice(0, tam);
+  const base = semAcento(texto);
+  let melhor = 0;
+  let melhorPts = -1;
+  for (let ini = 0; ini < texto.length; ini += 500) {
+    const janela = base.slice(ini, ini + tam);
+    const pts = termos.reduce((n, t) => n + (janela.includes(t) ? 1 : 0) * 10 + (janela.split(t).length - 1), 0);
+    if (pts > melhorPts) { melhorPts = pts; melhor = ini; }
+  }
+  return texto.slice(melhor, melhor + tam);
+}
+
 async function abrir(url, buscarFn) {
   const r = await buscarFn(url, { headers: { 'User-Agent': UA, Accept: 'text/html,application/pdf,*/*' }, redirect: 'follow', tentativas: 2, timeoutMs: 20000 });
   return r;
 }
 
 /** Retorna { validas: [{title,url,texto,lido}], invalidas: [{url,motivo}] }. */
-export async function verificarFontes(fontes, buscarFn) {
+export async function verificarFontes(fontes, buscarFn, termos = []) {
   const validas = [];
   const invalidas = [];
   const vistos = new Set();
@@ -42,7 +77,16 @@ export async function verificarFontes(fontes, buscarFn) {
       const r = await abrir(f.url, buscarFn);
       const tipo = r.headers.get('content-type') || '';
       if (r.ok) {
-        const texto = /html/i.test(tipo) ? htmlParaTexto(await r.text()).slice(0, 3500) : '';
+        const completo = /html/i.test(tipo) ? htmlParaTexto(await r.text()) : '';
+        if (completo.length >= 300 && termos.length) {
+          const rel = relevancia(completo, termos);
+          const minimo = Math.max(1, Math.ceil(termos.length * 0.6));
+          if (rel.distintos < minimo || rel.total < 3) {
+            invalidas.push({ url: f.url, motivo: `a página não trata do assunto (só ${rel.distintos}/${termos.length} termos: ${termos.join(', ')}); use uma página ESPECÍFICA sobre o tema, não a home nem uma página geral` });
+            continue;
+          }
+        }
+        const texto = completo ? trechoRelevante(completo, termos) : '';
         validas.push({ title: f.title, url: f.url, texto, lido: Boolean(texto) });
       } else if ([401, 403, 429, 999].includes(r.status) && confiavel(host)) {
         validas.push({ title: f.title, url: f.url, texto: '', lido: false });

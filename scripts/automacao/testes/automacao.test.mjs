@@ -105,3 +105,19 @@ test('validador devolve: tenta de novo e, persistindo, reprova sem publicar', as
   assert.match(r.motivo, /P5/);
   assert.equal(d.chamadas.filter((c) => c === 'redator').length, 3); // 1 + 2 voltas
 });
+
+test('P3: fonte precisa tratar do assunto e o trecho enviado ao validador vem da região relevante', async () => {
+  const { termosDoAssunto, relevancia, trechoRelevante, verificarFontes } = await import('../fontes.mjs');
+  const termos = termosDoAssunto('Por que a lua tem fases?', 'por que a lua tem fases');
+  assert.deepEqual(termos, ['lua', 'fases']);
+  assert.equal(relevancia('Crew-13 Starliner DAVINCI menu', termos).distintos, 0);
+  const lixo = 'menu '.repeat(900);
+  const conteudo = `${lixo} As fases da Lua acontecem porque a Lua reflete a luz do Sol. ${'A lua muda de fase. '.repeat(10)}`;
+  assert.match(trechoRelevante(conteudo, termos), /fases da Lua/);
+  const fake = (texto) => async () => ({ ok: true, status: 200, headers: { get: () => 'text/html' }, text: async () => `<p>${texto}</p>` });
+  const geral = await verificarFontes([{ title: 'x', url: 'https://www.nasa.gov/' }], fake('Crew-13 Starliner '.repeat(40)), termos);
+  assert.equal(geral.validas.length, 0);
+  assert.match(geral.invalidas[0].motivo, /não trata do assunto/);
+  const boa = await verificarFontes([{ title: 'x', url: 'https://science.nasa.gov/moon/moon-phases/' }], fake(conteudo), termos);
+  assert.equal(boa.validas.length, 1);
+});
