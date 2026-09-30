@@ -5,7 +5,7 @@ import { hojeBR, somarDias, paraISO, slugify } from '../util.mjs';
 import { letraColuna, linhasDoCalendario } from '../sheets.mjs';
 import { checarFatos, checarCopia, checarSeguranca, checarLinksInternos, checarMeta, percentualCopiado } from '../gates.mjs';
 import { maiorSemelhanca, titulosParecidos } from '../similaridade.mjs';
-import { selecionarPautas, falhasRecentes, processarPauta } from '../gerar-do-dia.mjs';
+import { selecionarPautas, falhasRecentes, processarPauta, statusAposFalha } from '../gerar-do-dia.mjs';
 import { lerResposta } from '../prompts.mjs';
 import { extrairJSON } from '../claude.mjs';
 import { lerAcervo } from '../artigo.mjs';
@@ -196,4 +196,10 @@ test('horário de publicação: 1º do dia 12:00, 2º 18:00', async () => {
   assert.equal(jaPassouDoHorario('a', info, Date.parse('2026-10-01T17:00:00-03:00')), false);
   assert.equal(jaPassouDoHorario('a', info, Date.parse('2026-10-01T18:05:00-03:00')), true);
   assert.equal(jaPassouDoHorario('b', info), true);
+});
+
+test('sem crédito na API não descarta o tema', () => {
+  const m = 'API do Claude: 400 {"error":{"message":"Your credit balance is too low to access the Anthropic API."}}';
+  assert.equal(statusAposFalha({ tentativas: 5, motivo: m }), null);
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: 1753 palavras' }), 'revisar');
 });

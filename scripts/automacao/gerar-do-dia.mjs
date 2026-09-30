@@ -222,7 +222,10 @@ export function falhasRecentes(linhas, hoje, dias = 7) {
  * o próximo tema. Falha de infraestrutura (API fora do ar, rede) não queima o tema: ele continua "planejado".
  */
 export const INFRA = /API do Claude: (429|5\d\d)|fetch failed|timeout|ECONN|ETIMEDOUT|não abriu|rate.?limit|overloaded/i;
+// Problema de conta/chave (sem crédito, chave inválida): nunca é culpa do tema; o tema fica "planejado" e a execução para.
+export const FATAL = /credit balance|invalid x-api-key|authentication_error|permission_error|billing/i;
 export function statusAposFalha({ tentativas, motivo }) {
+  if (FATAL.test(String(motivo))) return null;
   if (INFRA.test(String(motivo))) return tentativas >= 3 ? 'revisar' : null; // null = mantém "planejado"
   return 'revisar';
 }
@@ -292,6 +295,13 @@ async function main() {
       if (novoStatus) log(`Tema ${linha['ID Artigo']} reprovado: sai da fila (status "${novoStatus}"); passando para o próximo tema.`);
       resumo.push(`| ${linha['ID Artigo']} | ${linha['Pauta']} | FALHA | ${r.motivo.slice(0, 120)} | - |`);
       log(`FALHA: ${r.motivo}`);
+      if (FATAL.test(String(r.motivo))) {
+        if (!dry) await gravarCelulas({ sheetId: process.env.SHEET_ID, token, colunas, atualizacoes: atualizacoes.map((a) => ({ ...a, linha: linha._linha })) });
+        log('Parando: problema na conta ou chave da API (ex.: sem crédito). Nenhum tema foi descartado.');
+        abrirAviso('Geração parou: sem crédito ou chave da API inválida', 'A API da Anthropic recusou a chamada (crédito insuficiente ou chave inválida). Recarregue o crédito em console.anthropic.com > Plans & Billing e rode o workflow de novo. Nenhum tema foi descartado.');
+        resumo.push('| - | (parou: problema na conta/chave da API) | | | |');
+        break;
+      }
     }
     if (!dry) await gravarCelulas({ sheetId: process.env.SHEET_ID, token, colunas, atualizacoes: atualizacoes.map((a) => ({ ...a, linha: linha._linha })) });
   }
