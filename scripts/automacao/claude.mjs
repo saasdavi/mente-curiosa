@@ -31,7 +31,7 @@ export function extrairJSON(texto) {
 }
 
 /** Pergunta ao Claude sobre uma imagem (JPEG em base64). Usado para conferir se a foto bate com o alt. */
-export async function chamarClaudeComImagem({ system, pergunta, imagemBase64, maxTokens = 300, modelo = CFG.modeloClaude }) {
+export async function chamarClaudeComImagem({ system, pergunta, imagemBase64, maxTokens = 700, modelo = CFG.modeloClaude }) {
   const chave = process.env.ANTHROPIC_API_KEY;
   if (!chave) throw new Error('ANTHROPIC_API_KEY não definida');
   const r = await buscar('https://api.anthropic.com/v1/messages', {

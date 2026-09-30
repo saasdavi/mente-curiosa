@@ -159,3 +159,23 @@ export function lerResposta(texto) {
   const meta = JSON.parse(jsonTxt);
   return { meta, corpo: m[2].trim() };
 }
+
+export function sistemaImagens() {
+  return 'Você planeja as imagens de um artigo de blog de ciência para o grande público. Responda SOMENTE com JSON no formato do campo "imagens" (capa, fotos, extras). As buscas são em inglês, simples e genéricas (1 a 4 palavras, cena comum que existe em bancos de fotos gratuitos). Evite cenas de violência, pessoas em destaque, marcas e texto.';
+}
+
+export function pedidoNovoPlanoImagens({ meta, titulo, motivo }) {
+  return [
+    `Artigo: ${titulo}`,
+    `Tags: ${(meta.tags ?? []).join(', ')}`,
+    '',
+    'O plano de imagens anterior falhou: nenhuma foto do banco combinou com as legendas.',
+    `Motivo: ${motivo}`,
+    '',
+    'Plano anterior:',
+    JSON.stringify(meta.imagens, null, 1),
+    '',
+    'Faça um NOVO plano com buscas mais simples e genéricas (ex.: "savanna landscape", "grass field", "forest food web"), mantendo a mesma quantidade de fotos e as mesmas seções. Cada alt em português (25+ caracteres) deve descrever uma cena que certamente aparece numa foto comum. Formato:',
+    '{"capa": {"busca": "...", "alt": "..."}, "fotos": [{"busca": "...", "alt": "...", "legenda": "...", "secao": 2}], "extras": ["...", "..."]}',
+  ].join('\n');
+}

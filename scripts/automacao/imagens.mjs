@@ -56,19 +56,32 @@ export async function baixarImagem(cand, buscarFn = buscar) {
   return buf;
 }
 
-/** Pede à IA para olhar a foto e confirmar que ela mostra o que o alt descreve. */
-export async function fotoConfereComAlt(buffer, alt, visaoFn = chamarClaudeComImagem) {
+/**
+ * Pede à IA para olhar a foto. Devolve { ok, motivo, altCorrigido }.
+ * - foto adequada ao tema mas com legenda imprecisa: ok=true e altCorrigido descrevendo só o que aparece;
+ * - foto sem relação com o tema, com pessoas reconhecíveis, marcas, texto legível ou violência explícita: ok=false.
+ */
+export async function fotoConfereComAlt(buffer, alt, visaoFn = chamarClaudeComImagem, tema = '') {
   const jpeg = await sharp(buffer).resize(900, 900, { fit: 'inside' }).jpeg({ quality: 70 }).toBuffer();
   const texto = await visaoFn({
-    system: 'Você confere fotos para um blog de ciência. Responda SOMENTE com JSON: {"ok": true|false, "motivo": "..."}.',
-    pergunta: `Texto alternativo proposto: "${alt}"\n\nA foto mostra o que o texto descreve, sem pessoas reconhecíveis, marcas, logos ou texto legível que atrapalhe? Se o texto descreve coisas que não aparecem, responda ok=false.`,
+    system: 'Você confere fotos para um blog de ciência para o grande público. Responda SOMENTE com JSON: {"ok": true|false, "motivo": "curto", "alt_corrigido": "texto alternativo em português ou vazio"}.',
+    pergunta: [
+      `Texto alternativo proposto: "${alt}"`,
+      tema ? `Tema buscado: "${tema}"` : '',
+      '',
+      'Regras:',
+      '- ok=false se a foto não tem relação com o tema, mostra pessoa reconhecível, marca, logo, texto legível que atrapalhe, ou violência explícita (sangue, animal morto ou ferido em destaque, cena de ataque).',
+      '- Se a foto serve ao tema mas o texto alternativo está impreciso, responda ok=true e escreva em alt_corrigido um texto em português (25 a 140 caracteres) que descreva somente o que aparece na foto.',
+      '- Se o texto alternativo já está correto, ok=true e alt_corrigido vazio.',
+    ].filter((x) => x !== '').join('\n'),
     imagemBase64: jpeg.toString('base64'),
   });
   try {
     const j = extrairJSON(texto);
-    return { ok: j.ok === true, motivo: String(j.motivo ?? '') };
+    const altCorrigido = String(j.alt_corrigido ?? '').trim();
+    return { ok: j.ok === true, motivo: String(j.motivo ?? ''), altCorrigido: altCorrigido.length >= 25 ? altCorrigido : '' };
   } catch {
-    return { ok: false, motivo: 'resposta da IA ilegível' };
+    return { ok: false, motivo: 'resposta da IA ilegível', altCorrigido: '' };
   }
 }
 
@@ -133,8 +146,8 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
       if (tentativas++ >= 4) break;
       try {
         const buf = await d.baixar(c);
-        const r = await d.confere(buf, alt);
-        if (r.ok) { usadosLocal.add(c.urlCredito); usadosLocal.add(c.id); return { c, buf }; }
+        const r = await d.confere(buf, alt, undefined, consulta);
+        if (r.ok) { usadosLocal.add(c.urlCredito); usadosLocal.add(c.id); return { c, buf, alt: r.altCorrigido || alt }; }
         motivos.push(r.motivo);
       } catch (e) { motivos.push(e.message); }
     }
@@ -146,17 +159,17 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
   const capa = {
     arquivo: `${slug}.webp`,
     buffer: await comporCapa(cap.buf, titulo),
-    alt: meta.imagens.capa.alt,
+    alt: cap.alt,
     credito: credito(cap.c),
   };
   const fotos = [];
   for (const f of meta.imagens.fotos) {
     const e = await escolher(f.busca, f.alt);
-    const nome = slugify(f.alt).split('-').slice(0, 7).join('-') || `foto-${fotos.length + 1}`;
+    const nome = slugify(e.alt).split('-').slice(0, 7).join('-') || `foto-${fotos.length + 1}`;
     fotos.push({
       arquivo: `${nome}.webp`,
       buffer: await fotoCorpo(e.buf),
-      alt: f.alt,
+      alt: e.alt,
       legenda: f.legenda,
       secao: f.secao,
       credito: credito(e.c),

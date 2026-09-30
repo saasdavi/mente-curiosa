@@ -159,3 +159,23 @@ test('no ar: só confirma se a página abre, tem título, texto, imagens que car
   const foraSitemap = await conferirPagina({ url, titulo: 'Por que a lua tem fases?', buscarFn: site(resp(200, 'text/html', html('/images/x/foto1.jpg'))), sitemapTexto: '<loc>outra</loc>' });
   assert.match(foraSitemap.problemas.join(' '), /sitemap/);
 });
+
+test('P7: usa a legenda corrigida pela IA e tenta um novo plano de fotos quando nada combina', async () => {
+  const sharp = (await import('sharp')).default;
+  const { prepararImagens, fotoConfereComAlt } = await import('../imagens.mjs');
+  const png = await sharp({ create: { width: 800, height: 600, channels: 3, background: '#88aa88' } }).png().toBuffer();
+  const meta = { imagens: { capa: { busca: 'lion zebra', alt: 'Leoa observando uma zebra na savana africana' }, fotos: [], extras: [] } };
+  const cand = { id: 'pexels:1', fonte: 'Pexels', urlImagem: 'x', autor: 'A', urlCredito: 'u1', license: 'L', licenseUrl: 'lu' };
+  const deps = {
+    pexels: async () => [cand], nasa: async () => [], baixar: async () => png,
+    confere: async () => ({ ok: true, motivo: '', altCorrigido: 'Leoa segurando uma zebra jovem no chão da savana seca' }),
+  };
+  const r = await prepararImagens({ meta, categoria: 'animais', slug: 'x', titulo: 'Cadeia alimentar', fontesFoto: ['pexels'], usados: new Set(), deps });
+  assert.match(r.capa.alt, /Leoa segurando/);
+
+  // a IA de visão entende o JSON novo e ignora alt_corrigido curto demais
+  const visao = async () => '{"ok": true, "motivo": "", "alt_corrigido": "curto"}';
+  assert.equal((await fotoConfereComAlt(png, 'x', visao)).altCorrigido, '');
+  const visao2 = async () => '{"ok": false, "motivo": "violência explícita"}';
+  assert.equal((await fotoConfereComAlt(png, 'x', visao2)).ok, false);
+});
