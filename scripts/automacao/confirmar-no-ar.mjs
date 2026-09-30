@@ -11,6 +11,11 @@ import { lerAcervo } from './artigo.mjs';
 const UA = 'Mozilla/5.0 (compatible; MenteCuriosaBot/1.0; +https://www.mentecuriosa.blog)';
 const PALAVRAS_MIN = 900;
 
+/** A data que vale é a do próprio artigo no blog (pode ter sido ajustada); a da planilha é só o plano. */
+export function dataEfetiva(slug, dataPlanilha, info) {
+  return info.get(slug)?.data || dataPlanilha;
+}
+
 const absoluto = (src, base) => { try { return new URL(src, base).href; } catch { return null; } };
 
 /**
@@ -71,7 +76,9 @@ async function main() {
   const hoje = hojeBR(CFG.fusoHorario);
   const { linhas, colunas, token } = await lerCalendario({ sheetId: process.env.SHEET_ID, credenciais: process.env.GOOGLE_SHEETS_CREDENTIALS });
   const status = (l) => String(l['Status']).trim().toLowerCase();
-  const alvo = linhas.filter((l) => ['agendado', 'em revisão', 'em revisao'].includes(status(l)) && l.dataISO && l.dataISO <= hoje && l['Slug']);
+  const info = new Map(lerAcervo().map((a) => [a.data.slug, { titulo: a.data.title, data: String(a.data.datePublished).slice(0, 10) }]));
+  const dataReal = (l) => dataEfetiva(l['Slug'], l.dataISO, info);
+  const alvo = linhas.filter((l) => ['agendado', 'em revisão', 'em revisao'].includes(status(l)) && l['Slug'] && dataReal(l) && dataReal(l) <= hoje);
   log(`Hoje ${hoje} | artigos a confirmar no ar: ${alvo.length}`);
   if (!alvo.length) return;
 
@@ -79,18 +86,17 @@ async function main() {
   let sitemapTexto = '';
   try { sitemapTexto = await (await buscar(`${CFG.siteUrl}/sitemap.xml`, { headers: { 'User-Agent': UA }, tentativas: 3 })).text(); } catch { log('aviso: não consegui ler o sitemap.xml'); }
 
-  const titulos = new Map(lerAcervo().map((a) => [a.data.slug, a.data.title]));
   const atualizacoes = [];
   const resumo = [];
   let falhas = 0;
   for (const l of alvo) {
     const url = `${CFG.siteUrl}/${l['Slug']}/`;
-    const res = await conferirPagina({ url, titulo: titulos.get(l['Slug']) ?? '', sitemapTexto });
+    const res = await conferirPagina({ url, titulo: info.get(l['Slug'])?.titulo ?? '', sitemapTexto });
     if (res.ok) {
       log(`NO AR ✓ ${l['ID Artigo']} ${url} (${res.palavras} palavras, ${res.imagens} imagens)`);
       atualizacoes.push(
         { linha: l._linha, coluna: 'Status', valor: 'publicado' },
-        { linha: l._linha, coluna: 'Data Publicação', valor: l.dataISO },
+        { linha: l._linha, coluna: 'Data Publicação', valor: dataReal(l) },
         { linha: l._linha, coluna: 'PR / Log da automação', valor: `NO AR ✓ ${hoje}: ${url}` },
       );
       resumo.push(`| ${l['ID Artigo']} | [${l['Slug']}](${url}) | publicado ✓ | ${res.palavras} palavras, ${res.imagens} imagens |`);
@@ -101,7 +107,7 @@ async function main() {
       atualizacoes.push({ linha: l._linha, coluna: 'PR / Log da automação', valor: `${aguardandoRevisao ? 'AGUARDANDO MERGE' : 'NÃO CONFIRMADO'} ${hoje}: ${motivo}`.slice(0, 480) });
       resumo.push(`| ${l['ID Artigo']} | [${l['Slug']}](${url}) | ${aguardandoRevisao ? 'aguardando merge' : 'NÃO CONFIRMADO'} | ${motivo.slice(0, 160)} |`);
       if (!aguardandoRevisao) { falhas++; abrirAviso(`Artigo não confirmado no ar: ${l['Slug']}`, `${url}\n\n${motivo}\n\nO status da planilha continua "agendado" até o artigo abrir corretamente.`); }
-      else if (l.dataISO < hoje) abrirAviso(`Artigo atrasado aguardando merge: ${l['Slug']}`, `A data de publicação (${l.dataISO}) já passou e o PR ainda não foi mesclado.`);
+      else if (dataReal(l) < hoje) abrirAviso(`Artigo atrasado aguardando merge: ${l['Slug']}`, `A data de publicação (${dataReal(l)}) já passou e o PR ainda não foi mesclado.`);
     }
   }
   if (!soConferir) await gravarCelulas({ sheetId: process.env.SHEET_ID, token, colunas, atualizacoes });

@@ -179,3 +179,10 @@ test('P7: usa a legenda corrigida pela IA e tenta um novo plano de fotos quando 
   const visao2 = async () => '{"ok": false, "motivo": "violência explícita"}';
   assert.equal((await fotoConfereComAlt(png, 'x', visao2)).ok, false);
 });
+
+test('no ar: vale a data real do artigo no blog, não a da planilha', async () => {
+  const { dataEfetiva } = await import('../confirmar-no-ar.mjs');
+  const info = new Map([['a', { titulo: 'A', data: '2026-09-30' }]]);
+  assert.equal(dataEfetiva('a', '2026-10-02', info), '2026-09-30');
+  assert.equal(dataEfetiva('b', '2026-10-02', info), '2026-10-02');
+});
