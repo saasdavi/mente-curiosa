@@ -204,6 +204,15 @@ export function falhasRecentes(linhas, hoje, dias = 7) {
   }
   return n;
 }
+/**
+ * Regra anti-loop: uma pauta que o auditor reprovou sai da fila (status "revisar") e o robô passa para
+ * o próximo tema. Falha de infraestrutura (API fora do ar, rede) não queima o tema: ele continua "planejado".
+ */
+export const INFRA = /API do Claude: (429|5\d\d)|fetch failed|timeout|ECONN|ETIMEDOUT|não abriu|rate.?limit|overloaded/i;
+export function statusAposFalha({ tentativas, motivo }) {
+  if (INFRA.test(String(motivo))) return tentativas >= 3 ? 'revisar' : null; // null = mantém "planejado"
+  return 'revisar';
+}
 const tentativasAnteriores = (l) => Number(String(l['PR / Log da automação'] || '').match(/tentativa (\d+)/)?.[1] ?? 0);
 
 // ---------------------------------------------------------------- principal
@@ -225,11 +234,14 @@ async function main() {
   let branches = [];
   try { branches = sh('git', ['ls-remote', '--heads', 'origin', 'artigo/*']).split('\n').map((l) => l.split('\t')[1] ?? ''); } catch { /* ok */ }
   const acervo = lerAcervo();
-  const pautas = selecionarPautas({ linhas, acervo, hoje, horizonte, max, branches });
-  log(`Hoje ${hoje} | pautas selecionadas: ${pautas.length}`);
+  const RESERVA = 3; // temas extras para trocar quando um for reprovado
+  const pautas = selecionarPautas({ linhas, acervo, hoje, horizonte, max: max + RESERVA, branches });
+  log(`Hoje ${hoje} | meta: ${max} artigo(s) | candidatas (com reserva): ${pautas.length}`);
+  let sucessos = 0;
 
   let falhasNaExecucao = 0;
   for (const linha of pautas) {
+    if (sucessos >= max) break;
     if (falhasNaExecucao >= 3) { log('Freio: 3 falhas nesta execução; parando.'); break; }
     log(`\n=== ${linha['ID Artigo']} ${linha['Pauta']} (${linha.dataISO}) ===`);
     let r;
@@ -240,16 +252,19 @@ async function main() {
       if (pub.ok) {
         const status = pub.mesclado ? (linha.dataISO > hoje ? 'agendado' : 'publicado') : 'em revisão';
         atualizacoes.push({ coluna: 'Status', valor: dry ? linha['Status'] : status }, { coluna: 'PR / Log da automação', valor: pub.pr ?? pub.nota });
+        sucessos++;
         resumo.push(`| ${linha['ID Artigo']} | ${linha['Pauta']} | ${status} | ${pub.pr ?? '-'} | nota ${r.nota} |`);
       } else { r = { ok: false, motivo: pub.motivo, historico: r.historico }; }
     }
     if (!r.ok) {
       falhasNaExecucao++;
       const n = tentativasAnteriores(linha) + 1;
+      const novoStatus = statusAposFalha({ tentativas: n, motivo: r.motivo });
       atualizacoes.push(
         { coluna: 'PR / Log da automação', valor: `FALHA ${hoje} (tentativa ${n}): ${r.motivo}`.slice(0, 480) },
-        ...(n >= 2 ? [{ coluna: 'Status', valor: 'revisar' }] : []),
+        ...(novoStatus ? [{ coluna: 'Status', valor: novoStatus }] : []),
       );
+      if (novoStatus) log(`Tema ${linha['ID Artigo']} reprovado: sai da fila (status "${novoStatus}"); passando para o próximo tema.`);
       resumo.push(`| ${linha['ID Artigo']} | ${linha['Pauta']} | FALHA | ${r.motivo.slice(0, 120)} | - |`);
       log(`FALHA: ${r.motivo}`);
     }

@@ -121,3 +121,10 @@ test('P3: fonte precisa tratar do assunto e o trecho enviado ao validador vem da
   const boa = await verificarFontes([{ title: 'x', url: 'https://science.nasa.gov/moon/moon-phases/' }], fake(conteudo), termos);
   assert.equal(boa.validas.length, 1);
 });
+
+test('anti-loop: reprovação de conteúdo tira o tema da fila; falha de API não queima o tema', async () => {
+  const { statusAposFalha } = await import('../gerar-do-dia.mjs');
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: nota 80 (mínimo 85)' }), 'revisar');
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'formato: API do Claude: 529 overloaded' }), null);
+  assert.equal(statusAposFalha({ tentativas: 3, motivo: 'formato: API do Claude: 529 overloaded' }), 'revisar');
+});
