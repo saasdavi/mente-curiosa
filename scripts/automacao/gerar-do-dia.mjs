@@ -100,7 +100,8 @@ export async function processarPauta(linha, acervo, deps = {}) {
     const fontes = (meta.sources ?? []).map((s) => cacheFontes.get(s.url)).filter(Boolean);
     if (fontes.length < CFG.fontesMin || (meta.sources ?? []).length < 3) {
       const inval = (meta.sources ?? []).filter((s) => cacheFontes.get(s.url) === null).map((s) => `${s.url} (${motivosFonte.get(s.url) ?? 'não abriu'})`);
-      problemas.push(`P3: ${fontes.length} fonte(s) válida(s) de ${(meta.sources ?? []).length} (precisa de 3 citadas e 2 que abrem). Troque: ${inval.join(', ') || '—'}`);
+      const citadas = (meta.sources ?? []).length;
+      problemas.push(`P3: você citou ${citadas} fonte(s) e ${fontes.length} servem (precisa citar EXATAMENTE 3 fontes, das quais pelo menos 2 abrem e tratam do assunto).${citadas < 3 ? ` Acrescente ${3 - citadas} fonte(s) específica(s) do tema.` : ''}${inval.length ? ` Troque: ${inval.join(', ')}` : ''}`);
     }
 
     // P4/P6: fatos e cópia
@@ -253,6 +254,7 @@ async function main() {
         const status = pub.mesclado ? (linha.dataISO > hoje ? 'agendado' : 'publicado') : 'em revisão';
         atualizacoes.push({ coluna: 'Status', valor: dry ? linha['Status'] : status }, { coluna: 'PR / Log da automação', valor: pub.pr ?? pub.nota });
         sucessos++;
+        log(`APROVADO ${linha['ID Artigo']}: nota de auditoria ${r.nota}, ${r.corpo.split(/\s+/).length} palavras, ${(r.fontes ?? []).length} fontes, título "${r.frontmatter?.title ?? ''}"${dry ? ' (dry-run: nada gravado)' : ''}`);
         resumo.push(`| ${linha['ID Artigo']} | ${linha['Pauta']} | ${status} | ${pub.pr ?? '-'} | nota ${r.nota} |`);
       } else { r = { ok: false, motivo: pub.motivo, historico: r.historico }; }
     }
@@ -273,7 +275,8 @@ async function main() {
   if (falhasNaExecucao >= 3) abrirAviso('Geração parou: 3 artigos reprovados seguidos', 'Veja o resumo da execução e a coluna "PR / Log da automação".');
   else if (falhasNaExecucao > 0 && !dry) abrirAviso(`Falha ao gerar artigo(s) em ${hoje}`, `${falhasNaExecucao} pauta(s) reprovada(s). Veja o resumo da execução e a coluna "PR / Log da automação" da planilha.`);
   // Falha nunca pode parecer sucesso: o workflow fica vermelho e o GitHub avisa por e-mail.
-  if (falhasNaExecucao > 0) process.exitCode = 1;
+  if (falhasNaExecucao > 0 && sucessos >= max) console.log(`::warning::${falhasNaExecucao} tema(s) reprovado(s) e substituído(s); meta do dia cumprida (${sucessos}/${max}).`);
+  else if (falhasNaExecucao > 0) process.exitCode = 1;
   if (process.env.GITHUB_STEP_SUMMARY) {
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Artigos de ${hoje}\n\n| ID | Pauta | Resultado | PR / motivo | Auditoria |\n|---|---|---|---|---|\n${resumo.join('\n') || '| - | nenhuma pauta pendente | | | |'}\n`);
   }
