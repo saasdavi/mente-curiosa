@@ -27,6 +27,7 @@ function lerTemasLocal() {
     'Ordem do Dia': '1',
     'KW ID principal': t.id,
     dataISO: t.data,
+    'fontes': t.fontes || [],
   }));
   return { linhas, colunas: {}, token: null };
 }

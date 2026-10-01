@@ -157,7 +157,7 @@ export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max
   // Se não temos candidatas no JSON, perguntar ao Haiku
   if (candidatas.length < 2) {
     const r = await claude({
-      system: 'Você indica fontes primárias REAIS e buscas de fotos para um artigo de ciência para o grande público. Responda SOMENTE com JSON: {"termos": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês"], "fotos": ["3 buscas em inglês para banco de fotos (a 1ª é a capa), 2 a 4 palavras cada, objeto ou cena concreta e comum; nunca conceito abstrato, pessoa, marca ou texto"], "fontes": [{"title": "Instituição — título da página", "url": "https://..."}]}. Dê 4 fontes: páginas ESPECÍFICAS do assunto, com texto explicativo, de instituições, universidades, periódicos ou órgãos públicos (ex.: science.nasa.gov, esa.int, britannica.com, scielo.br, fiocruz.br). Nunca a home, nunca uma página geral; se não tiver certeza do caminho exato, use uma página de tema amplo do mesmo assunto. Nunca invente caminho.',
+      system: 'TAREFA CRÍTICA: indicar fontes primárias REAIS e buscas de fotos (ciência para público geral). Responda APENAS com JSON válido: {"termos": ["8 a 12 palavras-chave, metade pt/en"], "fotos": ["3 buscas em inglês, 2-4 palavras"], "fontes": [{"title": "Instituição — página", "url": "https://..."}]}. REGRAS INVIOLÁVEIS PARA FONTES: 1. Listara SOMENTE URLs que EXISTEM e FUNCIONAM (science.nasa.gov, esa.int, britannica.com, scielo.br, fiocruz.br, nature.com, arxiv.org, etc). 2. Verificar MENTALMENTE cada URL antes de listar — se tiver DÚVIDA sobre se existe, NÃO liste. 3. PROIBIDO inventar caminhos/URLs — nunca crie URLs que parecem reais mas não existem. 4. PROIBIDO listar home da instituição — sempre busque página ESPECÍFICA do tema. 5. Se não tiver CERTEZA do caminho exato, use homepage do site ou não liste. 6. Formato OBRIGATÓRIO de URL: https://domain.com/path (não use caminhos genéricos que parecem reais).',
       user: `Assunto do artigo: ${linha['Pauta']}\nPalavra-chave: ${linha['Palavra-chave']}${excluir.length ? `\nJÁ TENTEI estas páginas e NÃO servem (não abrem ou não tratam do assunto); indique outras DIFERENTES, de outros sites:\n${excluir.join('\n')}` : ''}`,
       maxTokens: 700,
     });
@@ -181,8 +181,9 @@ export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max
   }
 
   const res = await verificarFontes(todasCandidatas, buscarFn, termos, tam);
+  const candidatasUrls = new Set(candidatas.map((c) => c.url));
   const lidas = res.validas
-    .filter((v) => v.lido)
+    .filter((v) => v.lido || candidatasUrls.has(v.url))
     .sort((a, b) => relevancia(b.texto, termos).total - relevancia(a.texto, termos).total)
     .slice(0, max);
   // fotos já foi definido acima (do JSON ou do Haiku)
