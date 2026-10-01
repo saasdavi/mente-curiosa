@@ -2,7 +2,7 @@
 
 export const CFG = {
   fusoHorario: 'America/Sao_Paulo',
-  abaCalendario: 'pautas-modelo',
+  abaCalendario: 'pautas-modelo_calendario-COMPLETA',
   intervaloCalendario: 'A1:Z1200',
   horizonteDias: 2, // gera artigos com até N dias de antecedência, para dar tempo de revisar o PR
   maxPorExecucao: 2,
