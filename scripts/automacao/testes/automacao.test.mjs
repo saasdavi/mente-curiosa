@@ -124,11 +124,15 @@ test('P3: fonte precisa tratar do assunto e o trecho enviado ao validador vem da
   assert.equal(boa.validas.length, 1);
 });
 
-test('anti-loop: reprovação de conteúdo tira o tema da fila; falha de API não queima o tema', async () => {
+test('anti-loop: tema volta à fila por 3 tentativas; falha de conta/API não queima o tema', async () => {
   const { statusAposFalha } = await import('../gerar-do-dia.mjs');
-  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: nota 80 (mínimo 85)' }), 'revisar');
+  // O tema volta à fila e é refeito em outra execução; só depois de 3 tentativas vai para revisão.
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: nota 80 (mínimo 85)' }), null);
+  assert.equal(statusAposFalha({ tentativas: 3, motivo: 'P2: nota 80 (mínimo 85)' }), 'revisar');
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P3: não achei 2 fontes legíveis para o tema; nada foi escrito' }), null);
   assert.equal(statusAposFalha({ tentativas: 1, motivo: 'formato: API do Claude: 529 overloaded' }), null);
   assert.equal(statusAposFalha({ tentativas: 3, motivo: 'formato: API do Claude: 529 overloaded' }), 'revisar');
+  assert.equal(statusAposFalha({ tentativas: 3, motivo: 'API do Claude: 400 credit balance is too low' }), null);
 });
 
 test('no ar: só confirma se a página abre, tem título, texto, imagens que carregam e está no sitemap', async () => {
@@ -201,7 +205,8 @@ test('horário de publicação: 1º do dia 12:00, 2º 18:00', async () => {
 test('sem crédito na API não descarta o tema', () => {
   const m = 'API do Claude: 400 {"error":{"message":"Your credit balance is too low to access the Anthropic API."}}';
   assert.equal(statusAposFalha({ tentativas: 5, motivo: m }), null);
-  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: 1753 palavras' }), 'revisar');
+  assert.equal(statusAposFalha({ tentativas: 1, motivo: 'P2: 1753 palavras' }), null); // volta à fila (tentativa 1 de 3)
+  assert.equal(statusAposFalha({ tentativas: 3, motivo: 'P2: 1753 palavras' }), 'revisar');
 });
 
 test('fotos sem Claude: pontua pela descrição do Pexels', async () => {
@@ -266,7 +271,8 @@ test('fotos antes de escrever: uma por busca, sem repetir; erro se faltar foto',
 
 test('sem foto para o tema: não escreve nada e não gasta Claude de redação', async () => {
   const d = depsFalsas();
-  d.pesquisar = async () => ({ lidas: [], termos: [], fotos: ['x'] });
+  const pg = depsFalsas().pesquisar;
+  d.pesquisar = async () => ({ ...(await pg()), fotos: ['x'] });
   d.fotosPrevias = async () => { throw new Error('sem foto no banco de imagens para "x"'); };
   const r = await processarPauta(LINHA, lerAcervo(), d);
   assert.equal(r.ok, false);
@@ -284,4 +290,48 @@ test('prepararImagens usa as fotos escolhidas antes', async () => {
   const r = await prepararImagens({ meta, categoria: 'animais', slug: 's', titulo: 'Título', fontesFoto: ['pexels'], usados: [], previas: [previa(1), previa(2)], deps: { baixar: async (c) => { baixados.push(c.id); return png; }, pexels: async () => { throw new Error('não deveria buscar'); } } });
   assert.deepEqual(baixados, ['pexels:1', 'pexels:2']);
   assert.equal(r.fotos.length, 1);
+});
+
+test('fontes: 1ª pesquisa com 1 fonte busca outras; sem 2 fontes o robô não escreve', async () => {
+  const { processarPauta } = await import('../gerar-do-dia.mjs');
+  const fonte = (n) => ({ title: `Fonte ${n}`, url: `https://www.nasa.gov/f${n}`, texto: TEXTO_FONTE, lido: true });
+  // 1ª pesquisa acha 1; a 2ª (com `excluir`) acha outra → escreve.
+  const chamadas = [];
+  const d = depsFalsas();
+  d.pesquisar = async (a) => { chamadas.push(a.excluir ?? null); return a.excluir ? { lidas: [fonte(2)], extras: [], termos: [], fotos: [], tentadas: ['https://x/2'], descartadas: [] } : { lidas: [fonte(1)], extras: [], termos: [], fotos: [], tentadas: ['https://x/1'], descartadas: [{ url: 'https://x/9', motivo: 'HTTP 404' }] }; };
+  const r = await processarPauta(LINHA, [], d);
+  assert.equal(chamadas.length, 2);
+  assert.deepEqual(chamadas[1], ['https://x/1']);
+  assert.ok(d.chamadas.includes('redator'), 'com 2 fontes o redator é chamado');
+  // as duas pesquisas acham só 1 → nada é escrito e nenhum pedido ao redator.
+  const d2 = depsFalsas();
+  d2.pesquisar = async () => ({ lidas: [fonte(1)], extras: [], termos: [], fotos: [], tentadas: [], descartadas: [] });
+  const r2 = await processarPauta(LINHA, [], d2);
+  assert.equal(r2.ok, false);
+  assert.match(r2.motivo, /P3: não achei 2 fontes legíveis/);
+  assert.equal(d2.chamadas.filter((c) => c === 'redator').length, 0);
+  assert.ok(r);
+});
+
+test('links internos: o que não existe vira texto, por código', async () => {
+  const { sanearLinksInternos } = await import('../artigo.mjs');
+  const permitidos = [{ titulo: 'Categoria Ciência', url: '/categoria/ciencia-e-fenomenos/' }, { titulo: 'Céu azul', url: '/por-que-o-ceu-e-azul/' }];
+  const t = sanearLinksInternos('Veja [pressão](/pressao-atmosferica-vento/) e [céu](/por-que-o-ceu-e-azul/).', permitidos, ['/', '/sobre/']);
+  assert.doesNotMatch(t, /pressao-atmosferica-vento/);
+  assert.match(t, /Veja pressão e/);
+  assert.match(t, /\(\/por-que-o-ceu-e-azul\/\)/);
+  assert.match(t, /Leia também/); // completou o mínimo de 2 links com links reais
+});
+
+test('publicar_agora: data e hora de agora só quando ligado', async () => {
+  const { dataHoraPublicacao } = await import('../artigo.mjs');
+  const antes = process.env.PUBLICAR_AGORA;
+  try {
+    delete process.env.PUBLICAR_AGORA;
+    assert.match(dataHoraPublicacao({ dataISO: '2030-01-05', 'Ordem do Dia': '1' }), /^2030-01-05T12:00:00-03:00$/);
+    process.env.PUBLICAR_AGORA = 'true';
+    const v = dataHoraPublicacao({ dataISO: '2030-01-05', 'Ordem do Dia': '1' });
+    assert.match(v, /-03:00$/);
+    assert.ok(new Date(v).getTime() <= Date.now());
+  } finally { if (antes === undefined) delete process.env.PUBLICAR_AGORA; else process.env.PUBLICAR_AGORA = antes; }
 });

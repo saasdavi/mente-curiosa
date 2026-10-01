@@ -21,6 +21,10 @@ on:
       reabrir:
         description: 'IDs de temas em "revisar" para voltar à fila (ex.: ART0453,ART2838)'
         required: false
+      publicar_agora:
+        description: 'Teste manual: os artigos saem com a data e hora de agora e entram no blog no próximo deploy'
+        type: boolean
+        default: false
 
 concurrency:
   group: gerar-artigos
@@ -62,6 +66,7 @@ jobs:
       - name: Gerar os artigos
         env:
           REABRIR: ${{ inputs.reabrir }}
+          PUBLICAR_AGORA: ${{ inputs.publicar_agora }}
         run: |
           ARGS="--max ${{ inputs.max || '2' }}"
           if [ -n "$REABRIR" ]; then ARGS="$ARGS --reabrir $REABRIR"; fi
