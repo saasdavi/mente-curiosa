@@ -39,7 +39,7 @@ import { prepararImagens, escolherFotosPrevias } from './imagens.mjs';
 import { garantirAviso, sanearLinksInternos, montarFrontmatter, gravarArtigo, lerAcervo, urlsDeCreditoUsadas } from './artigo.mjs';
 import { auditarArtigo, norm } from '../lib-audit.mjs';
 
-const NOTA_MINIMA = 85;
+const NOTA_MINIMA = 80;
 
 // ---------------------------------------------------------------- seleção (P1)
 export function selecionarPautas({ linhas, acervo, hoje, horizonte, max, branches = [] }) {
