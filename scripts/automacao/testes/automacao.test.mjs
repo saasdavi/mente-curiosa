@@ -285,3 +285,24 @@ test('prepararImagens usa as fotos escolhidas antes', async () => {
   assert.deepEqual(baixados, ['pexels:1', 'pexels:2']);
   assert.equal(r.fotos.length, 1);
 });
+
+test('peças das redes: Facebook 1200×630 e Pin 1000×1500 em JPG, gravadas em public/social/<slug>/', async () => {
+  const { pecasRedes } = await import('../imagens.mjs');
+  const { gravarArtigo } = await import('../artigo.mjs');
+  const sharp = (await import('sharp')).default;
+  const { mkdtempSync, existsSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const foto = await sharp({ create: { width: 1600, height: 1000, channels: 3, background: '#557733' } }).jpeg().toBuffer();
+  const redes = await pecasRedes(foto, 'Por que o gelo flutua na água e não afunda?');
+  const fb = await sharp(redes.facebook).metadata();
+  const pin = await sharp(redes.pin).metadata();
+  assert.deepEqual([fb.width, fb.height, fb.format], [1200, 630, 'jpeg']);
+  assert.deepEqual([pin.width, pin.height, pin.format], [1000, 1500, 'jpeg']);
+  const raiz = mkdtempSync(join(tmpdir(), 'artigo-'));
+  const capa = { arquivo: 'x.webp', buffer: Buffer.from('x') };
+  gravarArtigo({ raiz, frontmatter: { slug: 'por-que-o-gelo-flutua', title: 't' }, corpo: 'c', imagens: { capa, fotos: [], redes } });
+  assert.ok(existsSync(join(raiz, 'public/social/por-que-o-gelo-flutua/facebook.jpg')));
+  assert.ok(existsSync(join(raiz, 'public/social/por-que-o-gelo-flutua/pin-1.jpg')));
+  rmSync(raiz, { recursive: true, force: true });
+});

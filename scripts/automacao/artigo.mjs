@@ -64,6 +64,15 @@ export function gravarArtigo({ raiz = '.', frontmatter, corpo, imagens }) {
     writeFileSync(p, im.buffer);
     criados.push(p);
   }
+  if (imagens.redes) {
+    const social = join(raiz, 'public/social', slug);
+    mkdirSync(social, { recursive: true });
+    for (const [nome, buf] of [['facebook.jpg', imagens.redes.facebook], ['pin-1.jpg', imagens.redes.pin]]) {
+      const p = join(social, nome);
+      writeFileSync(p, buf);
+      criados.push(p);
+    }
+  }
   return criados;
 }
 

@@ -1,7 +1,7 @@
 // Orquestrador: para cada pauta do dia escreve, valida (9 portões de AUDITORIA_AUTOMATICA.md) e publica.
 // Uso: node scripts/automacao/gerar-do-dia.mjs [--data AAAA-MM-DD] [--horizonte N] [--max N] [--dry-run]
 import { execFileSync } from 'node:child_process';
-import { appendFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { appendFileSync, mkdtempSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { CFG, FONTES_FOTO } from './config.mjs';
@@ -189,7 +189,7 @@ export function publicarArtigo({ resultado, linha, autoMerge, dry }) {
     voltarParaMain(ramo, slug);
     return { ok: false, motivo: `P9: build falhou: ${saida.slice(0, 300)}` };
   }
-  sh('git', ['add', `src/content/artigos/${slug}.md`, `public/images/${slug}`]);
+  sh('git', ['add', `src/content/artigos/${slug}.md`, `public/images/${slug}`, ...(existsSync(`public/social/${slug}`) ? [`public/social/${slug}`] : [])]);
   sh('git', ['-c', 'user.name=mente-curiosa-bot', '-c', 'user.email=bot@mentecuriosa.blog', 'commit', '-q', '-m', `Artigo ${linha['ID Artigo']}: ${resultado.frontmatter.title}`]);
   sh('git', ['push', '-q', '-u', 'origin', ramo]);
   const corpoPR = [
@@ -214,7 +214,7 @@ export function publicarArtigo({ resultado, linha, autoMerge, dry }) {
 function voltarParaMain(ramo, slug, manter = false) {
   try { sh('git', ['checkout', '-q', '-f', 'main']); } catch { /* ignora */ }
   if (!manter) {
-    try { sh('git', ['clean', '-fdq', 'src/content/artigos', `public/images/${slug}`]); } catch { /* ignora */ }
+    try { sh('git', ['clean', '-fdq', 'src/content/artigos', `public/images/${slug}`, `public/social/${slug}`]); } catch { /* ignora */ }
     try { sh('git', ['branch', '-D', ramo]); } catch { /* ignora */ }
   }
 }

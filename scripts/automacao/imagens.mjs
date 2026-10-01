@@ -127,11 +127,11 @@ export async function fotoCorpo(buffer) {
   return sharp(buffer).resize(1200, 800, { fit: 'cover', position: 'attention' }).webp({ quality: 80 }).toBuffer();
 }
 
-/** Capa 1200×675: foto de fundo + degradê + título + marca. */
-export async function comporCapa(buffer, titulo, logoPath = 'public/brand/logo-circulo-400.png') {
-  const W = 1200, H = 675;
-  let tam = 58, linhas = quebrarLinhas(titulo, Math.floor(1000 / (tam * 0.6)));
-  while (linhas.length > 4 && tam > 34) { tam -= 4; linhas = quebrarLinhas(titulo, Math.floor(1000 / (tam * 0.6))); }
+/** Arte com foto de fundo + degradê + título + marca, em qualquer tamanho (capa, Facebook, Pin). */
+async function comporArte(buffer, titulo, { W, H, tamMax, linhasMax, logoPath = 'public/brand/logo-circulo-400.png' }) {
+  const largura = W - 200;
+  let tam = tamMax, linhas = quebrarLinhas(titulo, Math.floor(largura / (tam * 0.6)));
+  while (linhas.length > linhasMax && tam > 34) { tam -= 4; linhas = quebrarLinhas(titulo, Math.floor(largura / (tam * 0.6))); }
   const altura = linhas.length * tam * 1.2;
   const y0 = H - 70 - altura;
   const textos = linhas.map((l, i) => `<text x="64" y="${y0 + (i + 1) * tam * 1.2 - 8}" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold" font-size="${tam}" fill="#ffffff">${ESC(l)}</text>`).join('');
@@ -139,9 +139,19 @@ export async function comporCapa(buffer, titulo, logoPath = 'public/brand/logo-c
   const logo = await sharp(readFileSync(logoPath)).resize(84, 84).toBuffer();
   return sharp(buffer)
     .resize(W, H, { fit: 'cover', position: 'attention' })
-    .composite([{ input: Buffer.from(svg) }, { input: logo, left: 56, top: 40 }])
-    .webp({ quality: 82 })
-    .toBuffer();
+    .composite([{ input: Buffer.from(svg) }, { input: logo, left: 56, top: 40 }]);
+}
+
+/** Capa 1200×675 (.webp). */
+export async function comporCapa(buffer, titulo, logoPath) {
+  return (await comporArte(buffer, titulo, { W: 1200, H: 675, tamMax: 58, linhasMax: 4, logoPath })).webp({ quality: 82 }).toBuffer();
+}
+
+/** Peças para as redes, lidas pelo /feed.xml: Facebook 1200×630 e Pin 1000×1500 (.jpg, aceitos pelas duas redes). */
+export async function pecasRedes(buffer, titulo, logoPath) {
+  const facebook = await (await comporArte(buffer, titulo, { W: 1200, H: 630, tamMax: 58, linhasMax: 4, logoPath })).jpeg({ quality: 85 }).toBuffer();
+  const pin = await (await comporArte(buffer, titulo, { W: 1000, H: 1500, tamMax: 76, linhasMax: 6, logoPath })).jpeg({ quality: 85 }).toBuffer();
+  return { facebook, pin };
 }
 
 /**
@@ -199,6 +209,7 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
     alt: cap.alt,
     credito: credito(cap.c),
   };
+  const redes = await pecasRedes(cap.buf, titulo);
   const fotos = [];
   for (const [i, f] of meta.imagens.fotos.entries()) {
     const e = await escolher(f.busca, f.alt, previas[i + 1]);
@@ -212,7 +223,7 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
       credito: credito(e.c),
     });
   }
-  return { capa, fotos };
+  return { capa, fotos, redes };
 }
 
 /**
