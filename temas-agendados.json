@@ -1,0 +1,24 @@
+[
+  {
+    "id": "ART0453",
+    "data": "2026-10-01",
+    "pauta": "Por que a lua tem fases?",
+    "palavra_chave": "por que a lua tem fases",
+    "categoria": "universo-e-espaco",
+    "cluster": "Universo e espaço",
+    "volume": 1299,
+    "dificuldade": 39,
+    "slug": "por-que-a-lua-tem-fases"
+  },
+  {
+    "id": "ART2838",
+    "data": "2026-10-01",
+    "pauta": "O que é a cadeia alimentar?",
+    "palavra_chave": "o que é a cadeia alimentar",
+    "categoria": "animais",
+    "cluster": "Animais",
+    "volume": 0,
+    "dificuldade": 0,
+    "slug": "o-que-e-a-cadeia-alimentar"
+  }
+]

@@ -7,6 +7,29 @@ import { join } from 'node:path';
 import { CFG, FONTES_FOTO } from './config.mjs';
 import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
+import { readFileSync, existsSync } from 'node:fs';
+
+function lerTemasLocal() {
+  const arquivo = './temas-agendados.json';
+  if (!existsSync(arquivo)) return null;
+  const temas = JSON.parse(readFileSync(arquivo, 'utf8'));
+  const linhas = temas.map((t, i) => ({
+    _linha: i + 2,
+    'Cal ID': `CAL${String(i).padStart(4, '0')}`,
+    'Data (AAAA-MM-DD)': t.data,
+    'ID Artigo': t.id,
+    'Palavra-chave': t.palavra_chave,
+    'Pauta': t.pauta,
+    'Categoria (slug)': t.categoria,
+    'Cluster': t.cluster,
+    'Slug': t.slug,
+    'Status': 'planejado',
+    'Ordem do Dia': '1',
+    'KW ID principal': t.id,
+    dataISO: t.data,
+  }));
+  return { linhas, colunas: {}, token: null };
+}
 import { chamarClaude, extrairJSON, USO, custoEstimado } from './claude.mjs';
 import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
 import { verificarFontes, termosDoAssunto, pesquisarFontes, termosDeContexto, relevancia } from './fontes.mjs';
@@ -275,7 +298,18 @@ async function main() {
   const resumo = [];
 
   if (process.env.PAUSAR === 'true') { log('PAUSAR=true: geração pausada.'); return; }
-  const { linhas, colunas, token } = await lerCalendario({ sheetId: process.env.SHEET_ID, credenciais: process.env.GOOGLE_SHEETS_CREDENTIALS });
+  let resultado = lerTemasLocal();
+  let token = null;
+  let colunas = {};
+  if (!resultado) {
+    resultado = await lerCalendario({ sheetId: process.env.SHEET_ID, credenciais: process.env.GOOGLE_SHEETS_CREDENTIALS });
+    token = resultado.token;
+    colunas = resultado.colunas;
+  } else {
+    token = resultado.token;
+    colunas = resultado.colunas;
+  }
+  const { linhas } = resultado;
   // --reabrir ART0453,ART2838: devolve à fila temas que estavam em "revisar" (ex.: depois de corrigir o robô)
   const reabrir = arg('reabrir', '').split(',').map((x) => x.trim().toUpperCase()).filter(Boolean);
   if (reabrir.length) {
