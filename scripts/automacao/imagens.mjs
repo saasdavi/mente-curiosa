@@ -17,6 +17,7 @@ const FALLBACK_CATEGORIA = {
   'psicologia-e-comportamento': 'thinking mind',
   'tecnologia-ia-e-ciencia': 'technology computer',
 };
+export { FALLBACK_CATEGORIA };
 const palavras = (t) => String(t).toLowerCase().split(/[^a-z]+/).filter((w) => w.length >= 3);
 /** Quantas palavras da busca aparecem na descrição da foto (0 se a descrição vier vazia). */
 export function pontuar(consulta, alt) {
@@ -40,6 +41,7 @@ export async function buscarPexels(consulta, { chave = process.env.PEXELS_API_KE
       urlImagem: f.src?.large2x || f.src?.large || f.src?.original,
       autor: f.photographer || 'Pexels',
       urlCredito: f.url,
+      descricao: String(f.alt ?? '').trim(),
       pontos: pontuar(consulta, f.alt),
       ordem: i,
       ...LICENCA_PEXELS,
@@ -147,7 +149,7 @@ export async function comporCapa(buffer, titulo, logoPath = 'public/brand/logo-c
  * deps: { pexels, nasa, baixar, confere } (substituíveis nos testes)
  * Retorna { capa, fotos } ou lança erro com o motivo.
  */
-export async function prepararImagens({ meta, categoria, slug, titulo, fontesFoto, usados, deps = {} }) {
+export async function prepararImagens({ meta, categoria, slug, titulo, fontesFoto, usados, previas = [], deps = {} }) {
   const d = { pexels: buscarPexels, nasa: buscarNasa, baixar: baixarImagem, confere: async () => ({ ok: true, motivo: '', altCorrigido: '' }), ...deps };
   const usadosLocal = new Set(usados);
   const buscarCandidatas = async (consulta) => {
@@ -162,8 +164,15 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
     }
     return lista.filter((c) => !usadosLocal.has(c.urlCredito) && !usadosLocal.has(c.id));
   };
-  const escolher = async (consulta, alt) => {
+  const escolher = async (consulta, alt, previa) => {
     const motivos = [];
+    if (previa) { // foto já escolhida antes de escrever: baixa essa; se falhar, cai na busca normal
+      try {
+        const buf = await d.baixar(previa.c);
+        usadosLocal.add(previa.c.urlCredito); usadosLocal.add(previa.c.id);
+        return { c: previa.c, buf, alt };
+      } catch (e) { motivos.push(e.message); }
+    }
     // busca do plano → só as 2 primeiras palavras → busca genérica da categoria
     const consultas = [...new Set([consulta, String(consulta).split(/\s+/).slice(0, 2).join(' '), FALLBACK_CATEGORIA[categoria]].filter(Boolean))];
     for (const q of consultas) {
@@ -182,7 +191,8 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
   };
   const credito = (c) => ({ author: c.autor, source: c.fonte, url: c.urlCredito, license: c.license, licenseUrl: c.licenseUrl });
 
-  const cap = await escolher(meta.imagens.capa.busca, meta.imagens.capa.alt);
+  previas.forEach((p) => { usadosLocal.add(p.c.urlCredito); usadosLocal.add(p.c.id); });
+  const cap = await escolher(meta.imagens.capa.busca, meta.imagens.capa.alt, previas[0]);
   const capa = {
     arquivo: `${slug}.webp`,
     buffer: await comporCapa(cap.buf, titulo),
@@ -190,8 +200,8 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
     credito: credito(cap.c),
   };
   const fotos = [];
-  for (const f of meta.imagens.fotos) {
-    const e = await escolher(f.busca, f.alt);
+  for (const [i, f] of meta.imagens.fotos.entries()) {
+    const e = await escolher(f.busca, f.alt, previas[i + 1]);
     const nome = slugify(e.alt).split('-').slice(0, 7).join('-') || `foto-${fotos.length + 1}`;
     fotos.push({
       arquivo: `${nome}.webp`,
@@ -203,4 +213,33 @@ export async function prepararImagens({ meta, categoria, slug, titulo, fontesFot
     });
   }
   return { capa, fotos };
+}
+
+/**
+ * Escolhe as fotos ANTES de escrever (sem Claude e sem baixar nada): uma por busca (a 1ª é a capa), sem repetir.
+ * Devolve [{ consulta, c }] (c = candidata do Pexels/NASA com `descricao`). Lança erro se faltar foto para o tema.
+ */
+export async function escolherFotosPrevias({ buscas, categoria, usados = new Set(), fontesFoto = ['pexels'], deps = {} }) {
+  const d = { pexels: buscarPexels, nasa: buscarNasa, ...deps };
+  const usadosLocal = new Set(usados);
+  const fora = [];
+  const lista = [];
+  for (const consulta of buscas) {
+    const consultas = [...new Set([consulta, String(consulta).split(/\s+/).slice(0, 2).join(' '), FALLBACK_CATEGORIA[categoria]].filter(Boolean))];
+    let achou = null;
+    for (const q of consultas) {
+      for (const f of fontesFoto) {
+        try {
+          const cands = await (f === 'nasa' ? d.nasa : d.pexels)(q);
+          achou = cands.find((c) => !usadosLocal.has(c.urlCredito) && !usadosLocal.has(c.id));
+        } catch (e) { fora.push(e.message); }
+        if (achou) break;
+      }
+      if (achou) break;
+    }
+    if (!achou) throw new Error(`sem foto no banco de imagens para "${consulta}"${fora.length ? ` (${fora[0]})` : ''}`);
+    usadosLocal.add(achou.urlCredito); usadosLocal.add(achou.id);
+    lista.push({ consulta, c: achou });
+  }
+  return lista;
 }

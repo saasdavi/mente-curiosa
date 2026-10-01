@@ -242,3 +242,46 @@ test('pesquisa prévia: resposta ilegível segue sem fontes lidas', async () => 
   const r = await pesquisarFontes({ linha: LINHA, claude: async () => ({ texto: 'sem json' }), buscarFn: async () => { throw new Error('não deveria abrir'); } });
   assert.deepEqual(r.lidas, []);
 });
+
+test('palavras de contexto: as mais fortes das fontes, sem as da planilha nem as comuns', async () => {
+  const { termosDeContexto } = await import('../fontes.mjs');
+  const a = 'Ice density hydrogen bonds lattice. The density of ice is lower; hydrogen bonds form a lattice. Density matters for lakes and the lattice. '.repeat(3);
+  const b = 'A densidade do gelo e a rede de ligações: hydrogen bonds and lattice also appear here; the lattice and bonds. '.repeat(3);
+  const t = termosDeContexto([a, b], ['ice', 'gelo'], 5);
+  assert.ok(t.includes('lattice') && t.includes('density') && t.includes('hydrogen'));
+  assert.ok(!t.includes('ice') && !t.includes('the'));
+});
+
+test('fotos antes de escrever: uma por busca, sem repetir; erro se faltar foto', async () => {
+  const { escolherFotosPrevias } = await import('../imagens.mjs');
+  const { blocoFotosPrevias, blocoTermosContexto } = await import('../prompts.mjs');
+  const cand = (id) => ({ id: `pexels:${id}`, urlCredito: `https://pexels.com/p/${id}`, descricao: `photo ${id}` });
+  const pexels = async () => [cand(1), cand(2), cand(3), cand(4)];
+  const r = await escolherFotosPrevias({ buscas: ['a', 'b', 'c'], categoria: 'animais', deps: { pexels } });
+  assert.deepEqual(r.map((x) => x.c.id), ['pexels:1', 'pexels:2', 'pexels:3']);
+  assert.match(blocoFotosPrevias(r), /CAPA.*photo 1/);
+  assert.match(blocoTermosContexto(['lattice']), /lattice/);
+  await assert.rejects(escolherFotosPrevias({ buscas: ['a'], categoria: 'animais', deps: { pexels: async () => [] } }), /sem foto no banco/);
+});
+
+test('sem foto para o tema: não escreve nada e não gasta Claude de redação', async () => {
+  const d = depsFalsas();
+  d.pesquisar = async () => ({ lidas: [], termos: [], fotos: ['x'] });
+  d.fotosPrevias = async () => { throw new Error('sem foto no banco de imagens para "x"'); };
+  const r = await processarPauta(LINHA, lerAcervo(), d);
+  assert.equal(r.ok, false);
+  assert.match(r.motivo, /P7: sem foto/);
+  assert.equal(d.chamadas.length, 0);
+});
+
+test('prepararImagens usa as fotos escolhidas antes', async () => {
+  const { prepararImagens } = await import('../imagens.mjs');
+  const sharp = (await import('sharp')).default;
+  const png = await sharp({ create: { width: 1600, height: 1000, channels: 3, background: '#335577' } }).png().toBuffer();
+  const previa = (id) => ({ consulta: 'q', c: { id: `pexels:${id}`, urlCredito: `https://pexels.com/p/${id}`, autor: 'A', fonte: 'Pexels', license: 'L', licenseUrl: 'u', descricao: 'd' } });
+  const baixados = [];
+  const meta = { imagens: { capa: { busca: 'q', alt: 'Capa de teste com mais de vinte caracteres' }, fotos: [{ busca: 'q', alt: 'Foto de teste com mais de vinte caracteres', legenda: 'Legenda de teste longa', secao: 2 }] } };
+  const r = await prepararImagens({ meta, categoria: 'animais', slug: 's', titulo: 'Título', fontesFoto: ['pexels'], usados: [], previas: [previa(1), previa(2)], deps: { baixar: async (c) => { baixados.push(c.id); return png; }, pexels: async () => { throw new Error('não deveria buscar'); } } });
+  assert.deepEqual(baixados, ['pexels:1', 'pexels:2']);
+  assert.equal(r.fotos.length, 1);
+});
