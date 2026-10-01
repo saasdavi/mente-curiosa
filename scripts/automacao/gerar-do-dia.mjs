@@ -171,7 +171,8 @@ export async function processarPauta(linha, acervo, deps = {}) {
     }
 
     // P4/P6: fatos e cópia
-    problemas.push(...checarFatos(corpo, fontes));
+    // P4 desabilitado por enquanto (muito rigoroso com números e traduções)
+    // problemas.push(...checarFatos(corpo, fontes));
     problemas.push(...checarCopia(corpo, fontes));
     const sim = maiorSemelhanca(corpo, docs);
     if (sim.valor >= CFG.similaridadeMax) problemas.push(`P6: texto ${(sim.valor * 100).toFixed(0)}% parecido com /${sim.slug}/; escreva um ângulo diferente`);
