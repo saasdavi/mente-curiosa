@@ -8,7 +8,12 @@
     "cluster": "Universo e espaço",
     "volume": 1299,
     "dificuldade": 39,
-    "slug": "por-que-a-lua-tem-fases"
+    "slug": "por-que-a-lua-tem-fases",
+    "fontes": [
+      {"title": "NASA — Moon Phases", "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"},
+      {"title": "Britannica — Moon Phase", "url": "https://www.britannica.com/science/moon-phase"},
+      {"title": "USGS — Moon Facts", "url": "https://www.usgs.gov/space-hazards-protection/moon-facts"}
+    ]
   },
   {
     "id": "ART2838",
@@ -19,6 +24,11 @@
     "cluster": "Animais",
     "volume": 0,
     "dificuldade": 0,
-    "slug": "o-que-e-a-cadeia-alimentar"
+    "slug": "o-que-e-a-cadeia-alimentar",
+    "fontes": [
+      {"title": "Britannica — Food Chain", "url": "https://www.britannica.com/science/food-chain"},
+      {"title": "National Geographic — Food Chain", "url": "https://www.nationalgeographic.org/encyclopedia/food-chain/"},
+      {"title": "Smithsonian — Food Webs", "url": "https://www.si.edu/"}
+    ]
   }
 ]
