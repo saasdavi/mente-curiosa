@@ -30,12 +30,14 @@ export function checarFatos(corpo, fontes) {
   if (lidas.length < CFG.fontesMin) return [`P4: só ${lidas.length} fonte(s) pôde(ram) ser lida(s); preciso de ${CFG.fontesMin} para conferir os números`];
   const nasFontes = new Set();
   for (const f of lidas) for (const n of numerosDe(f.texto)) nasFontes.add(n);
-  // Permite números que estão ±1 de um número nas fontes (ex: fonte 29 → aceita 28-30; fonte 29.5 → aceita 28.5-30.5)
+  // Permite números com decimais que estão ±0.5 de um número nas fontes (arredondamento, ex: fonte 29.5 → aceita 29 ou 30)
   const dentroDaToleancia = (num) => {
     const val = Number(num);
+    const temDecimal = /[.]/.test(num);
+    if (!temDecimal) return false; // só tolerância para decimais
     for (const fn of nasFontes) {
       const fval = Number(fn);
-      if (Math.abs(val - fval) <= 1) return true;
+      if (Math.abs(val - fval) <= 0.5) return true;
     }
     return false;
   };
