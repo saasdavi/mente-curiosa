@@ -335,3 +335,29 @@ test('publicar_agora: data e hora de agora só quando ligado', async () => {
     assert.ok(new Date(v).getTime() <= Date.now());
   } finally { if (antes === undefined) delete process.env.PUBLICAR_AGORA; else process.env.PUBLICAR_AGORA = antes; }
 });
+
+test('links reais por código: referências da Wikipédia filtradas por domínio confiável; a Wikipédia não é fonte', async () => {
+  const { candidatasReais } = await import('../fontes.mjs');
+  const urls = [];
+  const resp = (obj) => ({ ok: true, json: async () => obj });
+  const buscarFn = async (url) => {
+    urls.push(url);
+    if (url.includes('list=search')) return resp({ query: { search: [{ title: 'Fases da Lua' }] } });
+    if (url.startsWith('https://pt.')) return resp({ query: { pages: [{ extlinks: [{ url: 'https://science.nasa.gov/moon/moon-phases/' }, { url: 'https://blogspot.com/x' }, { url: 'https://exemplo-qualquer.com/a' }, { url: 'https://pt.wikipedia.org/wiki/Lua' }, { url: 'https://science.nasa.gov/moon/moon-phases/#topo' }], langlinks: [{ title: 'Lunar phase' }] }] } });
+    return resp({ query: { pages: [{ extlinks: [{ url: 'https://www.britannica.com/science/lunar-phase' }, { url: 'https://www.nasa.gov/arquivo.pdf' }] }] } });
+  };
+  const r = await candidatasReais('por que a Lua tem fases', buscarFn);
+  assert.deepEqual(r.map((x) => x.url), ['https://science.nasa.gov/moon/moon-phases/', 'https://www.britannica.com/science/lunar-phase']);
+  assert.ok(urls.some((u) => u.startsWith('https://en.wikipedia.org/')), 'seguiu o link do verbete em inglês');
+  // sem rede: lista vazia, sem erro
+  assert.deepEqual(await candidatasReais('x', async () => { throw new Error('fetch failed'); }), []);
+});
+
+test('fonte sem título ganha o título real da página aberta', async () => {
+  const { verificarFontes } = await import('../fontes.mjs');
+  const html = `<html><head><title>Moon Phases – NASA Science</title></head><body>${'A lua tem fases porque a posição relativa muda. '.repeat(30)}</body></html>`;
+  const buscarFn = async () => ({ ok: true, status: 200, headers: { get: () => 'text/html' }, text: async () => html });
+  const r = await verificarFontes([{ title: '', url: 'https://science.nasa.gov/moon/moon-phases/' }], buscarFn, ['lua', 'fases']);
+  assert.equal(r.validas.length, 1);
+  assert.match(r.validas[0].title, /Moon Phases – NASA Science/);
+});

@@ -78,7 +78,9 @@ export async function verificarFontes(fontes, buscarFn, termos = [], tam = 9000)
       const r = await abrir(f.url, buscarFn);
       const tipo = r.headers.get('content-type') || '';
       if (r.ok) {
-        const completo = /html/i.test(tipo) ? htmlParaTexto(await r.text()) : '';
+        const html = /html/i.test(tipo) ? await r.text() : '';
+        const completo = html ? htmlParaTexto(html) : '';
+        const tituloPagina = htmlParaTexto(/<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1] ?? '').slice(0, 140);
         if (completo.length >= 300 && termos.length) {
           const rel = relevancia(completo, termos);
           const minimo = Math.min(2, termos.length);
@@ -88,9 +90,9 @@ export async function verificarFontes(fontes, buscarFn, termos = [], tam = 9000)
           }
         }
         const texto = completo ? trechoRelevante(completo, termos, tam) : '';
-        validas.push({ title: f.title, url: f.url, texto, lido: Boolean(texto) });
+        validas.push({ title: f.title || (tituloPagina ? `${host} — ${tituloPagina}` : host), url: f.url, texto, lido: Boolean(texto) });
       } else if ([401, 403, 429, 999].includes(r.status) && confiavel(host)) {
-        validas.push({ title: f.title, url: f.url, texto: '', lido: false });
+        validas.push({ title: f.title || host, url: f.url, texto: '', lido: false });
       } else {
         invalidas.push({ url: f.url, motivo: `HTTP ${r.status}` });
       }
@@ -99,6 +101,46 @@ export async function verificarFontes(fontes, buscarFn, termos = [], tam = 9000)
     }
   }
   return { validas, invalidas };
+}
+
+/**
+ * Links REAIS por código, sem depender da memória do modelo: a API da Wikipédia (pt e en) devolve as referências
+ * externas do verbete do tema; ficam só as de domínios confiáveis. A Wikipédia em si nunca é fonte (DOMINIOS_BLOQUEADOS).
+ * O robô ainda abre, confere e lê cada link em verificarFontes. Falha de rede devolve lista vazia.
+ */
+export async function candidatasReais(consulta, buscarFn, max = 8) {
+  const q = String(consulta ?? '').trim();
+  if (!q) return [];
+  const api = async (lang, params) => {
+    try {
+      const r = await buscarFn(`https://${lang}.wikipedia.org/w/api.php?format=json&formatversion=2&origin=*&${params}`, { headers: { 'User-Agent': UA, Accept: 'application/json' }, tentativas: 2, timeoutMs: 15000 });
+      return r.ok ? await r.json() : null;
+    } catch { return null; }
+  };
+  const links = [];
+  const colher = (pagina) => { for (const l of pagina?.extlinks ?? []) links.push(l.url); };
+  const achou = await api('pt', `action=query&list=search&srlimit=1&srsearch=${encodeURIComponent(q)}`);
+  const titulo = achou?.query?.search?.[0]?.title;
+  if (titulo) {
+    const pt = await api('pt', `action=query&prop=extlinks|langlinks&ellimit=80&lllang=en&titles=${encodeURIComponent(titulo)}`);
+    const pagina = pt?.query?.pages?.[0];
+    colher(pagina);
+    const en = pagina?.langlinks?.[0]?.title;
+    if (en) colher((await api('en', `action=query&prop=extlinks&ellimit=80&titles=${encodeURIComponent(en)}`))?.query?.pages?.[0]);
+  }
+  const vistos = new Set();
+  const out = [];
+  for (const url of links) {
+    let host;
+    try { host = dominio(url); } catch { continue; }
+    if (!/^https?:/i.test(url) || DOMINIOS_BLOQUEADOS.test(host) || !confiavel(host) || /\.(pdf|jpe?g|png|gif)(\?|$)/i.test(url) || /archive\.org/.test(host)) continue;
+    const chave = url.replace(/#.*$/, '');
+    if (vistos.has(chave)) continue;
+    vistos.add(chave);
+    out.push({ title: '', url: chave });
+    if (out.length >= max) break;
+  }
+  return out;
 }
 
 /**
@@ -115,15 +157,16 @@ export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max
   let j;
   try { j = extrairJSON(r.texto); } catch { return { lidas: [], termos: [], tentadas: [], descartadas: [] }; }
   const termos = termosDoAssunto(linha['Pauta'], linha['Palavra-chave'], ...(Array.isArray(j.termos) ? j.termos.map(String) : []));
-  const candidatas = (Array.isArray(j.fontes) ? j.fontes : []).filter((f) => f && typeof f.url === 'string').slice(0, 4);
-  const res = await verificarFontes(candidatas, buscarFn, termos, tam);
+  const candidatas = (Array.isArray(j.fontes) ? j.fontes : []).filter((f) => f && typeof f.url === 'string' && !excluir.includes(f.url)).slice(0, 4);
+  const reais = (await candidatasReais(linha['Palavra-chave'] || linha['Pauta'], buscarFn, excluir.length ? 24 : 8)).filter((c) => !excluir.includes(c.url)); // na 2ª busca olha mais referências, sem repetir as já tentadas
+  const res = await verificarFontes([...reais, ...candidatas], buscarFn, termos, tam);
   const lidas = res.validas
     .filter((v) => v.lido)
     .sort((a, b) => relevancia(b.texto, termos).total - relevancia(a.texto, termos).total)
     .slice(0, max);
   const fotos = (Array.isArray(j.fotos) ? j.fotos : []).map((x) => String(x).trim()).filter(Boolean).slice(0, 3);
   const extras = res.validas.filter((v) => !lidas.includes(v)).slice(0, 2);
-  return { lidas, extras, termos, fotos, tentadas: candidatas.map((c) => c.url), descartadas: res.invalidas };
+  return { lidas, extras, termos, fotos, tentadas: [...reais, ...candidatas].map((c) => c.url), descartadas: res.invalidas };
 }
 
 const STOP_EN = new Set(['the', 'and', 'for', 'are', 'was', 'were', 'that', 'this', 'with', 'from', 'have', 'has', 'had', 'not', 'but', 'you', 'your', 'can', 'will', 'which', 'their', 'there', 'they', 'them', 'than', 'then', 'also', 'into', 'about', 'more', 'most', 'some', 'such', 'other', 'when', 'what', 'how', 'why', 'who', 'its', 'our', 'out', 'one', 'all', 'any', 'may', 'been', 'being', 'does', 'did', 'each', 'many', 'much', 'over', 'only', 'these', 'those', 'between', 'because', 'while', 'where', 'would', 'could', 'should', 'just', 'like', 'use', 'used', 'using', 'see', 'new', 'home', 'menu', 'search', 'read', 'share', 'privacy', 'cookies', 'policy', 'contact', 'terms']);
