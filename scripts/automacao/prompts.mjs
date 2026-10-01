@@ -122,6 +122,7 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca, fontesLidas 
     `O title deve ter no máximo 44 caracteres (com " | Mente Curiosa" nunca passa de 60).`,
     `A palavra-chave principal, exatamente como escrita acima ("${linha['Palavra-chave']}"), deve aparecer na primeira frase do primeiro parágrafo.`,
     `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,
+    `Originalidade: explique com as SUAS palavras e reorganize a ordem das ideias das fontes; nunca copie frases delas. Nos títulos de seção, na introdução e no resumo use sinônimos e variações da palavra-chave em vez de repeti-la; a expressão exata fica no title, na primeira frase e em poucos pontos do texto.`,
     `Afirme apenas o que as fontes citadas dizem ou o que é conhecimento científico básico e incontroverso. Não acrescente exemplos, causas, efeitos, relações ou estatísticas que a fonte não traga: um validador compara cada afirmação com o texto das fontes e reprova o que não tem apoio. Para chegar ao tamanho, aprofunde com definições, etapas e exemplos que a própria fonte traz.`,
     blocoFontesLidas(fontesLidas),
     blocoTermosContexto(termosContexto),
