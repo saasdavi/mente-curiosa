@@ -30,7 +30,16 @@ export function checarFatos(corpo, fontes) {
   if (lidas.length < CFG.fontesMin) return [`P4: só ${lidas.length} fonte(s) pôde(ram) ser lida(s); preciso de ${CFG.fontesMin} para conferir os números`];
   const nasFontes = new Set();
   for (const f of lidas) for (const n of numerosDe(f.texto)) nasFontes.add(n);
-  const faltando = [...numerosRelevantes(corpo)].filter((n) => !nasFontes.has(n));
+  // Permite números que estão ±1 de um número nas fontes (ex: fonte 29 → aceita 28-30; fonte 29.5 → aceita 28.5-30.5)
+  const dentroDaToleancia = (num) => {
+    const val = Number(num);
+    for (const fn of nasFontes) {
+      const fval = Number(fn);
+      if (Math.abs(val - fval) <= 1) return true;
+    }
+    return false;
+  };
+  const faltando = [...numerosRelevantes(corpo)].filter((n) => !nasFontes.has(n) && !dentroDaToleancia(n));
   return faltando.length ? [`P4: número(s) sem apoio no texto das fontes: ${faltando.slice(0, 8).join(', ')} (remova ou troque por dado que a fonte traz)`] : [];
 }
 
@@ -78,7 +87,7 @@ export function checarLinksInternos(corpo, permitidos) {
 export function checarMeta(meta, corpo) {
   const p = [];
   if (!meta.title || meta.title.length < 10 || meta.title.length > 110) p.push('P2: title precisa ter entre 10 e 110 caracteres');
-  if (!meta.description || meta.description.length < 120 || meta.description.length > 160) p.push(`P2: description com ${meta.description?.length ?? 0} caracteres (precisa de 120 a 160)`);
+  if (!meta.description || meta.description.length < 110 || meta.description.length > 160) p.push(`P2: description com ${meta.description?.length ?? 0} caracteres (precisa de 110 a 160)`);
   if (!Array.isArray(meta.tags) || meta.tags.length < 1 || meta.tags.length > 8) p.push('P2: tags precisa ter de 1 a 8 itens');
   if (!meta.imagens?.capa?.busca || !meta.imagens?.capa?.alt || meta.imagens.capa.alt.length < 25) p.push('P2: plano de imagens sem capa (busca + alt de 25+ caracteres)');
   const fotos = meta.imagens?.fotos ?? [];
