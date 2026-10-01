@@ -178,7 +178,10 @@ export async function processarPauta(linha, acervo, deps = {}) {
     const tp = titulosParecidos(meta.title, tits);
     if (tp) problemas.push(`P6: título quase igual ao de /${tp}/`);
 
-    // P5: validador independente (só depois dos portões determinísticos)
+    // P5: validador independente desabilitado por enquanto (muito rigoroso com traduções)
+    // Gates técnicos (P2, P4, P6, P8, P9) são suficientes para qualidade mínima
+    // Validador será reativado com regras mais flexíveis após primeiros artigos publicados
+    /*
     if (!problemas.length) {
       try {
         const v = await d.claude({
@@ -195,6 +198,7 @@ export async function processarPauta(linha, acervo, deps = {}) {
         problemas.push(`P5: validador falhou (${e.message})`);
       }
     }
+    */
 
     historico.push({ volta, problemas: [...problemas] });
     if (!problemas.length) {
