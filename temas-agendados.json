@@ -10,9 +10,9 @@
     "dificuldade": 39,
     "slug": "por-que-a-lua-tem-fases",
     "fontes": [
-      {"title": "NASA — Moon Phases", "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"},
       {"title": "Britannica — Moon Phase", "url": "https://www.britannica.com/science/moon-phase"},
-      {"title": "USGS — Moon Facts", "url": "https://www.usgs.gov/space-hazards-protection/moon-facts"}
+      {"title": "Britannica — Moon", "url": "https://www.britannica.com/science/moon"},
+      {"title": "National Geographic — Moon", "url": "https://www.nationalgeographic.com/science/article/moon"}
     ]
   },
   {
