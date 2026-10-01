@@ -108,7 +108,7 @@ export async function verificarFontes(fontes, buscarFn, termos = [], tam = 9000)
  */
 export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max = 2 }) {
   const r = await claude({
-    system: 'Você indica fontes primárias REAIS para um artigo de ciência para o grande público. Responda SOMENTE com JSON: {"termos": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês"], "fontes": [{"title": "Instituição — título da página", "url": "https://..."}]}. Dê 4 fontes: páginas ESPECÍFICAS do assunto, com texto explicativo, de instituições, universidades, periódicos ou órgãos públicos (ex.: science.nasa.gov, esa.int, britannica.com, scielo.br, fiocruz.br). Nunca a home, nunca uma página geral; se não tiver certeza do caminho exato, use uma página de tema amplo do mesmo assunto. Nunca invente caminho.',
+    system: 'Você indica fontes primárias REAIS e buscas de fotos para um artigo de ciência para o grande público. Responda SOMENTE com JSON: {"termos": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês"], "fotos": ["3 buscas em inglês para banco de fotos (a 1ª é a capa), 2 a 4 palavras cada, objeto ou cena concreta e comum; nunca conceito abstrato, pessoa, marca ou texto"], "fontes": [{"title": "Instituição — título da página", "url": "https://..."}]}. Dê 4 fontes: páginas ESPECÍFICAS do assunto, com texto explicativo, de instituições, universidades, periódicos ou órgãos públicos (ex.: science.nasa.gov, esa.int, britannica.com, scielo.br, fiocruz.br). Nunca a home, nunca uma página geral; se não tiver certeza do caminho exato, use uma página de tema amplo do mesmo assunto. Nunca invente caminho.',
     user: `Assunto do artigo: ${linha['Pauta']}\nPalavra-chave: ${linha['Palavra-chave']}`,
     maxTokens: 700,
   });
@@ -121,5 +121,35 @@ export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max
     .filter((v) => v.lido)
     .sort((a, b) => relevancia(b.texto, termos).total - relevancia(a.texto, termos).total)
     .slice(0, max);
-  return { lidas, termos };
+  const fotos = (Array.isArray(j.fotos) ? j.fotos : []).map((x) => String(x).trim()).filter(Boolean).slice(0, 3);
+  return { lidas, termos, fotos };
 }
+
+const STOP_EN = new Set(['the', 'and', 'for', 'are', 'was', 'were', 'that', 'this', 'with', 'from', 'have', 'has', 'had', 'not', 'but', 'you', 'your', 'can', 'will', 'which', 'their', 'there', 'they', 'them', 'than', 'then', 'also', 'into', 'about', 'more', 'most', 'some', 'such', 'other', 'when', 'what', 'how', 'why', 'who', 'its', 'our', 'out', 'one', 'all', 'any', 'may', 'been', 'being', 'does', 'did', 'each', 'many', 'much', 'over', 'only', 'these', 'those', 'between', 'because', 'while', 'where', 'would', 'could', 'should', 'just', 'like', 'use', 'used', 'using', 'see', 'new', 'home', 'menu', 'search', 'read', 'share', 'privacy', 'cookies', 'policy', 'contact', 'terms']);
+const STOP_PT = new Set(['para', 'como', 'mais', 'muito', 'pelo', 'pela', 'pelos', 'pelas', 'entre', 'sobre', 'quando', 'onde', 'qual', 'quais', 'quem', 'porque', 'também', 'tambem', 'ainda', 'apenas', 'assim', 'cada', 'esta', 'este', 'estes', 'estas', 'essa', 'esse', 'essas', 'esses', 'isso', 'isto', 'aqui', 'foram', 'sido', 'sendo', 'pode', 'podem', 'tem', 'tinha', 'seus', 'suas', 'dele', 'dela', 'deles', 'delas', 'nosso', 'nossa', 'menu', 'cookies', 'privacidade', 'contato']);
+
+/**
+ * Palavras fortes do assunto tiradas do texto das fontes lidas (sem gastar tokens): as mais repetidas,
+ * com bônus para as que aparecem nas duas fontes; ficam de fora as comuns e as que já estão nas palavras da planilha.
+ */
+export function termosDeContexto(textos, termosPlanilha = [], n = 12) {
+  const jaTem = new Set(termosPlanilha.map(semAcento));
+  const contagem = new Map();
+  const emFontes = new Map();
+  for (const t of textos) {
+    const vistas = new Set();
+    for (const w of semAcento(t).replace(/[^a-z ]/g, ' ').split(/\s+/)) {
+      if (w.length < 5 || STOP.has(w) || STOP_EN.has(w) || STOP_PT.has(w) || jaTem.has(w)) continue;
+      contagem.set(w, (contagem.get(w) ?? 0) + 1);
+      vistas.add(w);
+    }
+    for (const w of vistas) emFontes.set(w, (emFontes.get(w) ?? 0) + 1);
+  }
+  return [...contagem.entries()]
+    .filter(([, c]) => c >= 3)
+    .map(([w, c]) => [w, c * (emFontes.get(w) > 1 ? 2 : 1)])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, n)
+    .map(([w]) => w);
+}
+

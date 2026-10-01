@@ -9,10 +9,10 @@ import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
 import { chamarClaude, extrairJSON, USO, custoEstimado } from './claude.mjs';
 import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
-import { verificarFontes, termosDoAssunto, pesquisarFontes } from './fontes.mjs';
+import { verificarFontes, termosDoAssunto, pesquisarFontes, termosDeContexto } from './fontes.mjs';
 import { maiorSemelhanca, titulosParecidos } from './similaridade.mjs';
 import { checarTexto, checarFatos, checarCopia } from './gates.mjs';
-import { prepararImagens } from './imagens.mjs';
+import { prepararImagens, escolherFotosPrevias } from './imagens.mjs';
 import { garantirAviso, montarFrontmatter, gravarArtigo, lerAcervo, urlsDeCreditoUsadas } from './artigo.mjs';
 import { auditarArtigo, norm } from '../lib-audit.mjs';
 
@@ -48,7 +48,7 @@ export function linksPermitidos(linha, acervo) {
  * ou { ok:false, motivo, historico }.
  */
 export async function processarPauta(linha, acervo, deps = {}) {
-  const d = { claude: chamarClaude, fontes: verificarFontes, pesquisar: pesquisarFontes, imagens: prepararImagens, buscarFn: buscar, ...deps };
+  const d = { claude: chamarClaude, fontes: verificarFontes, pesquisar: pesquisarFontes, fotosPrevias: escolherFotosPrevias, imagens: prepararImagens, buscarFn: buscar, ...deps };
   const permitidos = linksPermitidos(linha, acervo);
   const permitidosUrls = [...permitidos.map((l) => l.url), '/', '/sobre/', '/contato/', '/politica-de-privacidade/'];
   const termo = linha['Termo-cabeça (Planner)'] || '';
@@ -64,20 +64,30 @@ export async function processarPauta(linha, acervo, deps = {}) {
 
   // Pesquisa antes de escrever: até 2 fontes lidas (5.000 caracteres cada) que o redator usa como base.
   let fontesLidas = [];
+  let fotosPrevias = [];
+  let termosContexto = [];
   try {
     const p = await d.pesquisar({ linha, claude: d.claude, buscarFn: d.buscarFn });
     fontesLidas = p.lidas ?? [];
+    termosContexto = termosDeContexto(fontesLidas.map((f) => f.texto), [...termosDoAssunto(linha['Pauta'], linha['Palavra-chave']), ...(p.termos ?? [])]);
+    if (termosContexto.length) log(`Palavras de contexto das fontes: ${termosContexto.join(', ')}`);
+    // Fotos escolhidas ANTES de escrever (sem Claude): se o tema não tem foto, não gasta nada com texto.
+    if ((p.fotos ?? []).length) {
+      fotosPrevias = await d.fotosPrevias({ buscas: p.fotos, categoria: linha['Categoria (slug)'], usados: new Set(urlsDeCreditoUsadas(acervo)), fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'] });
+      log(`Fotos escolhidas antes de escrever: ${fotosPrevias.map((f) => f.c.urlCredito).join(', ')}`);
+    }
     for (const v of fontesLidas) cacheFontes.set(v.url, v);
     log(`Pesquisa prévia: ${fontesLidas.length} fonte(s) lida(s)${fontesLidas.length ? ': ' + fontesLidas.map((f) => f.url).join(', ') : ' (seguindo sem; o redator indica as fontes)'}`);
   } catch (e) {
     if (FATAL.test(String(e.message))) throw e;
-    log(`aviso: pesquisa prévia de fontes falhou (${e.message}); seguindo sem.`);
+    if (/^sem foto no banco/.test(String(e.message))) return { ok: false, motivo: `P7: ${e.message} (nenhum texto foi escrito, nada foi gasto com redação)`, historico: [] };
+    log(`aviso: pesquisa prévia falhou (${e.message}); seguindo sem.`);
   }
 
   for (let volta = 0; volta <= CFG.voltasMax; volta++) {
     const pedido = volta === 0 || !ultima
-      ? pedidoArtigo({ linha, linksPermitidos: permitidos, termoCabeca: termo, fontesLidas })
-      : pedidoReescrita({ anterior: ultima.bruto, problemas, fontesLidas });
+      ? pedidoArtigo({ linha, linksPermitidos: permitidos, termoCabeca: termo, fontesLidas, fotosPrevias, termosContexto })
+      : pedidoReescrita({ anterior: ultima.bruto, problemas, fontesLidas, termosContexto });
     let resp;
     try {
       const r = await d.claude({ system: sistema, user: pedido });
@@ -150,6 +160,7 @@ export async function processarPauta(linha, acervo, deps = {}) {
           meta, categoria: linha['Categoria (slug)'], slug: linha['Slug'], titulo: meta.title,
           fontesFoto: FONTES_FOTO[linha['Categoria (slug)']] ?? ['pexels'],
           usados: urlsDeCreditoUsadas(acervo),
+          previas: fotosPrevias,
         })
         .catch((e) => ({ erro: e.message }));
       if (imagens.erro) return { ok: false, motivo: `P7: ${imagens.erro}`, historico };
@@ -222,7 +233,7 @@ export function falhasRecentes(linhas, hoje, dias = 7) {
  * Regra anti-loop: uma pauta que o auditor reprovou sai da fila (status "revisar") e o robô passa para
  * o próximo tema. Falha de infraestrutura (API fora do ar, rede) não queima o tema: ele continua "planejado".
  */
-export const INFRA = /API do Claude: (429|5\d\d)|fetch failed|timeout|ECONN|ETIMEDOUT|não abriu|rate.?limit|overloaded/i;
+export const INFRA = /API do Claude: (429|5\d\d)|fetch failed|timeout|ECONN|ETIMEDOUT|não abriu|rate.?limit|overloaded|Pexels HTTP (429|5\d\d)/i;
 // Problema de conta/chave (sem crédito, chave inválida): nunca é culpa do tema; o tema fica "planejado" e a execução para.
 export const FATAL = /credit balance|invalid x-api-key|authentication_error|permission_error|billing/i;
 export function statusAposFalha({ tentativas, motivo }) {

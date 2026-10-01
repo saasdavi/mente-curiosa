@@ -87,7 +87,8 @@ export function depsFalsas({ aprovar = true } = {}) {
       if (validador) return { texto: JSON.stringify(aprovar ? { id: 'ART9999', decisao: 'APROVADO', motivos: [], correcoes: [] } : { id: 'ART9999', decisao: 'DEVOLVER', motivos: ['V1: dado sem fonte'], correcoes: ['remover o dado'] }) };
       return { texto: respostaRedator() };
     },
-    pesquisar: async () => ({ lidas: [], termos: [] }),
+    pesquisar: async () => ({ lidas: [], termos: [], fotos: [] }),
+    fotosPrevias: async () => [],
     fontes: async (fontes) => ({ validas: fontes.map((f) => ({ title: f.title, url: f.url, texto: TEXTO_FONTE, lido: true })), invalidas: [] }),
     imagens: async ({ meta, slug, titulo }) => {
       const png = await sharp({ create: { width: 1600, height: 1000, channels: 3, background: '#3b6ea5' } }).png().toBuffer();

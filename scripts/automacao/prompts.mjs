@@ -84,7 +84,22 @@ export function blocoFontesLidas(fontesLidas = []) {
   ].join('\n');
 }
 
-export function pedidoArtigo({ linha, linksPermitidos, termoCabeca, fontesLidas = [] }) {
+/** Fotos já escolhidas (descrição em inglês dada pelo banco de imagens) e palavras de contexto tiradas das fontes. */
+export function blocoFotosPrevias(previas = []) {
+  if (!previas.length) return '';
+  const rot = ['CAPA', 'FOTO 1', 'FOTO 2', 'FOTO 3'];
+  return [
+    'FOTOS JÁ ESCOLHIDAS (o robô já achou estas fotos; a descrição está em inglês). Em "imagens", escreva para cada uma o "alt" em português descrevendo SOMENTE o que a descrição diz, uma "legenda" que ligue a foto ao texto e a "secao" (número da seção ## depois da qual a foto entra, sem repetir). Copie a busca de cada foto no campo "busca".',
+    ...previas.map((p, i) => `- ${rot[i] ?? `FOTO ${i}`} (busca "${p.consulta}"): ${p.c.descricao || p.consulta}`),
+  ].join('\n');
+}
+
+export function blocoTermosContexto(termos = []) {
+  if (!termos.length) return '';
+  return `PALAVRAS DE CONTEXTO tiradas das fontes (podem estar em inglês: use o equivalente em português, nunca deixe termo em inglês no texto). Use de 8 a 12 delas, de forma natural e sem forçar, além das palavras-chave principais: ${termos.join(', ')}.`;
+}
+
+export function pedidoArtigo({ linha, linksPermitidos, termoCabeca, fontesLidas = [], fotosPrevias = [], termosContexto = [] }) {
   const caudas = String(linha['Caudas longas (seções H2)'] || '').split(';').map((s) => s.trim()).filter(Boolean);
   const saude = CFG.categoriasSaude.includes(linha['Categoria (slug)']);
   return [
@@ -109,11 +124,13 @@ export function pedidoArtigo({ linha, linksPermitidos, termoCabeca, fontesLidas 
     `Use números e estatísticas somente se aparecerem no texto da fonte citada; na dúvida, prefira uma explicação qualitativa a um número.`,
     `Afirme apenas o que as fontes citadas dizem ou o que é conhecimento científico básico e incontroverso. Não acrescente exemplos, causas, efeitos, relações ou estatísticas que a fonte não traga: um validador compara cada afirmação com o texto das fontes e reprova o que não tem apoio. Para chegar ao tamanho, aprofunde com definições, etapas e exemplos que a própria fonte traz.`,
     blocoFontesLidas(fontesLidas),
+    blocoTermosContexto(termosContexto),
+    blocoFotosPrevias(fotosPrevias),
     `Responda exatamente no FORMATO DA RESPOSTA.`,
   ].filter((x) => x !== '').join('\n');
 }
 
-export function pedidoReescrita({ anterior, problemas, fontesLidas = [] }) {
+export function pedidoReescrita({ anterior, problemas, fontesLidas = [], termosContexto = [] }) {
   return [
     'A versão abaixo foi reprovada. Corrija SOMENTE os problemas listados, mantendo o restante, e devolva o artigo completo no mesmo FORMATO DA RESPOSTA.',
     'Regras da correção: (1) para cada afirmação "sem apoio nas fontes", REMOVA a afirmação ou reescreva dizendo apenas o que a fonte diz; nunca acrescente fato novo para compensar; (2) apague também as repetições dela no FAQ, nos mitos e nos pins; (3) se o texto encurtar, mantenha o mínimo de 1.250 palavras aprofundando o que as fontes trazem; (4) se faltarem fontes, cite exatamente 3 fontes específicas do tema.',
@@ -122,6 +139,7 @@ export function pedidoReescrita({ anterior, problemas, fontesLidas = [] }) {
     ...problemas.map((p) => `- ${p}`),
     '',
     blocoFontesLidas(fontesLidas),
+    blocoTermosContexto(termosContexto),
     '',
     'VERSÃO ANTERIOR:',
     anterior,
