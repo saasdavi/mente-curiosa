@@ -10,6 +10,23 @@ export function garantirAviso(corpo, categoria) {
   return `${corpo.trim()}\n\n*${CFG.avisoSaude}*\n`;
 }
 
+/**
+ * Link interno só vale se a página existe (lista `permitidos` + páginas fixas). Os que não valem são trocados pelo
+ * texto, por código: o modelo nunca "cria" link. Se sobrarem menos de 2 links internos, completa com links reais da lista.
+ */
+export function sanearLinksInternos(corpo, permitidos, extras = []) {
+  const ok = new Set([...permitidos.map((l) => l.url), ...extras]);
+  let t = corpo.replace(/!\[[^\]]*\]\((\/[^)\s]*)\)/g, (m, u) => (ok.has(u) ? m : ''));
+  t = t.replace(/\[([^\]]+)\]\((\/[^)\s]*)\)/g, (m, txt, u) => (ok.has(u) ? m : txt));
+  const usados = new Set([...t.matchAll(/\]\((\/[^)\s]*)\)/g)].map((m) => m[1]).filter((u) => ok.has(u)));
+  if (usados.size >= 2) return t;
+  const fixas = [{ titulo: 'Página inicial', url: '/' }, { titulo: 'Sobre o blog', url: '/sobre/' }].filter((l) => ok.has(l.url));
+  const faltam = [...permitidos, ...fixas].filter((l) => !usados.has(l.url)).slice(0, 2 - usados.size);
+  const linha = `**Leia também:** ${faltam.map((l) => `[${l.titulo}](${l.url})`).join(' · ')}`;
+  const i = t.search(/\n\n[^\n]*não substitui a orientação de um profissional de saúde/i);
+  return i >= 0 ? `${t.slice(0, i)}\n\n${linha}${t.slice(i)}` : `${t.trim()}\n\n${linha}\n`;
+}
+
 export function montarFrontmatter({ linha, meta, imagens, fontesValidas, autor = CFG.autorPadrao }) {
   const slug = linha['Slug'];
   const dir = `/images/${slug}`;
@@ -69,6 +86,8 @@ export function gravarArtigo({ raiz = '.', frontmatter, corpo, imagens }) {
 
 /** Horário de saída do artigo no dia (fuso de Brasília): 1º do dia às 12:00, 2º às 18:00; os demais alternam. */
 export function dataHoraPublicacao(linha) {
+  // Teste manual (workflow com "publicar_agora"): o artigo sai com a data e hora de agora (Brasília) e entra no blog no deploy seguinte.
+  if (process.env.PUBLICAR_AGORA === 'true') return new Date(Date.now() - 3 * 3600e3 - 60e3).toISOString().slice(0, 19) + '-03:00';
   const ordem = Number(linha['Ordem do Dia']) || 1;
   const hora = CFG.horariosPublicacao[(ordem - 1) % CFG.horariosPublicacao.length];
   return `${linha.dataISO}T${hora}:00-03:00`;

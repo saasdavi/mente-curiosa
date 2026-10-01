@@ -106,14 +106,14 @@ export async function verificarFontes(fontes, buscarFn, termos = [], tam = 9000)
  * e fica com as `max` mais relevantes, com até `tam` caracteres de cada. O redator escreve com base nesse texto.
  * Devolve { lidas: [{title,url,texto,lido}], termos }. Falha de rede ou fonte ruim devolve lidas vazio (segue sem).
  */
-export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max = 2 }) {
+export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max = 2, excluir = [] }) {
   const r = await claude({
     system: 'Você indica fontes primárias REAIS e buscas de fotos para um artigo de ciência para o grande público. Responda SOMENTE com JSON: {"termos": ["8 a 12 palavras-chave do assunto, metade em português e metade em inglês"], "fotos": ["3 buscas em inglês para banco de fotos (a 1ª é a capa), 2 a 4 palavras cada, objeto ou cena concreta e comum; nunca conceito abstrato, pessoa, marca ou texto"], "fontes": [{"title": "Instituição — título da página", "url": "https://..."}]}. Dê 4 fontes: páginas ESPECÍFICAS do assunto, com texto explicativo, de instituições, universidades, periódicos ou órgãos públicos (ex.: science.nasa.gov, esa.int, britannica.com, scielo.br, fiocruz.br). Nunca a home, nunca uma página geral; se não tiver certeza do caminho exato, use uma página de tema amplo do mesmo assunto. Nunca invente caminho.',
-    user: `Assunto do artigo: ${linha['Pauta']}\nPalavra-chave: ${linha['Palavra-chave']}`,
+    user: `Assunto do artigo: ${linha['Pauta']}\nPalavra-chave: ${linha['Palavra-chave']}${excluir.length ? `\nJÁ TENTEI estas páginas e NÃO servem (não abrem ou não tratam do assunto); indique outras DIFERENTES, de outros sites:\n${excluir.join('\n')}` : ''}`,
     maxTokens: 700,
   });
   let j;
-  try { j = extrairJSON(r.texto); } catch { return { lidas: [], termos: [] }; }
+  try { j = extrairJSON(r.texto); } catch { return { lidas: [], termos: [], tentadas: [], descartadas: [] }; }
   const termos = termosDoAssunto(linha['Pauta'], linha['Palavra-chave'], ...(Array.isArray(j.termos) ? j.termos.map(String) : []));
   const candidatas = (Array.isArray(j.fontes) ? j.fontes : []).filter((f) => f && typeof f.url === 'string').slice(0, 4);
   const res = await verificarFontes(candidatas, buscarFn, termos, tam);
@@ -122,7 +122,8 @@ export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max
     .sort((a, b) => relevancia(b.texto, termos).total - relevancia(a.texto, termos).total)
     .slice(0, max);
   const fotos = (Array.isArray(j.fotos) ? j.fotos : []).map((x) => String(x).trim()).filter(Boolean).slice(0, 3);
-  return { lidas, termos, fotos };
+  const extras = res.validas.filter((v) => !lidas.includes(v)).slice(0, 2);
+  return { lidas, extras, termos, fotos, tentadas: candidatas.map((c) => c.url), descartadas: res.invalidas };
 }
 
 const STOP_EN = new Set(['the', 'and', 'for', 'are', 'was', 'were', 'that', 'this', 'with', 'from', 'have', 'has', 'had', 'not', 'but', 'you', 'your', 'can', 'will', 'which', 'their', 'there', 'they', 'them', 'than', 'then', 'also', 'into', 'about', 'more', 'most', 'some', 'such', 'other', 'when', 'what', 'how', 'why', 'who', 'its', 'our', 'out', 'one', 'all', 'any', 'may', 'been', 'being', 'does', 'did', 'each', 'many', 'much', 'over', 'only', 'these', 'those', 'between', 'because', 'while', 'where', 'would', 'could', 'should', 'just', 'like', 'use', 'used', 'using', 'see', 'new', 'home', 'menu', 'search', 'read', 'share', 'privacy', 'cookies', 'policy', 'contact', 'terms']);

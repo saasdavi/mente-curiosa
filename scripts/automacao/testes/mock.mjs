@@ -87,7 +87,7 @@ export function depsFalsas({ aprovar = true } = {}) {
       if (validador) return { texto: JSON.stringify(aprovar ? { id: 'ART9999', decisao: 'APROVADO', motivos: [], correcoes: [] } : { id: 'ART9999', decisao: 'DEVOLVER', motivos: ['V1: dado sem fonte'], correcoes: ['remover o dado'] }) };
       return { texto: respostaRedator() };
     },
-    pesquisar: async () => ({ lidas: [], termos: [], fotos: [] }),
+    pesquisar: async () => ({ lidas: [{ title: 'NASA — Water and ice', url: 'https://www.nasa.gov/water-ice', texto: TEXTO_FONTE, lido: true }, { title: 'USGS — Water density', url: 'https://www.usgs.gov/water-density', texto: TEXTO_FONTE, lido: true }], extras: [], termos: [], fotos: [], tentadas: [], descartadas: [] }),
     fotosPrevias: async () => [],
     fontes: async (fontes) => ({ validas: fontes.map((f) => ({ title: f.title, url: f.url, texto: TEXTO_FONTE, lido: true })), invalidas: [] }),
     imagens: async ({ meta, slug, titulo }) => {

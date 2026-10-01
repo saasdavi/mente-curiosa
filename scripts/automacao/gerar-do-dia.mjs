@@ -9,11 +9,11 @@ import { hojeBR, somarDias, git, buscar, log } from './util.mjs';
 import { lerCalendario, gravarCelulas } from './sheets.mjs';
 import { chamarClaude, extrairJSON, USO, custoEstimado } from './claude.mjs';
 import { sistemaRedator, pedidoArtigo, pedidoReescrita, sistemaValidador, pedidoValidacao, lerResposta } from './prompts.mjs';
-import { verificarFontes, termosDoAssunto, pesquisarFontes, termosDeContexto } from './fontes.mjs';
+import { verificarFontes, termosDoAssunto, pesquisarFontes, termosDeContexto, relevancia } from './fontes.mjs';
 import { maiorSemelhanca, titulosParecidos } from './similaridade.mjs';
 import { checarTexto, checarFatos, checarCopia } from './gates.mjs';
 import { prepararImagens, escolherFotosPrevias } from './imagens.mjs';
-import { garantirAviso, montarFrontmatter, gravarArtigo, lerAcervo, urlsDeCreditoUsadas } from './artigo.mjs';
+import { garantirAviso, sanearLinksInternos, montarFrontmatter, gravarArtigo, lerAcervo, urlsDeCreditoUsadas } from './artigo.mjs';
 import { auditarArtigo, norm } from '../lib-audit.mjs';
 
 const NOTA_MINIMA = 85;
@@ -64,11 +64,27 @@ export async function processarPauta(linha, acervo, deps = {}) {
 
   // Pesquisa antes de escrever: até 2 fontes lidas (5.000 caracteres cada) que o redator usa como base.
   let fontesLidas = [];
+  let fontesExtras = [];
   let fotosPrevias = [];
   let termosContexto = [];
   try {
-    const p = await d.pesquisar({ linha, claude: d.claude, buscarFn: d.buscarFn });
+    let p = await d.pesquisar({ linha, claude: d.claude, buscarFn: d.buscarFn });
+    for (const x of p.descartadas ?? []) log(`Fonte descartada: ${x.url} (${x.motivo})`);
+    if ((p.lidas ?? []).length < CFG.fontesMin) {
+      log(`Pesquisa prévia: só ${(p.lidas ?? []).length} fonte(s) lida(s); buscando outras fontes.`);
+      const p2 = await d.pesquisar({ linha, claude: d.claude, buscarFn: d.buscarFn, excluir: p.tentadas ?? [] });
+      for (const x of p2.descartadas ?? []) log(`Fonte descartada: ${x.url} (${x.motivo})`);
+      const vistos = new Set();
+      const termos2 = [...new Set([...(p.termos ?? []), ...(p2.termos ?? [])])];
+      const todas = [...(p.lidas ?? []), ...(p2.lidas ?? [])]
+        .filter((f) => !vistos.has(f.url) && vistos.add(f.url))
+        .sort((a, b) => relevancia(b.texto, termos2).total - relevancia(a.texto, termos2).total);
+      p = { ...p2, lidas: todas.slice(0, 2), extras: [...(p.extras ?? []), ...(p2.extras ?? []), ...todas.slice(2)].filter((f) => !todas.slice(0, 2).includes(f)).slice(0, 2), termos: termos2, fotos: (p.fotos ?? []).length ? p.fotos : p2.fotos };
+    }
     fontesLidas = p.lidas ?? [];
+    fontesExtras = p.extras ?? [];
+    // Sem 2 fontes lidas o robô NÃO escreve (nada é gasto com redação) e o tema fica para outra tentativa.
+    if (fontesLidas.length < CFG.fontesMin) return { ok: false, motivo: `P3: não achei 2 fontes legíveis para o tema (só ${fontesLidas.length}); nada foi escrito`, historico: [] };
     termosContexto = termosDeContexto(fontesLidas.map((f) => f.texto), [...termosDoAssunto(linha['Pauta'], linha['Palavra-chave']), ...(p.termos ?? [])]);
     if (termosContexto.length) log(`Palavras de contexto das fontes: ${termosContexto.join(', ')}`);
     // Fotos escolhidas ANTES de escrever (sem Claude): se o tema não tem foto, não gasta nada com texto.
@@ -77,12 +93,13 @@ export async function processarPauta(linha, acervo, deps = {}) {
       log(`Fotos escolhidas antes de escrever: ${fotosPrevias.map((f) => f.c.urlCredito).join(', ')}`);
     }
     for (const v of fontesLidas) cacheFontes.set(v.url, v);
-    log(`Pesquisa prévia: ${fontesLidas.length} fonte(s) lida(s)${fontesLidas.length ? ': ' + fontesLidas.map((f) => f.url).join(', ') : ' (seguindo sem; o redator indica as fontes)'}`);
+    log(`Pesquisa prévia: ${fontesLidas.length} fonte(s) lida(s)${fontesLidas.length ? ': ' + fontesLidas.map((f) => f.url).join(', ') : ''}`);
   } catch (e) {
     if (FATAL.test(String(e.message))) throw e;
     if (/^sem foto no banco/.test(String(e.message))) return { ok: false, motivo: `P7: ${e.message} (nenhum texto foi escrito, nada foi gasto com redação)`, historico: [] };
-    log(`aviso: pesquisa prévia falhou (${e.message}); seguindo sem.`);
+    log(`aviso: pesquisa prévia falhou (${e.message}).`);
   }
+  if (fontesLidas.length < CFG.fontesMin) return { ok: false, motivo: `P3: não achei 2 fontes legíveis para o tema (só ${fontesLidas.length}); nada foi escrito`, historico: [] };
 
   for (let volta = 0; volta <= CFG.voltasMax; volta++) {
     const pedido = volta === 0 || !ultima
@@ -99,7 +116,11 @@ export async function processarPauta(linha, acervo, deps = {}) {
       continue;
     }
     const { meta } = resp;
-    const corpo = garantirAviso(resp.corpo, linha['Categoria (slug)']);
+    // Fontes: sempre as páginas que o robô abriu e leu (o modelo só pode acrescentar a que faltar, e ela é aberta no P3).
+    const base = [...fontesLidas, ...fontesExtras].map((f) => ({ title: f.title, url: f.url }));
+    meta.sources = [...base, ...(meta.sources ?? []).filter((x) => !base.some((b) => b.url === x.url))].slice(0, 3);
+    // Links internos: só páginas que existem; o que não existe vira texto, por código.
+    const corpo = garantirAviso(sanearLinksInternos(resp.corpo, permitidos, permitidosUrls), linha['Categoria (slug)']);
     problemas = [];
 
     // P2/P8/P9: estrutura, segurança, links
@@ -120,10 +141,10 @@ export async function processarPauta(linha, acervo, deps = {}) {
     for (const v of res.validas) cacheFontes.set(v.url, v);
     for (const i of res.invalidas) { cacheFontes.set(i.url, null); motivosFonte.set(i.url, i.motivo); }
     const fontes = (meta.sources ?? []).map((s) => cacheFontes.get(s.url)).filter(Boolean);
-    if (fontes.length < CFG.fontesMin || (meta.sources ?? []).length < 3) {
+    if (fontes.length < CFG.fontesMin || (meta.sources ?? []).length < 3 || fontes.length < (meta.sources ?? []).length) {
       const inval = (meta.sources ?? []).filter((s) => cacheFontes.get(s.url) === null).map((s) => `${s.url} (${motivosFonte.get(s.url) ?? 'não abriu'})`);
       const citadas = (meta.sources ?? []).length;
-      problemas.push(`P3: você citou ${citadas} fonte(s) e ${fontes.length} servem (precisa citar EXATAMENTE 3 fontes, das quais pelo menos 2 abrem e tratam do assunto).${citadas < 3 ? ` Acrescente ${3 - citadas} fonte(s) específica(s) do tema.` : ''}${inval.length ? ` Troque: ${inval.join(', ')}` : ''}`);
+      problemas.push(`P3: você citou ${citadas} fonte(s) e ${fontes.length} servem (precisa citar EXATAMENTE 3 fontes, e todas precisam abrir e tratar do assunto).${citadas < 3 ? ` Acrescente ${3 - citadas} fonte(s) específica(s) do tema.` : ''}${inval.length ? ` Troque: ${inval.join(', ')}` : ''}`);
     }
 
     // P4/P6: fatos e cópia
@@ -238,8 +259,8 @@ export const INFRA = /API do Claude: (429|5\d\d)|fetch failed|timeout|ECONN|ETIM
 export const FATAL = /credit balance|invalid x-api-key|authentication_error|permission_error|billing/i;
 export function statusAposFalha({ tentativas, motivo }) {
   if (FATAL.test(String(motivo))) return null;
-  if (INFRA.test(String(motivo))) return tentativas >= 3 ? 'revisar' : null; // null = mantém "planejado"
-  return 'revisar';
+  // null = mantém "planejado": o tema volta à fila e é refeito (novas fontes, nova redação) em outra execução; depois de 3 tentativas vai para revisão.
+  return tentativas >= 3 ? 'revisar' : null;
 }
 const tentativasAnteriores = (l) => Number(String(l['PR / Log da automação'] || '').match(/tentativa (\d+)/)?.[1] ?? 0);
 
@@ -304,7 +325,8 @@ async function main() {
         { coluna: 'PR / Log da automação', valor: `FALHA ${hoje} (tentativa ${n}): ${r.motivo}`.slice(0, 480) },
         ...(novoStatus ? [{ coluna: 'Status', valor: novoStatus }] : []),
       );
-      if (novoStatus) log(`Tema ${linha['ID Artigo']} reprovado: sai da fila (status "${novoStatus}"); passando para o próximo tema.`);
+      if (novoStatus) log(`Tema ${linha['ID Artigo']} reprovado ${n} vezes: vai para revisão (status "${novoStatus}"); passando para o próximo tema.`);
+      else log(`Tema ${linha['ID Artigo']} não passou (tentativa ${n} de 3): continua "planejado" e será refeito em outra execução; passando para o próximo tema.`);
       resumo.push(`| ${linha['ID Artigo']} | ${linha['Pauta']} | FALHA | ${r.motivo.slice(0, 120)} | - |`);
       log(`FALHA: ${r.motivo}`);
       if (FATAL.test(String(r.motivo))) {
