@@ -148,7 +148,7 @@ export async function candidatasReais(consulta, buscarFn, max = 8) {
  * e fica com as `max` mais relevantes, com até `tam` caracteres de cada. O redator escreve com base nesse texto.
  * Devolve { lidas: [{title,url,texto,lido}], termos }. Falha de rede ou fonte ruim devolve lidas vazio (segue sem).
  */
-export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max = 2, excluir = [] }) {
+export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max = 3, excluir = [] }) {
   // Se o JSON tiver fontes predefinidas, usar aquelas primeiro
   let candidatas = (Array.isArray(linha['fontes']) ? linha['fontes'] : []).filter((f) => f && typeof f.url === 'string' && !excluir.includes(f.url)).slice(0, 4);
   let termos = termosDoAssunto(linha['Pauta'], linha['Palavra-chave']);
