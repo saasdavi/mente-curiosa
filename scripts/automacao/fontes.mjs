@@ -184,6 +184,7 @@ export async function pesquisarFontes({ linha, claude, buscarFn, tam = 5000, max
   const candidatasUrls = new Set(candidatas.map((c) => c.url));
   const lidas = res.validas
     .filter((v) => v.lido || candidatasUrls.has(v.url))
+    .map((v) => candidatasUrls.has(v.url) ? { ...v, lido: true } : v)
     .sort((a, b) => relevancia(b.texto, termos).total - relevancia(a.texto, termos).total)
     .slice(0, max);
   // fotos já foi definido acima (do JSON ou do Haiku)
