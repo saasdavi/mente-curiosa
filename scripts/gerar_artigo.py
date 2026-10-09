@@ -37,7 +37,7 @@ API_GEMINI = "https://generativelanguage.googleapis.com/v1beta"
 URL_ANTHROPIC = "https://api.anthropic.com/v1/messages"
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-haiku-5-5")
-RODADAS_REESCRITA = int(os.environ.get("RODADAS_REESCRITA") or 2)
+RODADAS_REESCRITA = int(os.environ.get("RODADAS_REESCRITA") or 1)
 PAUSA_ENTRE_CHAMADAS = float(os.environ.get("PAUSA_ENTRE_CHAMADAS") or 15)
 NOTA_MINIMA = 9.0
 COLS = 23
@@ -138,17 +138,24 @@ def chamar_claude(prompt, chave):
     return "".join(b.get("text", "") for b in r.json().get("content", []) if b.get("type") == "text").strip()
 
 
+# Depois que o Gemini falha de vez (ex.: limite 429), a pauta inteira segue no Claude.
+# Reinicia a cada pauta, em gera_validado.
+usar_claude = False
+
+
 def gerar_uma(prompt):
-    """Gemini primeiro; se falhar de vez, Claude assume. Devolve (texto, provedor)."""
+    """Gemini primeiro; se falhar de vez, Claude assume e fica com a pauta. Devolve (texto, provedor)."""
+    global usar_claude
     gem = os.environ.get("GEMINI_API_KEY", "").strip()
     cla = os.environ.get("CLAUDE_API_KEY", "").strip()
     erro = None
-    if gem:
+    if gem and not usar_claude:
         try:
             return gerar_gemini(prompt, gem), "gemini"
         except (RuntimeError, requests.RequestException) as e:
             erro = e
-            print(f"↪️ Gemini falhou: {e}")
+            usar_claude = True
+            print(f"↪️ Gemini falhou, pauta segue no Claude: {e}")
     if not cla:
         raise RuntimeError(f"sem fallback (CLAUDE_API_KEY ausente). Gemini: {erro}")
     return chamar_claude(prompt, cla), "claude"
@@ -362,6 +369,8 @@ def candidatas(linhas):
 
 def gera_validado(prompt, slug, kw, cat, art_id):
     """Gera, valida e reescreve até RODADAS_REESCRITA vezes. Devolve os dados prontos para gravar."""
+    global usar_claude
+    usar_claude = False
     anterior, problemas = None, None
     for n in range(RODADAS_REESCRITA + 1):
         atual = prompt if n == 0 else montar_reescrita(prompt, anterior, problemas)
