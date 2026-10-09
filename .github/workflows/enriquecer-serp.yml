@@ -1,0 +1,48 @@
+name: Enriquecer pautas com SERP
+
+# Disparo manual. Processa as próximas N pautas planejadas ainda não enriquecidas
+# e grava os briefings em dados/briefings/ e a planilha em dados/.
+on:
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: 'Quantas pautas enriquecer nesta execução'
+        required: true
+        default: '10'
+
+concurrency:
+  group: enriquecer-serp
+  cancel-in-progress: false
+
+jobs:
+  enriquecer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Enriquecer pautas
+        env:
+          SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
+          LIMITE: ${{ github.event.inputs.limite }}
+        run: python scripts/enriquecer_serp.py
+
+      - name: Commit e push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action SERP"
+          git add dados/
+          git diff --staged --quiet || git commit -m "🤖 Enriquece pautas com SERP"
+          git pull --rebase -q origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
