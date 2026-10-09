@@ -2,7 +2,8 @@
 
 Para cada pauta `planejado` que ainda não tem briefing em dados/briefings/:
 - busca no Google (organic_results, related_questions, related_searches);
-- busca o autocomplete (long tails reais);
+- usa as buscas relacionadas da primeira página como long tails (sem autocomplete,
+  para gastar 1 busca por pauta);
 - lê o H2 das 5 primeiras páginas, só se o robots.txt permitir;
 - grava o briefing em dados/briefings/<slug>.md;
 A planilha não é alterada: o briefing é o que a IA lê para escrever.
@@ -111,19 +112,6 @@ def serp(params, chave):
     return dados
 
 
-def autocomplete(palavra, chave):
-    dados = serp(
-        {"engine": "google_autocomplete", "q": palavra, "gl": "br", "hl": "pt"},
-        chave,
-    )
-    sugestoes = sorted(
-        dados.get("suggestions", []),
-        key=lambda s: s.get("relevance", 0),
-        reverse=True,
-    )
-    return [s["value"] for s in sugestoes if s.get("value")][:10]
-
-
 def briefing(palavra, slug, chave):
     dados = serp({"engine": "google", "q": palavra, "gl": "br", "hl": "pt"}, chave)
     time.sleep(PAUSA)
@@ -135,8 +123,7 @@ def briefing(palavra, slug, chave):
         paginas.append({"titulo": item.get("title", ""), "link": item["link"], "info": info})
     perguntas = [q["question"] for q in dados.get("related_questions", []) if q.get("question")]
     relacionadas = [q["query"] for q in dados.get("related_searches", []) if q.get("query")]
-    long_tails = autocomplete(palavra, chave)
-    time.sleep(PAUSA)
+    long_tails = relacionadas
     return {
         "palavra": palavra,
         "slug": slug,
@@ -166,7 +153,7 @@ def escrever_md(b):
             linhas.append("   - Página não lida (robots.txt ou erro de acesso)")
     linhas += ["", "## Perguntas do Google (PAA)"] + [f"- {q}" for q in b["perguntas"]]
     linhas += ["", "## Buscas relacionadas"] + [f"- {q}" for q in b["relacionadas"]]
-    linhas += ["", "## Long tails (autocomplete)"] + [f"- {q}" for q in b["long_tails"]]
+    linhas += ["", "## Long tails (buscas relacionadas)"] + [f"- {q}" for q in b["long_tails"]]
     caminho = os.path.join(BRIEFING_DIR, f"{b['slug']}.md")
     with open(caminho, "w", encoding="utf-8") as f:
         f.write("\n".join(linhas) + "\n")
@@ -195,7 +182,7 @@ def main():
         try:
             b = briefing(palavra, slug, chave)
             if not b["long_tails"]:
-                raise RuntimeError("sem long tails do autocomplete")
+                raise RuntimeError("sem buscas relacionadas na primeira página")
             escrever_md(b)
             print(f"OK    {palavra}: {len(b['paginas'])} páginas, "
                   f"{len(b['perguntas'])} PAA, {len(b['long_tails'])} long tails")
