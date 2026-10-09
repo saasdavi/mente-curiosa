@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       limite:
-        description: 'Quantas pautas enriquecer nesta execução'
+        description: 'Quantas pautas enriquecer nesta execução (uma por vez)'
         required: true
-        default: '10'
+        default: '1'
 
 concurrency:
   group: enriquecer-serp
