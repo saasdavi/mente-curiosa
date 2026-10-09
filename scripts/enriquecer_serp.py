@@ -54,6 +54,21 @@ class H2Parser(HTMLParser):
         self.texto.append(data)
 
 
+# Fora dos concorrentes: vídeo, rede social, loja, buscador e enciclopédia.
+# Não são blog nem site de conteúdo, e não servem de fonte para o artigo.
+EXCLUIDOS = (
+    "youtube.com", "youtu.be", "instagram.com", "facebook.com", "tiktok.com",
+    "twitter.com", "x.com", "reddit.com", "linkedin.com", "pinterest.com",
+    "wikipedia.org", "wikipédia", "amazon.", "mercadolivre.", "shopee.",
+    "google.", "bing.com", "duckduckgo.com",
+)
+
+
+def eh_concorrente(link):
+    host = urllib.parse.urlparse(link).netloc.lower()
+    return not any(x in host for x in EXCLUIDOS)
+
+
 def pode_ler(url):
     """Lê o robots.txt com o mesmo User-Agent usado no acesso à página."""
     partes = urllib.parse.urlparse(url)
@@ -112,7 +127,7 @@ def autocomplete(palavra, chave):
 def briefing(palavra, slug, chave):
     dados = serp({"engine": "google", "q": palavra, "gl": "br", "hl": "pt"}, chave)
     time.sleep(PAUSA)
-    organicos = dados.get("organic_results", [])[:5]
+    organicos = [o for o in dados.get("organic_results", []) if o.get("link") and eh_concorrente(o["link"])][:5]
     paginas = []
     for item in organicos:
         info = analisar_pagina(item["link"])

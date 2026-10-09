@@ -3,12 +3,19 @@ name: Enriquecer pautas com SERP
 # Disparo manual. Processa as próximas N pautas planejadas ainda não enriquecidas
 # e grava os briefings em dados/briefings/ e a planilha em dados/.
 on:
+  # 4 execuções por dia, 1 pauta cada (10h, 13h, 16h e 19h de Brasília).
+  # 4 pautas × 2 buscas × 30 dias = 240 buscas no mês.
+  schedule:
+    - cron: '0 13 * * *'
+    - cron: '0 16 * * *'
+    - cron: '0 19 * * *'
+    - cron: '0 22 * * *'
   workflow_dispatch:
     inputs:
       limite:
-        description: 'Quantas pautas enriquecer nesta execução'
+        description: 'Quantas pautas enriquecer nesta execução (uma por vez)'
         required: true
-        default: '10'
+        default: '1'
 
 concurrency:
   group: enriquecer-serp
@@ -35,7 +42,7 @@ jobs:
       - name: Enriquecer pautas
         env:
           SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
-          LIMITE: ${{ github.event.inputs.limite }}
+          LIMITE: ${{ github.event.inputs.limite || '1' }}
         run: python scripts/enriquecer_serp.py
 
       - name: Commit e push
