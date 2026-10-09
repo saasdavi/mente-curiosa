@@ -1,0 +1,67 @@
+name: Gerar artigo (Gemini, fallback Claude)
+
+# Mesma estrutura do workflow "Artigos diários" do modelo.
+# Roda 1 hora depois de cada pesquisa SERP (10h, 13h, 16h e 19h de Brasília).
+on:
+  schedule:
+    - cron: '0 14 * * *'   # 11h
+    - cron: '0 17 * * *'   # 14h
+    - cron: '0 20 * * *'   # 17h
+    - cron: '0 23 * * *'   # 20h
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: 'Quantos artigos gerar nesta execução'
+        required: true
+        default: '1'
+
+# Mesmo grupo do SERP: nunca gravam em main ao mesmo tempo
+concurrency:
+  group: artigos-diarios
+  cancel-in-progress: false
+
+jobs:
+  artigo:
+    runs-on: ubuntu-latest
+    # Teto de segurança: uma execução travada não pode ficar horas rodando
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Instalar dependências Python
+      run: pip install requests pillow
+
+    - name: Gerar artigo
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        LIMITE: ${{ github.event.inputs.limite || '1' }}
+      run: python scripts/gerar_artigo.py
+
+    - name: Validar o site (build)
+      run: |
+        npm ci
+        npm run build
+
+    - name: Commit e push
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action Artigos"
+        git add src/content/artigos/ public/images/ dados/artigos_falhas/
+        git diff --staged --quiet || git commit -m "🤖 Artigo automático: geração por IA"
+        git pull --rebase -q origin "$GITHUB_REF_NAME"
+        git push origin "HEAD:$GITHUB_REF_NAME"

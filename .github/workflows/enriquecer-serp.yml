@@ -17,8 +17,9 @@ on:
         required: true
         default: '1'
 
+# Mesmo grupo da geração de artigos: nunca gravam em main ao mesmo tempo
 concurrency:
-  group: enriquecer-serp
+  group: artigos-diarios
   cancel-in-progress: false
 
 jobs:

@@ -1,0 +1,26 @@
+name: Deploy agendado (Vercel)
+
+# Reconstrói o site todo dia, para os artigos com data futura aparecerem na data da pauta.
+# Commits do robô não disparam build na Vercel por si só; este deploy é o que publica no horário.
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 21h de Brasília (UTC-3)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar deploy pelo deploy hook
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "Secret VERCEL_DEPLOY_HOOK não configurado"
+            exit 1
+          fi
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK" -o /dev/null
+          echo "Deploy disparado"
