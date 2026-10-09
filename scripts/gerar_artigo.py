@@ -36,7 +36,7 @@ CATEGORIAS_TS = "src/config/categories.ts"
 
 API_GEMINI = "https://generativelanguage.googleapis.com/v1beta"
 URL_ANTHROPIC = "https://api.anthropic.com/v1/messages"
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-haiku-5-5")
 RODADAS_REESCRITA = int(os.environ.get("RODADAS_REESCRITA") or 1)
 PAUSA_ENTRE_CHAMADAS = float(os.environ.get("PAUSA_ENTRE_CHAMADAS") or 15)
