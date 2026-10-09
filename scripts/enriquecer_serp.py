@@ -134,7 +134,7 @@ def long_tails_relevantes(palavra, relacionadas):
     base = tokens(palavra)
     return [
         q for q in relacionadas
-        if len(tokens(q) & base) >= min(2, len(base)) and "wiki" not in q.lower()
+        if len(tokens(q) & base) >= 1 and "wiki" not in q.lower()
     ]
 
 
@@ -228,6 +228,7 @@ def main():
         if len(r) >= COLUNAS
         and r[COL_STATUS] == "planejado"
         and not os.path.exists(os.path.join(BRIEFING_DIR, f"{r[COL_SLUG]}.md"))
+        and not os.path.exists(os.path.join(BRIEFING_DIR, f"{r[COL_SLUG]}.falha.txt"))
     ][:limite]
     print(f"Pautas a enriquecer: {len(alvo)}")
 
@@ -241,6 +242,11 @@ def main():
             print(f"OK    {palavra}: {len(b['paginas'])} páginas, "
                   f"{len(b['perguntas'])} PAA, {len(b['long_tails'])} long tails")
         except Exception as e:  # uma pauta falha sem parar as outras
+            # Registra a falha para não gastar a busca de novo na próxima execução.
+            # Para tentar de novo, apague o arquivo .falha.txt.
+            os.makedirs(BRIEFING_DIR, exist_ok=True)
+            with open(os.path.join(BRIEFING_DIR, f"{slug}.falha.txt"), "w", encoding="utf-8") as f:
+                f.write(f"{dt.date.today().isoformat()} {palavra}: {e}\n")
             print(f"FALHA {palavra}: {e}")
 
 
