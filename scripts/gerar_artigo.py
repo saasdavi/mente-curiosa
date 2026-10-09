@@ -22,6 +22,7 @@ import re
 import sys
 import time
 import unicodedata
+from concurrent.futures import ThreadPoolExecutor
 from zoneinfo import ZoneInfo
 
 import requests
@@ -126,7 +127,6 @@ def gerar_gemini(prompt, chave):
 
 
 def chamar_claude(prompt, chave):
-    pausa()
     r = requests.post(
         URL_ANTHROPIC,
         headers={"x-api-key": chave, "anthropic-version": "2023-06-01", "content-type": "application/json"},
@@ -198,7 +198,7 @@ def separa_analise(corpo):
 
 def verifica_link(url):
     try:
-        r = requests.get(url, headers={"User-Agent": "MenteCuriosaBot/1.0"}, timeout=15, allow_redirects=True)
+        r = requests.get(url, headers={"User-Agent": "MenteCuriosaBot/1.0"}, timeout=8, allow_redirects=True)
         return r.status_code == 200
     except requests.RequestException:
         return False
@@ -245,7 +245,8 @@ def valida(fm, corpo, nota):
     if len(fontes) < 3:
         problemas.append(f"{len(fontes)} fontes com link (mínimo 3)")
     else:
-        abertas = sum(verifica_link(f["url"]) for f in fontes[:6])
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            abertas = sum(pool.map(verifica_link, [f["url"] for f in fontes[:6]]))
         if abertas < 2:
             problemas.append(f"só {abertas} fonte(s) abrem (mínimo 2)")
     if not (10 <= len(fm.get("title", "")) <= 110):
