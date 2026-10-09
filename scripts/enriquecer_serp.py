@@ -112,48 +112,102 @@ def serp(params, chave):
     return dados
 
 
+STOPWORDS = {
+    "a", "o", "as", "os", "de", "da", "do", "das", "dos", "e", "em", "na", "no",
+    "nas", "nos", "um", "uma", "por", "que", "para", "com", "se", "é", "ao", "à",
+    "como", "porque", "pq", "the", "of", "and",
+}
+RUIDO_H2 = ("compartilh", "link copiado", "priorizar", "leia também", "newsletter",
+            "cookie", "referências", "ver também", "conteúdos", "índice", "navegação")
+DOMINIOS_FONTE = (".gov", ".gov.br", ".edu", ".edu.br", ".org", ".org.br", ".ac.uk", ".nasa.gov")
+
+
+def tokens(texto):
+    return {t for t in re.findall(r"\w+", texto.lower()) if t not in STOPWORDS and len(t) > 2}
+
+
+def h2_limpos(h2s):
+    return [h for h in h2s if len(h) <= 100 and not any(r in h.lower() for r in RUIDO_H2)][:8]
+
+
+def long_tails_relevantes(palavra, relacionadas):
+    base = tokens(palavra)
+    return [
+        q for q in relacionadas
+        if len(tokens(q) & base) >= min(2, len(base)) and "wiki" not in q.lower()
+    ]
+
+
+def lacunas(perguntas, paginas):
+    h2_tokens = [tokens(h) for p in paginas if p["info"] for h in p["info"]["h2"]]
+    sem_resposta = []
+    for q in perguntas:
+        t = tokens(q)
+        if not t:
+            continue
+        cobertura = max((len(t & h) / len(t) for h in h2_tokens), default=0)
+        if cobertura < 0.6:
+            sem_resposta.append(q)
+    return sem_resposta
+
+
+def fontes_candidatas(organicos_todos):
+    return [
+        {"titulo": o.get("title", ""), "link": o["link"]}
+        for o in organicos_todos
+        if o.get("link") and any(urllib.parse.urlparse(o["link"]).netloc.lower().endswith(d) for d in DOMINIOS_FONTE)
+    ][:5]
+
+
 def briefing(palavra, slug, chave):
     dados = serp({"engine": "google", "q": palavra, "gl": "br", "hl": "pt"}, chave)
     time.sleep(PAUSA)
-    organicos = [o for o in dados.get("organic_results", []) if o.get("link") and eh_concorrente(o["link"])][:5]
+    todos = dados.get("organic_results", [])
+    organicos = [o for o in todos if o.get("link") and eh_concorrente(o["link"])][:5]
     paginas = []
     for item in organicos:
         info = analisar_pagina(item["link"])
         time.sleep(PAUSA)
+        if info:
+            info["h2"] = h2_limpos(info["h2"])
         paginas.append({"titulo": item.get("title", ""), "link": item["link"], "info": info})
     perguntas = [q["question"] for q in dados.get("related_questions", []) if q.get("question")]
     relacionadas = [q["query"] for q in dados.get("related_searches", []) if q.get("query")]
-    long_tails = relacionadas
     return {
         "palavra": palavra,
         "slug": slug,
         "paginas": paginas,
         "perguntas": perguntas,
-        "relacionadas": relacionadas,
-        "long_tails": long_tails,
+        "lacunas": lacunas(perguntas, paginas),
+        "long_tails": long_tails_relevantes(palavra, relacionadas),
+        "fontes": fontes_candidatas(todos),
     }
 
 
 def escrever_md(b):
+    """Briefing na ordem que o prompt mestre lê: concorrentes, perguntas, lacunas,
+    long tails e fontes. Sem dados que o prompt não usa."""
     os.makedirs(BRIEFING_DIR, exist_ok=True)
     linhas = [
         f"# Briefing: {b['palavra']}",
         "",
-        f"Data da coleta: {dt.date.today().isoformat()}",
+        f"Coleta: {dt.date.today().isoformat()} (Google Brasil, primeira página)",
         "",
-        "## Top 5 do Google",
+        "## Concorrentes (top 5, sem vídeo, rede social, loja ou Wikipédia)",
     ]
     for i, p in enumerate(b["paginas"], 1):
-        linhas.append(f"{i}. [{p['titulo']}]({p['link']})")
         if p["info"]:
-            linhas.append(f"   - Palavras: {p['info']['palavras']}")
+            linhas.append(f"{i}. {p['titulo']} | {p['link']} | ~{p['info']['palavras']} palavras")
             for h in p["info"]["h2"]:
                 linhas.append(f"   - H2: {h}")
         else:
-            linhas.append("   - Página não lida (robots.txt ou erro de acesso)")
+            linhas.append(f"{i}. {p['titulo']} | {p['link']} | página não lida")
     linhas += ["", "## Perguntas do Google (PAA)"] + [f"- {q}" for q in b["perguntas"]]
-    linhas += ["", "## Buscas relacionadas"] + [f"- {q}" for q in b["relacionadas"]]
-    linhas += ["", "## Long tails (buscas relacionadas)"] + [f"- {q}" for q in b["long_tails"]]
+    linhas += ["", "## Lacunas (perguntas que os concorrentes lidos não respondem)"] + (
+        [f"- {q}" for q in b["lacunas"]] or ["(nenhuma)"])
+    linhas += ["", "## Long tails (buscas relacionadas que contêm o tema)"] + [f"- {q}" for q in b["long_tails"]]
+    linhas += ["", "## Fontes candidatas (instituições, órgãos e universidades da primeira página)"] + (
+        [f"- {f['titulo']} | {f['link']}" for f in b["fontes"]] or ["(nenhuma)"])
     caminho = os.path.join(BRIEFING_DIR, f"{b['slug']}.md")
     with open(caminho, "w", encoding="utf-8") as f:
         f.write("\n".join(linhas) + "\n")
@@ -182,7 +236,7 @@ def main():
         try:
             b = briefing(palavra, slug, chave)
             if not b["long_tails"]:
-                raise RuntimeError("sem buscas relacionadas na primeira página")
+                raise RuntimeError("nenhuma long tail relevante na primeira página")
             escrever_md(b)
             print(f"OK    {palavra}: {len(b['paginas'])} páginas, "
                   f"{len(b['perguntas'])} PAA, {len(b['long_tails'])} long tails")
