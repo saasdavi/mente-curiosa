@@ -364,6 +364,7 @@ def gera_validado(prompt, slug, kw, cat, art_id):
         if anterior is not None:
             print(f"✏️ {slug}: reescrita com a lista de problemas")
         texto, provedor = gerar_uma(atual)
+        fm = corpo = nota = plano = None
         try:
             fm, corpo = separa_frontmatter(texto)
             fm["id"], fm["category"], fm["keyword"] = art_id, cat, kw
@@ -372,6 +373,10 @@ def gera_validado(prompt, slug, kw, cat, art_id):
             problemas = valida(fm, corpo, nota)
         except RuntimeError as e:
             problemas = [str(e)]
+        # Nota 9,0 ou mais: aprovado para publicar, sem reescrita. Precisa ter
+        # frontmatter e marcadores de imagem, senão o site não monta a página.
+        if nota is not None and nota >= NOTA_MINIMA and plano is not None:
+            return fm, corpo, nota, plano, provedor
         if not problemas:
             return fm, corpo, nota, plano, provedor
         print(f"↪️ {provedor} reprovado: {'; '.join(problemas)}")
