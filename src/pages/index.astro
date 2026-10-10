@@ -18,7 +18,7 @@ const latest = articles.slice(0, 12);
   <section class="wrap" aria-labelledby="recentes">
     <h2 id="recentes">Artigos recentes</h2>
     {latest.length ? (
-      <div class="grid">{latest.map((a) => <ArticleCard article={a} />)}</div>
+      <div class="grid">{latest.map((a, i) => <ArticleCard article={a} prioridade={i === 0} />)}</div>
     ) : (
       <p class="muted">Os primeiros artigos chegam em breve.</p>
     )}
