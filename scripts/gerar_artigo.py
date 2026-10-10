@@ -33,6 +33,7 @@ FALHA_DIR = "dados/artigos_falhas"
 PROMPT_PATH = "prompts/prompt_mestre_mente_curiosa.md"
 ARTIGO_DIR = "src/content/artigos"
 CATEGORIAS_TS = "src/config/categories.ts"
+ESTADO_PATH = "dados/llm_estado.json"
 
 API_GEMINI = "https://generativelanguage.googleapis.com/v1beta"
 URL_ANTHROPIC = "https://api.anthropic.com/v1/messages"
@@ -143,6 +144,22 @@ def chamar_claude(prompt, chave):
 usar_claude = False
 
 
+def le_estado():
+    """Se o Gemini falhou hoje, o provedor do dia fica 'claude' até a virada do dia."""
+    try:
+        with open(ESTADO_PATH, encoding="utf-8") as f:
+            est = json.load(f)
+        return est.get("provedor") if est.get("data") == hoje() else None
+    except (OSError, ValueError):
+        return None
+
+
+def grava_estado(provedor):
+    os.makedirs(os.path.dirname(ESTADO_PATH), exist_ok=True)
+    with open(ESTADO_PATH, "w", encoding="utf-8") as f:
+        json.dump({"data": hoje(), "provedor": provedor}, f)
+
+
 def gerar_uma(prompt):
     """Gemini primeiro; se falhar de vez, Claude assume e fica com a pauta. Devolve (texto, provedor)."""
     global usar_claude
@@ -155,6 +172,7 @@ def gerar_uma(prompt):
         except (RuntimeError, requests.RequestException) as e:
             erro = e
             usar_claude = True
+            grava_estado("claude")
             print(f"↪️ Gemini falhou, pauta segue no Claude: {e}")
     if not cla:
         raise RuntimeError(f"sem fallback (CLAUDE_API_KEY ausente). Gemini: {erro}")
@@ -374,7 +392,7 @@ def candidatas(linhas):
 def gera_validado(prompt, slug, kw, cat, art_id):
     """Gera, valida e reescreve até RODADAS_REESCRITA vezes. Devolve os dados prontos para gravar."""
     global usar_claude
-    usar_claude = False
+    usar_claude = le_estado() == "claude"
     anterior, problemas = None, None
     for n in range(RODADAS_REESCRITA + 1):
         atual = prompt if n == 0 else montar_reescrita(prompt, anterior, problemas)

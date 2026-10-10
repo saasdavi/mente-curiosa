@@ -7,7 +7,6 @@ on:
     - cron: '0 14 * * *'   # 11h
     - cron: '0 17 * * *'   # 14h
     - cron: '0 20 * * *'   # 17h
-    - cron: '0 23 * * *'   # 20h
   workflow_dispatch:
     inputs:
       limite:
@@ -61,7 +60,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action Artigos"
-        git add src/content/artigos/ public/images/ dados/artigos_falhas/
+        git add src/content/artigos/ public/images/ dados/artigos_falhas/ dados/llm_estado.json
         git diff --staged --quiet || git commit -m "🤖 Artigo automático: geração por IA"
         git pull --rebase -q origin "$GITHUB_REF_NAME"
         git push origin "HEAD:$GITHUB_REF_NAME"
