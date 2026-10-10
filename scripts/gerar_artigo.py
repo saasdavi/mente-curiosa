@@ -175,6 +175,9 @@ def montar_reescrita(prompt, anterior, problemas):
 # ---------- Interpretação e validação ----------
 
 def separa_frontmatter(texto):
+    # Tira cerca de código (```markdown ... ```) e texto antes do frontmatter, se o modelo puser
+    texto = re.sub(r"^.*?(?=^---\s*$)", "", texto.strip(), count=1, flags=re.S | re.M)
+    texto = re.sub(r"^```\w*\s*$|^```\s*$", "", texto, flags=re.M).strip() + "\n"
     m = re.match(r"\s*---\n(.*?)\n---\n(.*)", texto, flags=re.S)
     if not m:
         raise RuntimeError("resposta sem frontmatter")
@@ -400,9 +403,13 @@ def main():
     modelo = open(PROMPT_PATH, encoding="utf-8").read().replace("{{DATA_HOJE}}", hoje())
     feitos = 0
 
+    tentadas = 0
     for r in candidatas(linhas):
-        if feitos >= limite:
+        # Conta tentativas, não só sucessos: senão uma pauta que falha faz o run
+        # passar pela fila inteira (com limite 1, testou as 10).
+        if tentadas >= limite:
             break
+        tentadas += 1
         slug, kw = r[COL_SLUG], r[COL_KW]
         cat = normaliza(r[COL_CAT])
         if cat not in cats:
