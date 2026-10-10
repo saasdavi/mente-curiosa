@@ -357,8 +357,8 @@ def gera_validado(prompt, slug, kw, cat, art_id):
     usar_claude = le_estado() == "claude"
     anterior, problemas = None, None
     for n in range(RODADAS_REESCRITA + 1):
-        atual = prompt if n == 0 else montar_reescrita(prompt, anterior, problemas)
-        if n:
+        atual = prompt if anterior is None else montar_reescrita(prompt, anterior, problemas)
+        if anterior is not None:
             print(f"✏️ {slug}: reescrita {n}/{RODADAS_REESCRITA} com a lista de problemas")
         texto, provedor = gerar_uma(atual)
         try:
@@ -371,8 +371,16 @@ def gera_validado(prompt, slug, kw, cat, art_id):
             problemas = [str(e)]
         if not problemas:
             return fm, corpo, nota, plano, provedor
-        anterior = texto
         print(f"↪️ {provedor} reprovado: {'; '.join(problemas)}")
+        if provedor == "gemini" and not usar_claude:
+            # Gemini reprovado na validação: Claude assume a pauta e o restante do dia
+            # (mesma regra de erro de API). Recomeça do prompt original, sem reescrita do Gemini.
+            usar_claude = True
+            grava_estado("claude")
+            anterior, problemas = None, None
+            print("↪️ pauta e restante do dia seguem no Claude")
+            continue
+        anterior = texto
     raise RuntimeError("; ".join(problemas))
 
 
