@@ -356,10 +356,11 @@ def gera_validado(prompt, slug, kw, cat, art_id):
     global usar_claude
     usar_claude = le_estado() == "claude"
     anterior, problemas = None, None
-    for n in range(RODADAS_REESCRITA + 1):
+    restam = RODADAS_REESCRITA
+    while True:
         atual = prompt if anterior is None else montar_reescrita(prompt, anterior, problemas)
         if anterior is not None:
-            print(f"✏️ {slug}: reescrita {n}/{RODADAS_REESCRITA} com a lista de problemas")
+            print(f"✏️ {slug}: reescrita com a lista de problemas")
         texto, provedor = gerar_uma(atual)
         try:
             fm, corpo = separa_frontmatter(texto)
@@ -378,10 +379,13 @@ def gera_validado(prompt, slug, kw, cat, art_id):
             usar_claude = True
             grava_estado("claude")
             anterior, problemas = None, None
+            restam = RODADAS_REESCRITA  # o Claude tem as suas próprias reescritas
             print("↪️ pauta e restante do dia seguem no Claude")
             continue
-        anterior = texto
-    raise RuntimeError("; ".join(problemas))
+        if restam == 0:
+            raise RuntimeError("; ".join(problemas))
+        restam -= 1
+        anterior = texto  # Claude (ou Gemini já trocado) corrige o próprio texto
 
 
 def main():
