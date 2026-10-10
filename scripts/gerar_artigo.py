@@ -84,47 +84,9 @@ def chamar_gemini(prompt, chave, modelo):
     return texto
 
 
-def eh_temporario(e):
-    """Sobrecarga (503), limite por minuto (429) e conexão caída passam sozinhos."""
-    return isinstance(e, requests.RequestException) or "HTTP 503" in str(e) or "HTTP 429" in str(e)
-
-
-def com_tentativas(prompt, chave, modelo, maximo=5):
-    """Repete quando o Gemini está ocupado, esperando 2, 4, 8... segundos com pausa aleatória."""
-    for tentativa in range(1, maximo + 1):
-        try:
-            return chamar_gemini(prompt, chave, modelo)
-        except (RuntimeError, requests.RequestException) as e:
-            if "HTTP 429" in str(e) or not eh_temporario(e) or tentativa == maximo:
-                raise
-            espera = min(2 ** tentativa, 64) + random.uniform(0, 2)
-            print(f"⏳ Gemini ocupado (tentativa {tentativa}/{maximo}). Nova tentativa em {espera:.0f}s...")
-            time.sleep(espera)
-
-
-def modelo_alternativo(chave, atual):
-    """Outro modelo flash do Gemini para quando o principal está ocupado ou sumiu."""
-    pausa()
-    r = requests.get(f"{API_GEMINI}/models", headers={"x-goog-api-key": chave}, params={"pageSize": 100}, timeout=60)
-    r.raise_for_status()
-    candidatos = [
-        m["name"].split("/")[-1] for m in r.json().get("models", [])
-        if "generateContent" in m.get("supportedGenerationMethods", [])
-        and "flash" in m["name"] and m["name"].split("/")[-1] != atual
-    ]
-    return sorted(candidatos, reverse=True)[0] if candidatos else None
-
-
 def gerar_gemini(prompt, chave):
-    try:
-        return com_tentativas(prompt, chave, GEMINI_MODEL)
-    except (RuntimeError, requests.RequestException) as e:
-        if "HTTP 404" in str(e) or "HTTP 403" in str(e) or eh_temporario(e):
-            novo = modelo_alternativo(chave, GEMINI_MODEL)
-            if novo:
-                print(f"↪️ {GEMINI_MODEL} indisponível ({e}); tentando {novo}")
-                return com_tentativas(prompt, chave, novo)
-        raise
+    """Uma única chamada. Qualquer erro (cota, permissão, indisponível) passa ao Claude."""
+    return chamar_gemini(prompt, chave, GEMINI_MODEL)
 
 
 def chamar_claude(prompt, chave):
