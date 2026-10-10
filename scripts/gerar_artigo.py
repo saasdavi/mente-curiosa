@@ -171,11 +171,13 @@ def separa_frontmatter(texto):
 
 
 def separa_analise(corpo):
-    """A análise de pontuação vem depois de uma linha '---' e não é publicada."""
-    partes = re.split(r"\n---\n", corpo)
-    if len(partes) > 1 and re.search(r"Nota final", partes[-1]):
-        corpo = "\n---\n".join(partes[:-1])
-    nota = re.search(r"Nota final:\s*\**\s*(\d+[,.]\d)", corpo + partes[-1] if len(partes) > 1 else corpo)
+    """Corta tudo a partir da linha 'Nota final' (e o '---' antes ou depois dela).
+    A análise de pontuação vem depois dessa linha e não é publicada."""
+    nota = re.search(r"Nota final:\s*\**\s*(\d+[,.]\d)", corpo)
+    m = re.search(r"^\**Nota final", corpo, flags=re.M)
+    if m:
+        corpo = corpo[:m.start()]
+    corpo = re.sub(r"(\n\s*---\s*)+$", "", corpo.rstrip() + "\n")
     return corpo.strip() + "\n", float(nota.group(1).replace(",", ".")) if nota else None
 
 
@@ -362,6 +364,7 @@ def gera_validado(prompt, slug, kw, cat, art_id):
         if anterior is not None:
             print(f"✏️ {slug}: reescrita com a lista de problemas")
         texto, provedor = gerar_uma(atual)
+        fm = corpo = nota = plano = None
         try:
             fm, corpo = separa_frontmatter(texto)
             fm["id"], fm["category"], fm["keyword"] = art_id, cat, kw
@@ -370,6 +373,10 @@ def gera_validado(prompt, slug, kw, cat, art_id):
             problemas = valida(fm, corpo, nota)
         except RuntimeError as e:
             problemas = [str(e)]
+        # Nota 9,0 ou mais: aprovado para publicar, sem reescrita. Precisa ter
+        # frontmatter e marcadores de imagem, senão o site não monta a página.
+        if nota is not None and nota >= NOTA_MINIMA and plano is not None:
+            return fm, corpo, nota, plano, provedor
         if not problemas:
             return fm, corpo, nota, plano, provedor
         print(f"↪️ {provedor} reprovado: {'; '.join(problemas)}")
