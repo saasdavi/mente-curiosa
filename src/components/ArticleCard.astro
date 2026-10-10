@@ -7,18 +7,23 @@ interface Props {
   article: Article;
   showCategory?: boolean;
 }
-const { article, showCategory = true } = Astro.props;
+const { article, showCategory = true, prioridade = false } = Astro.props;
 const d = article.data;
 const cat = getCategory(d.category);
+// Versão de 640 px gerada junto com a capa (celular carrega a menor).
+const pequena = d.featuredImage.replace(/\.webp$/, '-640.webp');
 ---
 <article class="card">
   <a class="card__img" href={articleUrl(d.slug)} tabindex="-1" aria-hidden="true">
     <img
       src={d.featuredImage}
+      srcset={`${pequena} 640w, ${d.featuredImage} 1200w`}
+      sizes="(max-width: 700px) 92vw, 400px"
       alt=""
       width={SITE.image.width}
       height={SITE.image.height}
-      loading="lazy"
+      loading={prioridade ? 'eager' : 'lazy'}
+      fetchpriority={prioridade ? 'high' : 'auto'}
       decoding="async"
     />
   </a>

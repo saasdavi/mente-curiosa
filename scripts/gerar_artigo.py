@@ -285,6 +285,10 @@ def baixa_capa(slug, busca, alt):
     os.makedirs(pasta, exist_ok=True)
     arquivo = f"{slug}.webp"
     im.save(os.path.join(pasta, arquivo), "WEBP", quality=82)
+    # Versão de 640 px para os cards no celular (usada no srcset do ArticleCard).
+    peq = im.copy()
+    peq.thumbnail((640, 640))
+    peq.save(os.path.join(pasta, f"{slug}-640.webp"), "WEBP", quality=80)
     return {
         "src": f"/images/{slug}/{arquivo}",
         "alt": alt,
