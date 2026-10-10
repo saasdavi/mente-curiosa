@@ -21,7 +21,7 @@ export const SITE = {
   // Tamanho padrão de todas as imagens de capa (1200×675, 16:9, .webp).
   image: { width: 1200, height: 675 },
   // Verificação do Search Console por meta tag (opcional; preferir verificação por DNS).
-  googleSiteVerification: '',
+  googleSiteVerification: 'vuldBToYK-rDshgD-qCqn3iOSdYF6kH3v-IzgbrnLcw',
   // Código de verificação do domínio no Pinterest (Configurações → Declarar site → meta tag).
   pinterestDomainVerify: '',
 } as const;
