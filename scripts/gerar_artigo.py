@@ -171,11 +171,13 @@ def separa_frontmatter(texto):
 
 
 def separa_analise(corpo):
-    """A análise de pontuação vem depois de uma linha '---' e não é publicada."""
-    partes = re.split(r"\n---\n", corpo)
-    if len(partes) > 1 and re.search(r"Nota final", partes[-1]):
-        corpo = "\n---\n".join(partes[:-1])
-    nota = re.search(r"Nota final:\s*\**\s*(\d+[,.]\d)", corpo + partes[-1] if len(partes) > 1 else corpo)
+    """Corta tudo a partir da linha 'Nota final' (e o '---' antes ou depois dela).
+    A análise de pontuação vem depois dessa linha e não é publicada."""
+    nota = re.search(r"Nota final:\s*\**\s*(\d+[,.]\d)", corpo)
+    m = re.search(r"^\**Nota final", corpo, flags=re.M)
+    if m:
+        corpo = corpo[:m.start()]
+    corpo = re.sub(r"(\n\s*---\s*)+$", "", corpo.rstrip() + "\n")
     return corpo.strip() + "\n", float(nota.group(1).replace(",", ".")) if nota else None
 
 
