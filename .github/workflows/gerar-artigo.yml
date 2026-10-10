@@ -57,10 +57,30 @@ jobs:
         npm run build
 
     - name: Commit e push
+      id: commit
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action Artigos"
         git add src/content/artigos/ public/images/ dados/artigos_falhas/ dados/llm_estado.json
-        git diff --staged --quiet || git commit -m "🤖 Artigo automático: geração por IA"
+        if git diff --staged --quiet; then
+          echo "novo=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        git commit -m "🤖 Artigo automático: geração por IA"
         git pull --rebase -q origin "$GITHUB_REF_NAME"
         git push origin "HEAD:$GITHUB_REF_NAME"
+        echo "novo=true" >> "$GITHUB_OUTPUT"
+
+    # Commits feitos com o GITHUB_TOKEN não disparam outros workflows,
+    # então o deploy precisa ser chamado daqui, logo após o push.
+    - name: Publicar no site (Vercel)
+      if: steps.commit.outputs.novo == 'true'
+      env:
+        VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+      run: |
+        if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+          echo "Secret VERCEL_DEPLOY_HOOK não configurado"
+          exit 1
+        fi
+        curl -fsS -X POST "$VERCEL_DEPLOY_HOOK" -o /dev/null
+        echo "Deploy disparado após a geração"
