@@ -396,10 +396,11 @@ def main():
     feitos = 0
 
     tentadas = 0
+    # Se uma pauta falha, a execução segue para a próxima, até gerar `limite` artigos
+    # ou esgotar MAX_TENTATIVAS. O teto evita gastar cota (Gemini/Claude) sem fim.
+    max_tentativas = int(os.environ.get("MAX_TENTATIVAS") or 3)
     for r in candidatas(linhas):
-        # Conta tentativas, não só sucessos: senão uma pauta que falha faz o run
-        # passar pela fila inteira (com limite 1, testou as 10).
-        if tentadas >= limite:
+        if feitos >= limite or tentadas >= max_tentativas:
             break
         tentadas += 1
         slug, kw = r[COL_SLUG], r[COL_KW]
