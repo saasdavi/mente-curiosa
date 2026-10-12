@@ -1,27 +1,37 @@
 # Calendário editorial — Mente Curiosa
 
-Gerado por `scripts/gerar_calendario_editorial.py` a partir de `dados/calendario_mente_curiosa.csv` e `src/content/artigos/`. Não editar à mão.
+Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 
 ## Resumo
 
-- Pautas no calendário: **1003**
-- Publicados no total (no ar): **20** (8 no calendário + 12 fora dele)
-- PUBLICADO no calendário: **8**
-- A PRODUZIR (ChatGPT vai produzir): **987**
-- FALHA (revisar erros): **8**
-- Publicados fora do calendário: **12** (seção no fim do arquivo)
+- Total: **1015**
+- PUBLICADO: **20**
+- A PRODUZIR: **987**
+- FALHA: **8**
 
 ## Calendário
 
 | Data | Dia | Horário | Código | Tema | Título | Categoria | Slug | Status |
 |---|---|---|---|---|---|---|---|---|
+| 24/09/2026 | Qui | — | — | por que o céu é azul | Por que o céu é azul? | ciencia-e-fenomenos | por-que-o-ceu-e-azul | **PUBLICADO** |
+| 24/09/2026 | Qui | — | — | por que sentimos medo | Por que sentimos medo? | psicologia-e-comportamento | por-que-sentimos-medo | **PUBLICADO** |
 | 01/10/2026 | Qui | 1 | CAL0001 | por que a Lua tem fases | Por que a lua tem fases? | Universo e espaço | por-que-a-lua-tem-fases | **A PRODUZIR** |
+| 01/10/2026 | Qui | — | — | por que os pássaros migram | Por que os pássaros migram? | animais | por-que-os-passaros-migram | **PUBLICADO** |
 | 02/10/2026 | Sex | 1 | CAL0002 | o que é a cadeia alimentar | O que é a cadeia alimentar? | Animais | o-que-e-a-cadeia-alimentar | **PUBLICADO** |
+| 02/10/2026 | Sex | — | — | como se formam as nuvens | Como se formam as nuvens? | ciencia-e-fenomenos | como-se-formam-as-nuvens | **PUBLICADO** |
+| 02/10/2026 | Sex | — | — | por que bocejamos | Por que bocejamos? | corpo-humano | por-que-bocejamos | **PUBLICADO** |
 | 03/10/2026 | Sab | 1 | CAL0003 | como funciona um raio | Como funciona um raio? | Ciência e fenômenos | como-funciona-um-raio | **A PRODUZIR** |
+| 03/10/2026 | Sab | — | — | como funciona a computação em nuvem | Como funciona a computação em nuvem? | tecnologia-ia-e-ciencia | como-funciona-a-computacao-em-nuvem | **PUBLICADO** |
+| 03/10/2026 | Sab | — | — | como nascem as estrelas | Como nascem as estrelas? | universo-e-espaco | como-nascem-as-estrelas | **PUBLICADO** |
 | 04/10/2026 | Dom | 1 | CAL0004 | como funciona o Wi-Fi | Como funciona o wi-fi? | Tecnologia, IA e ciência | como-funciona-o-wi-fi | **A PRODUZIR** |
 | 05/10/2026 | Seg | 1 | CAL0005 | como se formam os planetas | Como se formam os planetas? | Universo e espaço | como-se-formam-os-planetas | **A PRODUZIR** |
+| 05/10/2026 | Seg | — | — | como os gatos enxergam | Como os gatos enxergam? | animais | como-os-gatos-enxergam | **PUBLICADO** |
+| 05/10/2026 | Seg | — | — | por que procrastinamos | Por que procrastinamos? | psicologia-e-comportamento | por-que-procrastinamos | **PUBLICADO** |
 | 06/10/2026 | Ter | 1 | CAL0006 | o que é instinto animal | O que é instinto animal? | Animais | o-que-e-instinto-animal | **A PRODUZIR** |
+| 06/10/2026 | Ter | — | — | por que temos sonhos | Por que temos sonhos? | corpo-humano | por-que-temos-sonhos | **PUBLICADO** |
 | 07/10/2026 | Qua | 1 | CAL0007 | como se formam os terremotos | Como se formam os terremotos? | Ciência e fenômenos | como-se-formam-os-terremotos | **A PRODUZIR** |
+| 07/10/2026 | Qua | — | — | como funciona a inteligência artificial | Como funciona a inteligência artificial? | tecnologia-ia-e-ciencia | como-funciona-a-inteligencia-artificial | **PUBLICADO** |
+| 07/10/2026 | Qua | — | — | o que existe no centro da Via Láctea | O que existe no centro da Via Láctea? | universo-e-espaco | o-que-existe-no-centro-da-via-lactea | **PUBLICADO** |
 | 08/10/2026 | Qui | 1 | CAL0008 | como funciona o bluetooth | Como funciona o bluetooth? | Tecnologia, IA e ciência | como-funciona-o-bluetooth | **A PRODUZIR** |
 | 09/10/2026 | Sex | 1 | CAL0009 | o que é um cometa | O que é um cometa? | Universo e espaço | o-que-e-um-cometa | **A PRODUZIR** |
 | 10/10/2026 | Sab | 1 | CAL0010 | o que é a extinção de espécies | O que é a extinção de espécies? | Animais | o-que-e-a-extincao-de-especies | **A PRODUZIR** |
@@ -1018,35 +1028,3 @@ Gerado por `scripts/gerar_calendario_editorial.py` a partir de `dados/calendario
 | 30/09/2027 | Qui | 1 | CAL1001 | como se faz o sabão | Como se faz o sabão? | Ciência e fenômenos | como-se-faz-o-sabao | **A PRODUZIR** |
 | 30/09/2027 | Qui | 2 | CAL1002 | por que temos variações de humor | Por que temos variações de humor? | Psicologia e comportamento | por-que-temos-variacoes-de-humor | **A PRODUZIR** |
 | 30/09/2027 | Qui | 3 | CAL1003 | como funciona uma ponte | Como funciona uma ponte? | Tecnologia, IA e ciência | como-funciona-uma-ponte | **A PRODUZIR** |
-
-## Divergências
-
-Pautas já publicadas no blog, mas ainda marcadas como `planejado` no CSV.
-Corrigir no CSV quando for conveniente.
-
-| Data | Código | Slug |
-|---|---|---|
-| 31/10/2026 | CAL0031 | por-que-o-mar-e-salgado |
-| 16/11/2026 | CAL0062 | como-os-peixes-respiram |
-| 06/12/2026 | CAL0109 | como-a-ia-gera-videos |
-| 18/12/2026 | CAL0144 | por-que-sentimos-nostalgia |
-| 26/12/2026 | CAL0168 | por-que-buscamos-aprovacao |
-| 29/12/2026 | CAL0176 | o-que-e-materia-escura |
-| 01/01/2027 | CAL0186 | por-que-sentimos-deja-vu |
-
-## Publicados fora do calendário
-
-| Data de publicação | Título | Categoria | Slug |
-|---|---|---|---|
-| 2026-09-24 | Por que o céu é azul? | ciencia-e-fenomenos | por-que-o-ceu-e-azul |
-| 2026-09-24 | Por que sentimos medo? | psicologia-e-comportamento | por-que-sentimos-medo |
-| 2026-10-01 | Por que os pássaros migram? | animais | por-que-os-passaros-migram |
-| 2026-10-02 | Como se formam as nuvens? | ciencia-e-fenomenos | como-se-formam-as-nuvens |
-| 2026-10-02 | Por que bocejamos? | corpo-humano | por-que-bocejamos |
-| 2026-10-03 | Como funciona a computação em nuvem? | tecnologia-ia-e-ciencia | como-funciona-a-computacao-em-nuvem |
-| 2026-10-03 | Como nascem as estrelas? | universo-e-espaco | como-nascem-as-estrelas |
-| 2026-10-05 | Como os gatos enxergam? | animais | como-os-gatos-enxergam |
-| 2026-10-05 | Por que procrastinamos? | psicologia-e-comportamento | por-que-procrastinamos |
-| 2026-10-06 | Por que temos sonhos? | corpo-humano | por-que-temos-sonhos |
-| 2026-10-07 | Como funciona a inteligência artificial? | tecnologia-ia-e-ciencia | como-funciona-a-inteligencia-artificial |
-| 2026-10-07 | O que existe no centro da Via Láctea? | universo-e-espaco | o-que-existe-no-centro-da-via-lactea |
