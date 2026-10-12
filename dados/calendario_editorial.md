@@ -6,8 +6,8 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 
 - Total: **1015**
 - PUBLICADO: **20**
-- A PRODUZIR: **987**
-- FALHA: **8**
+- A PRODUZIR: **995**
+- FALHA: **0**
 
 ## Calendário
 
@@ -38,11 +38,11 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 11/10/2026 | Dom | 1 | CAL0011 | como se forma a chuva | Como se forma a chuva? | Ciência e fenômenos | como-se-forma-a-chuva | **A PRODUZIR** |
 | 12/10/2026 | Seg | 1 | CAL0012 | como funciona um carro elétrico | Como funciona um carro elétrico? | Tecnologia, IA e ciência | como-funciona-um-carro-eletrico | **A PRODUZIR** |
 | 13/10/2026 | Ter | 1 | CAL0013 | o que é um planeta | O que é um planeta? | Universo e espaço | o-que-e-um-planeta | **A PRODUZIR** |
-| 14/10/2026 | Qua | 1 | CAL0014 | por que os cães abanam o rabo | Por que os cães abanam o rabo? | Animais | por-que-os-caes-abanam-o-rabo | **FALHA** |
+| 14/10/2026 | Qua | 1 | CAL0014 | por que os cães abanam o rabo | Por que os cães abanam o rabo? | Animais | por-que-os-caes-abanam-o-rabo | **A PRODUZIR** |
 | 15/10/2026 | Qui | 1 | CAL0015 | como funciona um vulcão | Como funciona um vulcão? | Ciência e fenômenos | como-funciona-um-vulcao | **A PRODUZIR** |
 | 16/10/2026 | Sex | 1 | CAL0016 | como funciona a criptografia | Como funciona a criptografia? | Tecnologia, IA e ciência | como-funciona-a-criptografia | **A PRODUZIR** |
 | 17/10/2026 | Sab | 1 | CAL0017 | o que é uma estrela | O que é uma estrela? | Universo e espaço | o-que-e-uma-estrela | **A PRODUZIR** |
-| 18/10/2026 | Dom | 1 | CAL0018 | como as abelhas se comunicam | Como as abelhas se comunicam? | Animais | como-as-abelhas-se-comunicam | **FALHA** |
+| 18/10/2026 | Dom | 1 | CAL0018 | como as abelhas se comunicam | Como as abelhas se comunicam? | Animais | como-as-abelhas-se-comunicam | **A PRODUZIR** |
 | 19/10/2026 | Seg | 1 | CAL0019 | como funciona a eletricidade | Como funciona a eletricidade? | Ciência e fenômenos | como-funciona-a-eletricidade | **A PRODUZIR** |
 | 20/10/2026 | Ter | 1 | CAL0020 | como funciona o 5g | Como funciona o 5g? | Tecnologia, IA e ciência | como-funciona-o-5g | **A PRODUZIR** |
 | 21/10/2026 | Qua | 1 | CAL0021 | como funciona a gravidade | Como funciona a gravidade? | Universo e espaço | como-funciona-a-gravidade | **A PRODUZIR** |
@@ -66,11 +66,11 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 04/11/2026 | Qua | 2 | CAL0039 | por que o gelo flutua | Por que o gelo flutua? | Ciência e fenômenos | por-que-o-gelo-flutua | **A PRODUZIR** |
 | 05/11/2026 | Qui | 1 | CAL0040 | como funciona o aprendizado de máquina | Como funciona o aprendizado de máquina? | Tecnologia, IA e ciência | como-funciona-o-aprendizado-de-maquina | **A PRODUZIR** |
 | 05/11/2026 | Qui | 2 | CAL0041 | como é o planeta Júpiter | Como é o planeta Júpiter? | Universo e espaço | como-e-o-planeta-jupiter | **A PRODUZIR** |
-| 06/11/2026 | Sex | 1 | CAL0042 | como as aranhas fazem teias | Como as aranhas fazem teias? | Animais | como-as-aranhas-fazem-teias | **FALHA** |
+| 06/11/2026 | Sex | 1 | CAL0042 | como as aranhas fazem teias | Como as aranhas fazem teias? | Animais | como-as-aranhas-fazem-teias | **A PRODUZIR** |
 | 06/11/2026 | Sex | 2 | CAL0043 | como funciona o magnetismo | Como funciona o magnetismo? | Ciência e fenômenos | como-funciona-o-magnetismo | **A PRODUZIR** |
 | 07/11/2026 | Sab | 1 | CAL0044 | como os modelos de linguagem aprendem | Como os modelos de linguagem aprendem? | Tecnologia, IA e ciência | como-os-modelos-de-linguagem-aprendem | **A PRODUZIR** |
 | 07/11/2026 | Sab | 2 | CAL0045 | como é o planeta Saturno | Como é o planeta Saturno? | Universo e espaço | como-e-o-planeta-saturno | **A PRODUZIR** |
-| 08/11/2026 | Dom | 1 | CAL0046 | por que os camaleões mudam de cor | Por que os camaleões mudam de cor? | Animais | por-que-os-camaleoes-mudam-de-cor | **FALHA** |
+| 08/11/2026 | Dom | 1 | CAL0046 | por que os camaleões mudam de cor | Por que os camaleões mudam de cor? | Animais | por-que-os-camaleoes-mudam-de-cor | **A PRODUZIR** |
 | 08/11/2026 | Dom | 2 | CAL0047 | por que o som se propaga | Por que o som se propaga? | Ciência e fenômenos | por-que-o-som-se-propaga | **A PRODUZIR** |
 | 09/11/2026 | Seg | 1 | CAL0048 | como funciona o reconhecimento facial | Como funciona o reconhecimento facial? | Tecnologia, IA e ciência | como-funciona-o-reconhecimento-facial | **A PRODUZIR** |
 | 09/11/2026 | Seg | 2 | CAL0049 | como é o planeta Netuno | Como é o planeta Netuno? | Universo e espaço | como-e-o-planeta-netuno | **A PRODUZIR** |
@@ -164,8 +164,8 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 16/12/2026 | Qua | 1 | CAL0137 | como se formam as cavernas | Como se formam as cavernas? | Ciência e fenômenos | como-se-formam-as-cavernas | **A PRODUZIR** |
 | 16/12/2026 | Qua | 2 | CAL0138 | por que sentimos vergonha | Por que sentimos vergonha? | Psicologia e comportamento | por-que-sentimos-vergonha | **A PRODUZIR** |
 | 16/12/2026 | Qua | 3 | CAL0139 | como funciona a computação quântica | Como funciona a computação quântica? | Tecnologia, IA e ciência | como-funciona-a-computacao-quantica | **A PRODUZIR** |
-| 17/12/2026 | Qui | 1 | CAL0140 | por que o espaço é escuro | Por que o espaço é escuro? | Universo e espaço | por-que-o-espaco-e-escuro | **FALHA** |
-| 17/12/2026 | Qui | 2 | CAL0141 | por que sentimos fome | Por que sentimos fome? | Corpo humano | por-que-sentimos-fome | **FALHA** |
+| 17/12/2026 | Qui | 1 | CAL0140 | por que o espaço é escuro | Por que o espaço é escuro? | Universo e espaço | por-que-o-espaco-e-escuro | **A PRODUZIR** |
+| 17/12/2026 | Qui | 2 | CAL0141 | por que sentimos fome | Por que sentimos fome? | Corpo humano | por-que-sentimos-fome | **A PRODUZIR** |
 | 17/12/2026 | Qui | 3 | CAL0142 | como as cobras enxergam | Como as cobras enxergam? | Animais | como-as-cobras-enxergam | **A PRODUZIR** |
 | 18/12/2026 | Sex | 1 | CAL0143 | por que o fogo é quente | Por que o fogo é quente? | Ciência e fenômenos | por-que-o-fogo-e-quente | **A PRODUZIR** |
 | 18/12/2026 | Sex | 2 | CAL0144 | por que sentimos nostalgia | Por que sentimos nostalgia? | Psicologia e comportamento | por-que-sentimos-nostalgia | **PUBLICADO** |
@@ -204,7 +204,7 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 29/12/2026 | Ter | 2 | CAL0177 | como funciona a respiração | Como funciona a respiração? | Corpo humano | como-funciona-a-respiracao | **A PRODUZIR** |
 | 29/12/2026 | Ter | 3 | CAL0178 | por que os gatos miam | Por que os gatos miam? | Animais | por-que-os-gatos-miam | **A PRODUZIR** |
 | 30/12/2026 | Qua | 1 | CAL0179 | como se forma um tornado | Como se forma um tornado? | Ciência e fenômenos | como-se-forma-um-tornado | **A PRODUZIR** |
-| 30/12/2026 | Qua | 2 | CAL0180 | por que sonhamos acordados | Por que sonhamos acordados? | Psicologia e comportamento | por-que-sonhamos-acordados | **FALHA** |
+| 30/12/2026 | Qua | 2 | CAL0180 | por que sonhamos acordados | Por que sonhamos acordados? | Psicologia e comportamento | por-que-sonhamos-acordados | **A PRODUZIR** |
 | 30/12/2026 | Qua | 3 | CAL0181 | como funcionam os carros autônomos | Como funcionam os carros autônomos? | Tecnologia, IA e ciência | como-funcionam-os-carros-autonomos | **A PRODUZIR** |
 | 31/12/2026 | Qui | 1 | CAL0182 | o que é energia escura | O que é energia escura? | Universo e espaço | o-que-e-energia-escura | **A PRODUZIR** |
 | 31/12/2026 | Qui | 2 | CAL0183 | como funciona a circulação | Como funciona a circulação? | Corpo humano | como-funciona-a-circulacao | **A PRODUZIR** |
@@ -213,7 +213,7 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 01/01/2027 | Sex | 2 | CAL0186 | por que sentimos déjà vu | Por que sentimos déjà vu? | Psicologia e comportamento | por-que-sentimos-deja-vu | **PUBLICADO** |
 | 01/01/2027 | Sex | 3 | CAL0187 | como funciona um chatbot | Como funciona um chatbot? | Tecnologia, IA e ciência | como-funciona-um-chatbot | **A PRODUZIR** |
 | 02/01/2027 | Sab | 1 | CAL0188 | por que o sol brilha | Por que o sol brilha? | Universo e espaço | por-que-o-sol-brilha | **A PRODUZIR** |
-| 02/01/2027 | Sab | 2 | CAL0189 | como o corpo regula a temperatura | Como o corpo regula a temperatura? | Corpo humano | como-o-corpo-regula-a-temperatura | **FALHA** |
+| 02/01/2027 | Sab | 2 | CAL0189 | como o corpo regula a temperatura | Como o corpo regula a temperatura? | Corpo humano | como-o-corpo-regula-a-temperatura | **A PRODUZIR** |
 | 02/01/2027 | Sab | 3 | CAL0190 | por que os gatos dormem tanto | Por que os gatos dormem tanto? | Animais | por-que-os-gatos-dormem-tanto | **A PRODUZIR** |
 | 03/01/2027 | Dom | 1 | CAL0191 | como funciona o El Niño | Como funciona o El Niño? | Ciência e fenômenos | como-funciona-o-el-nino | **A PRODUZIR** |
 | 03/01/2027 | Dom | 2 | CAL0192 | por que esquecemos coisas | Por que esquecemos coisas? | Psicologia e comportamento | por-que-esquecemos-coisas | **A PRODUZIR** |
