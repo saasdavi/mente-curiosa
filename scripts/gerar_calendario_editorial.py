@@ -2,10 +2,10 @@
 
 Uso: python scripts/gerar_calendario_editorial.py
 
-Status de cada pauta:
-- publicado: o slug já existe em src/content/artigos/ (vale o que está no ar)
-- revisar: marcado como 'revisar' no CSV e ainda sem artigo no blog
-- agendado: pauta planejada, sem artigo no blog ainda (o ChatGPT produz)
+Status de cada pauta (3 tipos):
+- PUBLICADO: o slug está em src/content/artigos/ (no ar, com link e deploy)
+- FALHA: o slug tem arquivo em dados/artigos_falhas/ (falhou; revisar erros)
+- A PRODUZIR: pauta para o ChatGPT produzir (todo o resto)
 
 O CSV continua sendo a fonte. O .md é gerado e não deve ser editado à mão.
 """
@@ -16,7 +16,10 @@ import re
 
 CSV_PATH = "dados/calendario_mente_curiosa.csv"
 ARTIGOS_DIR = "src/content/artigos"
+FALHAS_DIR = "dados/artigos_falhas"
 SAIDA = "dados/calendario_editorial.md"
+
+PUBLICADO, FALHA, A_PRODUZIR = "PUBLICADO", "FALHA", "A PRODUZIR"
 
 # Índices das colunas do CSV (não há cabeçalho)
 COL_CODIGO, COL_DATA, COL_ISO, COL_DIA, COL_HORARIO = 0, 1, 2, 3, 4
@@ -55,27 +58,35 @@ def ler_artigos():
     return artigos
 
 
-def status_da_pauta(linha, artigos):
+def ler_falhas():
+    """Devolve o conjunto de slugs com arquivo em dados/artigos_falhas/."""
+    if not os.path.isdir(FALHAS_DIR):
+        return set()
+    return {nome[:-4] for nome in os.listdir(FALHAS_DIR) if nome.endswith(".txt")}
+
+
+def status_da_pauta(linha, artigos, falhas):
     if linha[COL_SLUG] in artigos:
-        return "publicado"
-    if linha[COL_STATUS] == "revisar":
-        return "revisar"
-    return "agendado"
+        return PUBLICADO
+    if linha[COL_SLUG] in falhas:
+        return FALHA
+    return A_PRODUZIR
 
 
 def gerar():
     calendario = ler_calendario()
     artigos = ler_artigos()
+    falhas = ler_falhas()
     slugs_calendario = {r[COL_SLUG] for r in calendario}
 
     calendario.sort(key=lambda r: (r[COL_ISO], r[COL_HORARIO]))
-    contagem = {"publicado": 0, "revisar": 0, "agendado": 0}
+    contagem = {PUBLICADO: 0, FALHA: 0, A_PRODUZIR: 0}
     linhas = []
     divergencias = []
     for r in calendario:
-        status = status_da_pauta(r, artigos)
+        status = status_da_pauta(r, artigos, falhas)
         contagem[status] += 1
-        if status == "publicado" and r[COL_STATUS] != "publicado":
+        if status == PUBLICADO and r[COL_STATUS] != "publicado":
             divergencias.append(r)
         linhas.append(
             f"| {celula(r[COL_DATA])} | {celula(r[COL_DIA])} | {celula(r[COL_HORARIO])} "
@@ -97,9 +108,9 @@ def gerar():
         "## Resumo",
         "",
         f"- Pautas no calendário: **{len(calendario)}**",
-        f"- Publicadas (no blog): **{contagem['publicado']}**",
-        f"- Agendadas (ChatGPT vai produzir): **{contagem['agendado']}**",
-        f"- Para revisar: **{contagem['revisar']}**",
+        f"- PUBLICADO (no ar, com link e deploy): **{contagem[PUBLICADO]}**",
+        f"- A PRODUZIR (ChatGPT vai produzir): **{contagem[A_PRODUZIR]}**",
+        f"- FALHA (revisar erros): **{contagem[FALHA]}**",
         f"- Artigos no blog fora do calendário: **{len(fora)}**",
         "",
         "## Calendário",
