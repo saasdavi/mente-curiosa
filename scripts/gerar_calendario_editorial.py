@@ -28,6 +28,11 @@ SAIDA = "dados/calendario_editorial.md"
 PUBLICADO, FALHA, A_PRODUZIR = "PUBLICADO", "FALHA", "A PRODUZIR"
 DIAS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"]
 
+# Ritmo de publicação: 3 artigos por dia, a partir de INICIO_AGENDA.
+# Vale para as pautas pendentes (A PRODUZIR e FALHA). Os PUBLICADO mantêm a data real.
+INICIO_AGENDA = datetime.date(2026, 10, 14)
+HORARIOS = ["09h", "12h", "20h"]
+
 # Índices das colunas do CSV (não há cabeçalho)
 COL_CODIGO, COL_DATA, COL_ISO, COL_DIA, COL_HORARIO = 0, 1, 2, 3, 4
 COL_TEMA, COL_TITULO, COL_CATEGORIA, COL_SLUG = 7, 8, 9, 15
@@ -111,6 +116,18 @@ def linha_publicado_sem_pauta(slug, info):
     }
 
 
+def reagendar(pendentes):
+    """Distribui as pautas pendentes 3 por dia, a partir de INICIO_AGENDA, na ordem do CSV."""
+    pendentes.sort(key=lambda l: (l["iso"], l["horario"]))
+    for i, l in enumerate(pendentes):
+        d = INICIO_AGENDA + datetime.timedelta(days=i // len(HORARIOS))
+        l["iso"] = d.isoformat()
+        l["data"] = d.strftime("%d/%m/%Y")
+        l["dia"] = DIAS[d.weekday()]
+        l["horario"] = HORARIOS[i % len(HORARIOS)]
+    return pendentes
+
+
 def gerar():
     artigos = ler_artigos()
     falhas = ler_falhas()
@@ -123,6 +140,9 @@ def gerar():
         for slug, info in artigos.items()
         if slug not in slugs_calendario
     ]
+    publicados = [l for l in linhas if l["status"] == PUBLICADO]
+    pendentes = reagendar([l for l in linhas if l["status"] != PUBLICADO])
+    linhas = publicados + pendentes
     linhas.sort(key=lambda l: (l["iso"], l["horario"]))
 
     contagem = {PUBLICADO: 0, FALHA: 0, A_PRODUZIR: 0}
