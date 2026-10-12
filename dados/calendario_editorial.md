@@ -5,10 +5,11 @@ Gerado por `scripts/gerar_calendario_editorial.py` a partir de `dados/calendario
 ## Resumo
 
 - Pautas no calendário: **1003**
-- PUBLICADO (no ar, com link e deploy): **8**
+- Publicados no total (no ar): **20** (8 no calendário + 12 fora dele)
+- PUBLICADO no calendário: **8**
 - A PRODUZIR (ChatGPT vai produzir): **987**
 - FALHA (revisar erros): **8**
-- Artigos no blog fora do calendário: **12**
+- Publicados fora do calendário: **12** (seção no fim do arquivo)
 
 ## Calendário
 
