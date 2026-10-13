@@ -8,7 +8,7 @@ import AdUnit from '../components/ads/AdUnit.astro';
 import { SITE } from '../config/site';
 import { getCategory, categoryUrl } from '../config/categories';
 import { getArticles, getRelated, articleUrl, formatDate, isoDate, readingTime, type Article } from '../lib/articles';
-import { articleJsonLd, breadcrumbJsonLd, articleCrumbs } from '../lib/schema';
+import { articleJsonLd, breadcrumbJsonLd, articleCrumbs, faqDoArtigo, faqJsonLd } from '../lib/schema';
 
 export async function getStaticPaths() {
   const all = await getArticles();
@@ -26,6 +26,7 @@ const cat = getCategory(d.category);
 const crumbs = articleCrumbs(article);
 const related = getRelated(article, all);
 const updated = d.dateModified.getTime() !== d.datePublished.getTime();
+const faq = faqDoArtigo(article);
 ---
 <BaseLayout
   title={d.seoTitle ?? d.title}
@@ -37,7 +38,7 @@ const updated = d.dateModified.getTime() !== d.datePublished.getTime();
   noindex={d.draft}
   publishedTime={d.datePublished}
   modifiedTime={d.dateModified}
-  jsonLd={[articleJsonLd(article), breadcrumbJsonLd(crumbs)]}
+  jsonLd={[articleJsonLd(article), breadcrumbJsonLd(crumbs), ...(faq.length ? [faqJsonLd(faq)] : [])]}
 >
   <link slot="head" rel="preload" as="image" href={d.featuredImage} fetchpriority="high" />
   <article class="wrap article">
