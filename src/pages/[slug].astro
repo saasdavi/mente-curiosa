@@ -48,7 +48,7 @@ const faq = faqDoArtigo(article);
       <h1>{d.title}</h1>
       <p class="article__lead">{d.description}</p>
       <p class="article__meta muted">
-        Por {d.author} · Publicado em <time datetime={isoDate(d.datePublished)}>{formatDate(d.datePublished)}</time>
+        Por {SITE.authorPages[d.author] ? <a href={SITE.authorPages[d.author]}>{d.author}</a> : d.author} · Publicado em <time datetime={isoDate(d.datePublished)}>{formatDate(d.datePublished)}</time>
         {updated && <>{' · '}Atualizado em <time datetime={isoDate(d.dateModified)}>{formatDate(d.dateModified)}</time></>}
         {' · '}{readingTime(article.body)} min de leitura
       </p>

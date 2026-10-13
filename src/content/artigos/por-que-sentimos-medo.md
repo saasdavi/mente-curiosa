@@ -10,7 +10,7 @@ tags:
 - emoções
 - amígdala
 keyword: por que sentimos medo
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-09-24
 dateModified: 2026-09-25
 featuredImage: /images/por-que-sentimos-medo/por-que-sentimos-medo.webp

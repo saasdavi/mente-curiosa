@@ -10,7 +10,7 @@ tags:
 - comportamento animal
 - natureza
 keyword: por que os pássaros migram
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-01
 dateModified: 2026-10-01
 sources:

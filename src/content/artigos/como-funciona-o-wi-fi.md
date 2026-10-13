@@ -10,7 +10,7 @@ tags:
 - ondas de rádio
 - internet
 keyword: como funciona o wi-fi
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-14
 dateModified: 2026-10-14
 sources:

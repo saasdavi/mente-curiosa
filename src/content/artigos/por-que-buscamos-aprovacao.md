@@ -8,7 +8,7 @@ tags:
   - "psicologia-e-comportamento"
   - "comportamento-humano"
 keyword: "por que buscamos aprovação"
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-10
 dateModified: 2026-10-10
 featuredImage: /images/por-que-buscamos-aprovacao/por-que-buscamos-aprovacao.webp

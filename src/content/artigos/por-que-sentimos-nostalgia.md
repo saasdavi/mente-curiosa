@@ -7,7 +7,7 @@ category: psicologia-e-comportamento
 tags:
   - "psicologia-e-comportamento"
 keyword: "por que sentimos nostalgia"
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-10
 dateModified: 2026-10-10
 featuredImage: /images/por-que-sentimos-nostalgia/por-que-sentimos-nostalgia.webp

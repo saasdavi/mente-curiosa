@@ -10,7 +10,7 @@ tags:
 - atmosfera
 - física
 keyword: por que o céu é azul
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-09-24
 dateModified: 2026-09-25
 featuredImage: /images/por-que-o-ceu-e-azul/por-que-o-ceu-e-azul.webp

@@ -9,7 +9,7 @@ tags:
   - "biologia-marinha"
   - "peixes"
 keyword: "como os peixes respiram"
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-10
 dateModified: 2026-10-10
 featuredImage: /images/como-os-peixes-respiram/como-os-peixes-respiram.webp

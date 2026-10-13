@@ -10,7 +10,7 @@ tags:
 - astronomia
 - órbita
 keyword: por que a lua tem fases
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-13
 dateModified: 2026-10-13
 sources:

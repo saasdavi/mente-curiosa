@@ -9,7 +9,7 @@ tags:
   - "oceanografia"
   - "geologia"
 keyword: "por que o mar é salgado"
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-10
 dateModified: 2026-10-10
 featuredImage: /images/por-que-o-mar-e-salgado/por-que-o-mar-e-salgado.webp
