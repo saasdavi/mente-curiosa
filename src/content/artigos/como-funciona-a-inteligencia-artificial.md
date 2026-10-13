@@ -2,7 +2,7 @@
 id: ART0901
 title: Como funciona a inteligência artificial?
 slug: como-funciona-a-inteligencia-artificial
-description: Como funciona a inteligência artificial? Ela aprende padrões a partir de muitos exemplos e usa esses padrões para prever respostas. Entenda sem complicação.
+description: 'Como funciona a inteligência artificial? Ela aprende padrões com muitos exemplos e usa esses padrões para prever respostas. Entenda sem complicação.'
 category: tecnologia-ia-e-ciencia
 tags:
 - inteligência artificial

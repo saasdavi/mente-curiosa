@@ -2,7 +2,7 @@
 id: ART0251
 title: Por que bocejamos?
 slug: por-que-bocejamos
-description: Por que bocejamos? A ciência aponta o resfriamento do cérebro e a mudança de estado de alerta. Veja por que o bocejo é contagioso e o que ainda é mistério.
+description: 'Por que bocejamos? A ciência aponta o resfriamento do cérebro e a mudança de alerta. Veja por que o bocejo é contagioso e o que ainda não se sabe.'
 category: corpo-humano
 tags:
 - bocejo

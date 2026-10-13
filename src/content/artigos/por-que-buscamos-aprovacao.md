@@ -2,7 +2,7 @@
 id: ART0009
 title: "Por que buscamos aprovação?"
 slug: por-que-buscamos-aprovacao
-description: "Por que buscamos aprovação? Entenda a necessidade humana de pertencer, o sentido da palavra aprovação e o que estudos científicos explicam sobre esse desejo."
+description: 'Por que buscamos aprovação? Entenda a necessidade humana de pertencer e o que os estudos científicos explicam sobre esse desejo.'
 category: psicologia-e-comportamento
 tags:
   - "psicologia-e-comportamento"
