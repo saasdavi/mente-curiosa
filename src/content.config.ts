@@ -92,6 +92,11 @@ const artigos = defineCollection({
         .array(z.object({ title: z.string().min(3), url: z.url() }))
         .min(1, 'informe ao menos uma fonte')
         .optional(),
+      // Perguntas frequentes: viram FAQPage no JSON-LD. Respostas curtas, de 2 a 3 frases.
+      faq: z
+        .array(z.object({ question: z.string().min(10), answer: z.string().min(20) }))
+        .max(5)
+        .optional(),
       draft: z.boolean().default(false),
     })
     .refine((d) => d.dateModified >= d.datePublished, {
