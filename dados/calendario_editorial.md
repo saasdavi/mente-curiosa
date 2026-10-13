@@ -26,15 +26,15 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 06/10/2026 | Ter | — | — | por que temos sonhos | Por que temos sonhos? | corpo-humano | por-que-temos-sonhos | **PUBLICADO** |
 | 07/10/2026 | Qua | — | — | como funciona a inteligência artificial | Como funciona a inteligência artificial? | tecnologia-ia-e-ciencia | como-funciona-a-inteligencia-artificial | **PUBLICADO** |
 | 07/10/2026 | Qua | — | — | o que existe no centro da Via Láctea | O que existe no centro da Via Láctea? | universo-e-espaco | o-que-existe-no-centro-da-via-lactea | **PUBLICADO** |
-| 14/10/2026 | Qua | 09h | CAL0001 | por que a Lua tem fases | Por que a lua tem fases? | Universo e espaço | por-que-a-lua-tem-fases | **A PRODUZIR** |
-| 14/10/2026 | Qua | 12h | CAL0003 | como funciona um raio | Como funciona um raio? | Ciência e fenômenos | como-funciona-um-raio | **A PRODUZIR** |
-| 14/10/2026 | Qua | 20h | CAL0004 | como funciona o Wi-Fi | Como funciona o wi-fi? | Tecnologia, IA e ciência | como-funciona-o-wi-fi | **A PRODUZIR** |
-| 15/10/2026 | Qui | 09h | CAL0005 | como se formam os planetas | Como se formam os planetas? | Universo e espaço | como-se-formam-os-planetas | **A PRODUZIR** |
-| 15/10/2026 | Qui | 12h | CAL0006 | o que é instinto animal | O que é instinto animal? | Animais | o-que-e-instinto-animal | **A PRODUZIR** |
-| 15/10/2026 | Qui | 20h | CAL0007 | como se formam os terremotos | Como se formam os terremotos? | Ciência e fenômenos | como-se-formam-os-terremotos | **A PRODUZIR** |
-| 16/10/2026 | Sex | 09h | CAL0008 | como funciona o bluetooth | Como funciona o bluetooth? | Tecnologia, IA e ciência | como-funciona-o-bluetooth | **A PRODUZIR** |
-| 16/10/2026 | Sex | 12h | CAL0009 | o que é um cometa | O que é um cometa? | Universo e espaço | o-que-e-um-cometa | **A PRODUZIR** |
-| 16/10/2026 | Sex | 20h | CAL0010 | o que é a extinção de espécies | O que é a extinção de espécies? | Animais | o-que-e-a-extincao-de-especies | **A PRODUZIR** |
+| 14/10/2026 | Qua | 09h | CAL0001 | por que a Lua tem fases | Por que a lua tem fases? | Universo e espaço | por-que-a-lua-tem-fases | **A PUBLICADO** |
+| 14/10/2026 | Qua | 12h | CAL0003 | como funciona um raio | Como funciona um raio? | Ciência e fenômenos | como-funciona-um-raio | **A PUBLICADO** |
+| 14/10/2026 | Qua | 20h | CAL0004 | como funciona o Wi-Fi | Como funciona o wi-fi? | Tecnologia, IA e ciência | como-funciona-o-wi-fi | **A PUBLICADO** |
+| 15/10/2026 | Qui | 09h | CAL0005 | como se formam os planetas | Como se formam os planetas? | Universo e espaço | como-se-formam-os-planetas | **A PUBLICADO** |
+| 15/10/2026 | Qui | 12h | CAL0006 | o que é instinto animal | O que é instinto animal? | Animais | o-que-e-instinto-animal | **A PUBLICADO** |
+| 15/10/2026 | Qui | 20h | CAL0007 | como se formam os terremotos | Como se formam os terremotos? | Ciência e fenômenos | como-se-formam-os-terremotos | **A PUBLICADO** |
+| 16/10/2026 | Sex | 09h | CAL0008 | como funciona o bluetooth | Como funciona o bluetooth? | Tecnologia, IA e ciência | como-funciona-o-bluetooth | **A PUBLICADO** |
+| 16/10/2026 | Sex | 12h | CAL0009 | o que é um cometa | O que é um cometa? | Universo e espaço | o-que-e-um-cometa | **A PUBLICADO** |
+| 16/10/2026 | Sex | 20h | CAL0010 | o que é a extinção de espécies | O que é a extinção de espécies? | Animais | o-que-e-a-extincao-de-especies | **A PUBLICADO** |
 | 17/10/2026 | Sab | 09h | CAL0011 | como se forma a chuva | Como se forma a chuva? | Ciência e fenômenos | como-se-forma-a-chuva | **A PRODUZIR** |
 | 17/10/2026 | Sab | 12h | CAL0012 | como funciona um carro elétrico | Como funciona um carro elétrico? | Tecnologia, IA e ciência | como-funciona-um-carro-eletrico | **A PRODUZIR** |
 | 17/10/2026 | Sab | 20h | CAL0013 | o que é um planeta | O que é um planeta? | Universo e espaço | o-que-e-um-planeta | **A PRODUZIR** |
