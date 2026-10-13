@@ -62,7 +62,9 @@ Segundo Sayigh, os pesquisadores também confirmaram que os golfinhos selvagens 
 
 Segundo a WHOI, a equipe de Sarasota conhece o histórico de cerca de 170 golfinhos da comunidade. Segundo Sayigh, os animais passam por avaliações rápidas de saúde, nas quais os pesquisadores os seguram por pouco tempo.
 
-Durante essas avaliações, a equipe prende hidrofones com ventosa diretamente no melão, a região da testa do animal, e registra os sons continuamente. Segundo Sayigh, o banco de dados reúne quase mil sessões de gravação de 324 golfinhos diferentes. A equipe registra continuamente e anota quem está sendo gravado em cada momento e o que está acontecendo.
+Durante essas avaliações, a equipe prende hidrofones com ventosa diretamente no melão, a região da testa do animal, e registra os sons continuamente.
+
+Segundo Sayigh, o banco de dados reúne quase mil sessões de gravação de 324 golfinhos diferentes. A equipe registra continuamente e anota quem está sendo gravado em cada momento e o que está acontecendo.
 
 ## O nome e a família
 
