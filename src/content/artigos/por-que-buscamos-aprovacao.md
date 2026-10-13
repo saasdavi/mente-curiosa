@@ -83,6 +83,17 @@ Também ajuda separar opiniões que trazem informação útil de opiniões que a
 
 Pertencer a um grupo continua sendo importante. A diferença está em manter vínculos sem abrir mão da própria visão sobre o que é certo para você.
 
+## Mitos comuns sobre aprovação
+
+Três mitos aparecem com frequência quando se fala de aprovação. Os estudos citados ajudam a separar o que tem apoio científico do que é só impressão, e não se aplicam a cada caso pessoal.
+
+**"Quem busca aprovação é fraco ou inseguro."** Mito. Segundo Baumeister e Leary, a necessidade de pertencer é uma motivação básica do ser humano. Querer ser aceito faz parte da vida em grupo. O que pode causar problema é a intensidade com que essa busca passa a comandar as decisões, e não o desejo em si.
+
+**"A rejeição é só um sentimento e não afeta o corpo."** Mito. No estudo de Eisenberger e colegas, a exclusão no jogo simulado ativou regiões também ligadas à dor física. A reação não equivale a uma lesão, mas corpo e mente respondem à exclusão social, e por isso ela importa.
+
+**"Quem não concorda com o grupo está sempre errado."** Mito. Pertencer não exige concordar com tudo. Um desacordo pode trazer informação útil, como um colega que aponta um erro no trabalho. O que distingue uma crítica útil de uma cobrança é o que ela oferece: algo concreto para melhorar ou apenas uma tentativa de medir seu valor.
+
+
 ## Resumindo
 
 Buscamos aprovação porque a necessidade de pertencer faz parte da natureza humana, segundo Baumeister e Leary. A exclusão social ativa regiões cerebrais associadas à dor, como mostrou o estudo de Eisenberger e colegas em 2003. Aprovação, em sentido psicológico, é o reconhecimento de que outra pessoa nos aceita. O desejo de aceitação não é um problema em si. Ele pesa mais quando passa a guiar quase todas as decisões.
@@ -92,19 +103,3 @@ Buscamos aprovação porque a necessidade de pertencer faz parte da natureza hum
 - American Psychological Association, Psychological Bulletin: Baumeister e Leary (1995), "The need to belong", revisão sobre a necessidade de pertencer. https://doi.org/10.1037/0033-2909.117.3.497
 - AAAS, revista Science: Eisenberger, Lieberman e Williams (2003), "Does rejection hurt?", estudo com ressonância magnética sobre exclusão social. https://doi.org/10.1126/science.1089134
 - Dicio, Dicionário Online de Português: definição e exemplos do verbo "buscar" e de seus sentidos. https://www.dicio.com.br/buscamos/
-
----
-
-**Análise de pontuação (interna)**
-
-| Critério | Peso | Nota | Justificativa |
-|---|---|---|---|
-| Fontes oficiais e E-E-A-T | 4,0 | 3,6 | Dois DOIs de revistas científicas e um dicionário. Não consegui abrir os links ao vivo; a confirmação depende da checagem pela equipe. O dicionário não é fonte primária. |
-| Precisão dos fatos | 1,5 | 1,4 | Anos, autores e revistas batem com as fontes. O estudo de 2003 foi com jogo simulado, e o texto informa isso. |
-| Intenção de busca e profundidade | 1,5 | 1,4 | Responde "o que significa aprovação" e "qual é o sinônimo de buscamos" logo no início das seções, cobrindo as lacunas do top 5. |
-| SEO on-page e imagens | 1,0 | 1,0 | Palavra-chave no título, na descrição, no primeiro parágrafo e em dois H2. Três imagens com alts únicos. |
-| Estrutura e leitura | 1,0 | 0,9 | Parágrafos curtos e seções bem divididas. Corpo com cerca de 1.100 palavras. |
-| Originalidade e naturalidade | 1,0 | 0,9 | Texto escrito do zero, sem frases proibidas. |
-| **Total** | **10,0** | **9,2** | Aprovado (mínimo 9,0). |
-
-Observação: o briefing não trouxe fontes institucionais sobre psicologia da aprovação. As referências deste artigo vêm de revistas científicas e do dicionário indicado na pauta. Convém a equipe confirmar os links antes da publicação.
