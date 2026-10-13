@@ -72,6 +72,63 @@ export function articleJsonLd(a: Article) {
   };
 }
 
+type Faq = { question: string; answer: string };
+
+const limpa = (texto: string) =>
+  texto
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\*\*|__|`/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+// Lê a seção "## Perguntas frequentes" do corpo. Aceita os formatos usados nos artigos:
+// "### Pergunta", "**Pergunta?** resposta" e "**Pergunta?**" com a resposta na linha seguinte.
+export function faqDoCorpo(corpo: string): Faq[] {
+  const linhas = corpo.split('\n');
+  const inicio = linhas.findIndex((l) => /^##\s+Perguntas frequentes\s*$/.test(l));
+  if (inicio < 0) return [];
+
+  const itens: Faq[] = [];
+  let pergunta: string | null = null;
+  let resposta: string[] = [];
+  const fecha = () => {
+    if (pergunta && resposta.length) itens.push({ question: limpa(pergunta), answer: limpa(resposta.join(' ')) });
+    pergunta = null;
+    resposta = [];
+  };
+
+  for (const linha of linhas.slice(inicio + 1)) {
+    if (/^##\s/.test(linha)) break; // próxima seção de nível 2
+    const titulo = linha.match(/^###\s+(.+)$/);
+    const negrito = linha.match(/^\*\*(.+?\?)\*\*\s*(.*)$/);
+    if (titulo) {
+      fecha();
+      pergunta = titulo[1];
+    } else if (negrito) {
+      fecha();
+      pergunta = negrito[1];
+      if (negrito[2].trim()) resposta.push(negrito[2]);
+    } else if (pergunta && linha.trim()) {
+      resposta.push(linha.trim());
+    }
+  }
+  fecha();
+  return itens.filter((f) => f.question.length >= 10 && f.answer.length >= 20);
+}
+
+// Frontmatter faq tem prioridade; artigos antigos usam a seção do corpo.
+export const faqDoArtigo = (a: Article): Faq[] => (a.data.faq?.length ? a.data.faq : faqDoCorpo(a.body ?? ''));
+
+export const faqJsonLd = (itens: Faq[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: itens.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+});
+
 export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
   return {
     '@context': 'https://schema.org',
