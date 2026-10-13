@@ -76,7 +76,9 @@ O mesmo material lembra que, em 1883, as pessoas viram luas azuladas quase todas
 
 ## De onde veio a confusão
 
-Segundo Spagna, a ligação entre lua azul e calendário vem de um almanaque do Maine, publicado em 1937. Naquele uso, a lua azul não era uma lua cheia qualquer, e sim um caso raro dentro de uma estação. Esse almanaque usava o ano tropical, que vai de um solstício de inverno ao seguinte.
+Segundo Spagna, a ligação entre lua azul e calendário vem de um almanaque do Maine, publicado em 1937.
+
+Naquele uso, a lua azul não era uma lua cheia qualquer, e sim um caso raro dentro de uma estação. Esse almanaque usava o ano tropical, que vai de um solstício de inverno ao seguinte.
 
 Segundo a mesma fonte, as estações não têm o mesmo tamanho, porque a órbita da Terra é elíptica e não circular.
 
