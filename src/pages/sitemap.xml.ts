@@ -20,6 +20,7 @@ export const GET: APIRoute = async () => {
       images: [a.data.featuredImage, ...(a.data.images ?? []).map((i) => i.src)].map(abs),
     })),
     { loc: abs('/sobre/') },
+    { loc: abs('/autores/davi-burato-custodio/') },
     { loc: abs('/contato/') },
     { loc: abs('/politica-de-privacidade/') },
     { loc: abs('/termos-de-uso/') },
