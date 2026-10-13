@@ -139,10 +139,3 @@ Porque o líder escalonado avança em degraus e se ramifica à procura do chão.
 - O Brasil tem muitos raios, e a maioria das mortes acontece em áreas abertas, por isso a prevenção começa por sair do campo.
 
 Veja também como [o céu é azul](/por-que-o-ceu-e-azul/) e [por que a Lua tem fases](/por-que-a-lua-tem-fases/), outros fenômenos da natureza explicados de forma simples.
-
-## Fontes
-
-- NOAA — National Weather Service, Understanding Lightning: Negative Flash: https://www.weather.gov/safety/lightning-science-negative-charged-flash
-- NOAA — National Weather Service, Understanding Lightning: Making Connection With the Ground: https://www.weather.gov/safety/lightning-science-connection-ground
-- Agência FAPESP, Inpe divulga dados de mortes por raios dos últimos 15 anos no Brasil: https://agencia.fapesp.br/inpe-divulga-dados-de-mortes-por-raios-dos-ultimos-15-anos-no-brasil/24586
-- Poder360, Brasil registra 77,8 milhões de raios por ano e prejuízo de R$ 100 milhões: https://www.poder360.com.br/brasil/brasil-registra-778-milhoes-de-raios-por-ano-e-prejuizo-de-r-100-milhoes/

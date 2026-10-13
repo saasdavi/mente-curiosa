@@ -149,9 +149,3 @@ Depende da distância. Se o aparelho estiver perto do roteador, a faixa de 5 GHz
 - Posicionar o roteador em um ponto central e elevado melhora o sinal em casa.
 
 Veja também como [o céu é azul](/por-que-o-ceu-e-azul/) e [como funciona um raio](/como-funciona-um-raio/), outros fenômenos explicados de forma simples.
-
-## Fontes
-
-- Anatel, Divisão da faixa de 6 GHz: Wi-Fi e sistemas móveis: https://www.gov.br/anatel/pt-br/assuntos/noticias/anatel-participa-de-audiencia-sobre-divisao-da-faixa-de-6-ghz-entre-wi-fi-e-telefonia-movel/apresentacao.pdf/@@download/file
-- OMS, Base stations and wireless technologies: https://www.who.int/teams/environment-climate-change-and-health/radiation-and-health/non-ionizing/wireless
-- Ciência Hoje, Como funciona o Wi-Fi?: https://cienciahoje.org.br/artigo/como-funciona-o-wi-fi/

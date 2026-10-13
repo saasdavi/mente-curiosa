@@ -97,10 +97,3 @@ Em rios e mares poluídos, a proliferação excessiva de algas e bactérias deco
 ## Resumindo
 
 A maioria dos peixes retira o oxigênio vital da água por meio das brânquias, estruturas finas e altamente vascularizadas. O fluxo contracorrente garante que até oitenta por cento do gás dissolvido passe para a corrente sanguínea com extrema eficiência física. Fora da água, os filamentos branquiais colapsam sob a gravidade e secam, impedindo a absorção gasosa mesmo no ar atmosférico. Espécies adaptadas a ambientes rasos, como o betta e a piramboia, desenvolveram órgãos complementares como o labirinto e pulmões primitivos.
-
-## Fontes
-
-- [Australian Museum](https://australian.museum/learn/animals/fishes/how-do-fish-breathe/): Museu de história natural que documenta a anatomia das brânquias e a ventilação por bombeamento bucal e aríete.
-- [NOAA - National Oceanic and Atmospheric Administration](https://oceanservice.noaa.gov/facts/fish-breathe.html): Agência governamental americana que detalha os mecanismos de captação de oxigênio dissolvido na água marinha.
-- [Nature Education Knowledge Project](https://www.nature.com/scitable/knowledge/library/the-chemical-and-physical-properties-of-water-and-aquatic-respiration-13239824/): Divisão acadêmica da revista Nature explicando o fluxo contracorrente e as propriedades físicas da respiração aquática.
-- [Florida Museum of Natural History](https://www.floridamuseum.ufl.edu/discover-fish/fish/anatomy/respiratory/): Instituição científica que descreve a anatomia comparada das brânquias, órgãos labirintos e respiração de dipnoicos.

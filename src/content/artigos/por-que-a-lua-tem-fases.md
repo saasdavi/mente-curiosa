@@ -139,8 +139,3 @@ Os outros planetas têm luas, e muitas delas também mostram fases em relação 
 - Você pode observar as fases sozinho, anotando a Lua a cada dois ou três dias.
 
 Veja também como [o céu é azul](/por-que-o-ceu-e-azul/) ou [como nascem as estrelas](/como-nascem-as-estrelas/), outros fenômenos do universo explicados de forma simples.
-
-## Fontes
-
-- NASA Science — Our World: Moon Phases: https://science.nasa.gov/eclips/videos/moon-phases/
-- NASA StarChild — Moonlight Madness: https://starchild.gsfc.nasa.gov/docs/StarChild/solar_system_level2/moonlight.html
