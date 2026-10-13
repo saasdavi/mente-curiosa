@@ -11,8 +11,8 @@ tags:
 - órbita
 keyword: por que a lua tem fases
 author: Equipe Mente Curiosa
-datePublished: 2026-10-14
-dateModified: 2026-10-14
+datePublished: 2026-10-13
+dateModified: 2026-10-13
 sources:
 - title: 'NASA Science — Our World: Moon Phases'
   url: https://science.nasa.gov/eclips/videos/moon-phases/
