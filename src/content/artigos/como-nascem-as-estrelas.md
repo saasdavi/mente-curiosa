@@ -2,7 +2,7 @@
 id: ART0451
 title: Como nascem as estrelas?
 slug: como-nascem-as-estrelas
-description: Como nascem as estrelas? Nuvens de gás e poeira desabam sob a própria gravidade até o centro ficar quente o bastante para a fusão começar. Entenda cada etapa.
+description: 'Como nascem as estrelas? Nuvens de gás e poeira desabam sob a própria gravidade até o centro esquentar o bastante para a fusão começar. Entenda cada etapa.'
 category: universo-e-espaco
 tags:
 - estrelas

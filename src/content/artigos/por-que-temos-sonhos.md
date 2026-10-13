@@ -2,7 +2,7 @@
 id: ART0256
 title: Por que temos sonhos?
 slug: por-que-temos-sonhos
-description: Por que temos sonhos? A ciência liga os sonhos ao sono REM, à memória e às emoções, mas ainda não tem resposta final. Veja as principais teorias e os mitos.
+description: 'Por que temos sonhos? A ciência liga os sonhos ao sono REM, à memória e às emoções, mas não tem resposta final. Veja as principais teorias e mitos.'
 category: corpo-humano
 tags:
 - sonhos

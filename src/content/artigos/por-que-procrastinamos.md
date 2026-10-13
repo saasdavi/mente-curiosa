@@ -2,7 +2,7 @@
 id: ART0006
 title: Por que procrastinamos?
 slug: por-que-procrastinamos
-description: Por que procrastinamos? Adiar é uma forma de fugir de emoções ruins ligadas à tarefa, não só preguiça. Veja o que diz a ciência e o que ajuda a sair do ciclo.
+description: 'Por que procrastinamos? Adiar é uma forma de fugir de emoções ruins ligadas à tarefa, não só preguiça. Veja o que diz a ciência e como sair do ciclo.'
 category: psicologia-e-comportamento
 tags:
 - procrastinação
