@@ -4,11 +4,11 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 
 ## Resumo
 
--- Total: **1015**
-- PUBLICADO: **28** ja publicados
-- A PRODUZIR: **33**  que podemos publicar
-- GERAR ARTIGO: **954** que devemos escrever artigos
-- FALHA: **0** falhou no deploy
+- Total: **1015**
+- PUBLICADO: **20**
+- A PRODUZIR: **30**
+- GERAR ARTIGO: **965**
+- FALHA: **0**
 
 ## Calendário
 
