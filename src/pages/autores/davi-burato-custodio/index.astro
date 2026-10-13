@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { SITE } from '../../../config/site';
+
+// Página de autor. Só afirmações verificáveis; cargo e bio são rascunho a confirmar pelo autor.
+const nome = 'Davi Burato Custódio';
+const cargo = 'Responsável pelo Mente Curiosa';
+const bio = 'Davi Burato Custódio é o responsável pelo Mente Curiosa, um projeto de divulgação científica em português. Os textos são escritos e revisados com apoio de ferramentas de inteligência artificial, e as fontes de cada artigo ficam listadas ao final.';
+const path = '/autores/davi-burato-custodio/';
+const url = new URL(path, SITE.url).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${url}#person`,
+    name: nome,
+    jobTitle: cargo,
+    description: bio,
+    url,
+    worksFor: { '@id': `${SITE.url}/#organization` },
+  },
+];
+---
+<BaseLayout title={nome} description={bio} path={path} jsonLd={jsonLd}>
+  <article class="wrap prose page">
+    <h1>{nome}</h1>
+    <p><strong>{cargo}</strong></p>
+    <p>{bio}</p>
+    <p>Para saber como os artigos são produzidos, leia a página <a href="/sobre/">Sobre</a>. Para correções ou contato, use a <a href="/contato/">página de contato</a>.</p>
+  </article>
+</BaseLayout>
