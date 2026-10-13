@@ -102,9 +102,11 @@ Uma estrela muito massiva termina em uma explosão chamada supernova.
 
 Segundo a NASA, uma supernova pode iluminar o céu por semanas. O núcleo que sobra pode se tornar uma estrela de nêutrons, se tiver entre 1,5 e 4 vezes a massa do Sol, ou um buraco negro, se tiver 10 vezes ou mais.
 
+Segundo a NASA, as estrelas de nêutrons giram rapidamente e emitem ondas de rádio.
+
 ## Mitos sobre as estrelas
 
-**"Estrelas são pontos fixas no céu."** Mito. Segundo a NASA, elas mudam ao longo da vida. Segundo a NASA, passam por uma sequência de fases que dura de milhões a bilhões de anos.
+**"Estrelas são pontos fixos no céu."** Mito. Segundo a NASA, elas mudam ao longo da vida e passam por fases que duram de milhões a bilhões de anos.
 
 **"Todas as estrelas são iguais ao Sol."** Mito. Segundo o material da Universidade do Texas em Dallas, o Sol é uma estrela de tamanho médio. Há estrelas muito maiores e muito menores.
 
