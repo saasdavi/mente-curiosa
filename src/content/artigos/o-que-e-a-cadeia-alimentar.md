@@ -12,7 +12,7 @@ tags:
   - energia
   - natureza
 keyword: o que é a cadeia alimentar
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: "2026-09-30"
 dateModified: "2026-09-30"
 featuredImage: /images/o-que-e-a-cadeia-alimentar/o-que-e-a-cadeia-alimentar.webp

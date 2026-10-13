@@ -45,7 +45,7 @@ const artigos = defineCollection({
       category: z.enum(CATEGORY_SLUGS),
       tags: z.array(z.string().min(2)).min(1).max(8),
       keyword: z.string().min(3),
-      author: z.string().default('Equipe Mente Curiosa'),
+      author: z.string().default('Davi Burato Custódio'),
       datePublished: z.coerce.date(),
       dateModified: z.coerce.date(),
       // Capa. Fica vazia só enquanto o artigo espera a automação de imagens (imagensPlano).

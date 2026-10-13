@@ -10,7 +10,7 @@ tags:
 - eletricidade
 - clima
 keyword: como funciona um raio
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-14
 dateModified: 2026-10-14
 sources:

@@ -10,7 +10,7 @@ tags:
 - hábitos
 - produtividade
 keyword: por que procrastinamos
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-05
 dateModified: 2026-10-05
 sources:

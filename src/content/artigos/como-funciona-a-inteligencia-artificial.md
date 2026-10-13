@@ -10,7 +10,7 @@ tags:
 - aprendizado de máquina
 - dados
 keyword: como funciona a inteligência artificial
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-07
 dateModified: 2026-10-07
 sources:

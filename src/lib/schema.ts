@@ -50,6 +50,14 @@ export const articleImages = (a: Article) => [
   ...(a.data.images ?? []).map((i) => imageObject(i.src, i.width, i.height, i.alt, i.credit, i.caption)),
 ];
 
+// Autor com página própria vira Person com o mesmo @id da página; os demais seguem como Organization.
+const autorJsonLd = (nome: string) => {
+  const caminho = SITE.authorPages[nome];
+  return caminho
+    ? { '@type': 'Person', '@id': `${abs(caminho)}#person`, name: nome, url: abs(caminho) }
+    : { '@type': 'Organization', name: nome, url: abs('/sobre/') };
+};
+
 export function articleJsonLd(a: Article) {
   const d = a.data;
   const url = abs(articleUrl(d.slug));
@@ -63,7 +71,7 @@ export function articleJsonLd(a: Article) {
     image: articleImages(a),
     datePublished: d.datePublished.toISOString(),
     dateModified: d.dateModified.toISOString(),
-    author: { '@type': 'Organization', name: d.author, url: abs('/sobre/') },
+    author: autorJsonLd(d.author),
     publisher: organizationJsonLd(),
     articleSection: getCategory(d.category).name,
     keywords: d.tags.join(', '),

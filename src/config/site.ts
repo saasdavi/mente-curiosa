@@ -9,7 +9,11 @@ export const SITE = {
   tagline: 'Respostas simples para perguntas curiosas',
   description:
     'Curiosidades explicadas de forma simples e com base na ciência: corpo humano, mente, universo, animais, fenômenos e tecnologia.',
-  defaultAuthor: 'Equipe Mente Curiosa',
+  defaultAuthor: 'Davi Burato Custódio',
+  // Páginas de autor: nome exato no frontmatter → caminho. Assinatura e JSON-LD usam este mapa.
+  authorPages: {
+    'Davi Burato Custódio': '/autores/davi-burato-custodio/',
+  } as Record<string, string>,
   defaultImage: '/images/og-default.webp',
   contactEmail: 'daviestreladamanha2@gmail.com',
   // Perfis oficiais: aparecem no rodapé e no schema (sameAs). Vazio = não exibe.

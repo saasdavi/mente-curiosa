@@ -10,7 +10,7 @@ tags:
 - tecnologia
 - dados
 keyword: como funciona a computação em nuvem
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-03
 dateModified: 2026-10-03
 sources:

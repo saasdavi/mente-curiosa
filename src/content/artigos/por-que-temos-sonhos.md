@@ -10,7 +10,7 @@ tags:
 - cérebro
 - memória
 keyword: por que temos sonhos
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-06
 dateModified: 2026-10-06
 sources:

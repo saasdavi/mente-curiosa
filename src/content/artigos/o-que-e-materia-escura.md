@@ -7,7 +7,7 @@ category: universo-e-espaco
 tags:
   - "universo-e-espaco"
 keyword: "o que é matéria escura"
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-11
 dateModified: 2026-10-11
 featuredImage: /images/o-que-e-materia-escura/o-que-e-materia-escura.webp

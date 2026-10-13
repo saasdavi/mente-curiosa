@@ -10,7 +10,7 @@ tags:
 - sono
 - comportamento
 keyword: por que bocejamos
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-02
 dateModified: 2026-10-02
 sources:

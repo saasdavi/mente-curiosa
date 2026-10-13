@@ -7,7 +7,7 @@ category: tecnologia-ia-e-ciencia
 tags:
   - "tecnologia-ia-e-ciencia"
 keyword: "como a IA gera vídeos"
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio
 datePublished: 2026-10-09
 dateModified: 2026-10-09
 featuredImage: /images/como-a-ia-gera-videos/como-a-ia-gera-videos.webp
