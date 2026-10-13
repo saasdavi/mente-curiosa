@@ -10,6 +10,11 @@ on:
         description: 'Nome do .md em GPT ARTIGOS PRONTOS (vazio = próximo da fila)'
         required: false
         default: ''
+      testar_imagens:
+        description: 'Só testar as APIs de imagem (não publica, não faz commit nem deploy)'
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: artigos-diarios
@@ -38,8 +43,17 @@ jobs:
     - name: Instalar dependências Python
       run: pip install requests pillow pyyaml
 
+    - name: Testar APIs de imagem
+      if: github.event.inputs.testar_imagens == 'true'
+      env:
+        PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
+      run: python scripts/publicar_artigo.py --testar-imagens
+
     - name: Publicar artigo
       id: publicar
+      if: github.event.inputs.testar_imagens != 'true'
       env:
         PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}

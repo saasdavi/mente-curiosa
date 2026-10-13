@@ -268,10 +268,36 @@ def publica(nome):
     return slug
 
 
+def testar_imagens():
+    """Consulta cada fonte com uma busca de teste e mostra o resultado. Não grava nada."""
+    erros = 0
+    for fonte in FONTES:
+        if not chave(CHAVES[fonte]):
+            print(f"{fonte}: CHAVE NÃO CONFIGURADA")
+            erros += 1
+            continue
+        try:
+            opcoes = BUSCAS[fonte]("coffee cup")
+        except requests.RequestException as e:
+            print(f"{fonte}: ERRO {e}")
+            erros += 1
+            continue
+        if not opcoes:
+            print(f"{fonte}: resposta sem fotos")
+            erros += 1
+            continue
+        print(f"{fonte}: OK, {len(opcoes)} fotos. Exemplo: {opcoes[0]['url']}")
+    return 1 if erros else 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--arquivo", help="nome do .md em GPT ARTIGOS PRONTOS (padrão: próximo da fila)")
+    ap.add_argument("--testar-imagens", action="store_true", help="só testa as APIs de imagem, sem publicar")
     args = ap.parse_args()
+
+    if args.testar_imagens:
+        return testar_imagens()
 
     if not any(chave(c) for c in CHAVES.values()):
         print("erro: nenhuma chave de imagem configurada (Pexels, Pixabay ou Unsplash)", file=sys.stderr)
