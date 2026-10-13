@@ -38,22 +38,22 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 17/10/2026 | Sab | 09h | CAL0011 | como se forma a chuva | Como se forma a chuva? | Ciência e fenômenos | como-se-forma-a-chuva | **A PRODUZIR** |
 | 17/10/2026 | Sab | 12h | CAL0012 | como funciona um carro elétrico | Como funciona um carro elétrico? | Tecnologia, IA e ciência | como-funciona-um-carro-eletrico | **A PRODUZIR** |
 | 17/10/2026 | Sab | 20h | CAL0013 | o que é um planeta | O que é um planeta? | Universo e espaço | o-que-e-um-planeta | **A PRODUZIR** |
-| 18/10/2026 | Dom | 09h | CAL0014 | por que os cães abanam o rabo | Por que os cães abanam o rabo? | Animais | por-que-os-caes-abanam-o-rabo | **A PRODUZIR** |
-| 18/10/2026 | Dom | 12h | CAL0015 | como funciona um vulcão | Como funciona um vulcão? | Ciência e fenômenos | como-funciona-um-vulcao | **A PRODUZIR** |
-| 18/10/2026 | Dom | 20h | CAL0016 | como funciona a criptografia | Como funciona a criptografia? | Tecnologia, IA e ciência | como-funciona-a-criptografia | **A PRODUZIR** |
-| 19/10/2026 | Seg | 09h | CAL0017 | o que é uma estrela | O que é uma estrela? | Universo e espaço | o-que-e-uma-estrela | **A PRODUZIR** |
-| 19/10/2026 | Seg | 12h | CAL0018 | como as abelhas se comunicam | Como as abelhas se comunicam? | Animais | como-as-abelhas-se-comunicam | **A PRODUZIR** |
-| 19/10/2026 | Seg | 20h | CAL0019 | como funciona a eletricidade | Como funciona a eletricidade? | Ciência e fenômenos | como-funciona-a-eletricidade | **A PRODUZIR** |
-| 20/10/2026 | Ter | 09h | CAL0020 | como funciona o 5g | Como funciona o 5g? | Tecnologia, IA e ciência | como-funciona-o-5g | **A PRODUZIR** |
-| 20/10/2026 | Ter | 12h | CAL0021 | como funciona a gravidade | Como funciona a gravidade? | Universo e espaço | como-funciona-a-gravidade | **A PRODUZIR** |
-| 20/10/2026 | Ter | 20h | CAL0022 | como as formigas encontram comida | Como as formigas encontram comida? | Animais | como-as-formigas-encontram-comida | **A PRODUZIR** |
-| 21/10/2026 | Qua | 09h | CAL0023 | o que é corrente elétrica | O que é corrente elétrica? | Ciência e fenômenos | o-que-e-corrente-eletrica | **A PRODUZIR** |
-| 21/10/2026 | Qua | 12h | CAL0024 | como funciona o blockchain | Como funciona o blockchain? | Tecnologia, IA e ciência | como-funciona-o-blockchain | **A PRODUZIR** |
-| 21/10/2026 | Qua | 20h | CAL0025 | o que é uma galáxia | O que é uma galáxia? | Universo e espaço | o-que-e-uma-galaxia | **A PRODUZIR** |
-| 22/10/2026 | Qui | 09h | CAL0026 | como os morcegos se orientam | Como os morcegos se orientam? | Animais | como-os-morcegos-se-orientam | **A PRODUZIR** |
-| 22/10/2026 | Qui | 12h | CAL0027 | por que o arco-íris aparece | Por que o arco-íris aparece? | Ciência e fenômenos | por-que-o-arco-iris-aparece | **A PRODUZIR** |
-| 22/10/2026 | Qui | 20h | CAL0028 | como funciona um carro híbrido | Como funciona um carro híbrido? | Tecnologia, IA e ciência | como-funciona-um-carro-hibrido | **A PRODUZIR** |
-| 23/10/2026 | Sex | 09h | CAL0029 | o que é o big bang | O que é o big bang? | Universo e espaço | o-que-e-o-big-bang | **A PRODUZIR** |
+| 18/10/2026 | Dom | 09h | CAL0014 | por que os cães abanam o rabo | Por que os cães abanam o rabo? | Animais | por-que-os-caes-abanam-o-rabo | **A PUBLICADO** |
+| 18/10/2026 | Dom | 12h | CAL0015 | como funciona um vulcão | Como funciona um vulcão? | Ciência e fenômenos | como-funciona-um-vulcao | **A PUBLICADO** |
+| 18/10/2026 | Dom | 20h | CAL0016 | como funciona a criptografia | Como funciona a criptografia? | Tecnologia, IA e ciência | como-funciona-a-criptografia | **A PUBLICADO** |
+| 19/10/2026 | Seg | 09h | CAL0017 | o que é uma estrela | O que é uma estrela? | Universo e espaço | o-que-e-uma-estrela | **A PUBLICADO** |
+| 19/10/2026 | Seg | 12h | CAL0018 | como as abelhas se comunicam | Como as abelhas se comunicam? | Animais | como-as-abelhas-se-comunicam | **A PUBLICADO** |
+| 19/10/2026 | Seg | 20h | CAL0019 | como funciona a eletricidade | Como funciona a eletricidade? | Ciência e fenômenos | como-funciona-a-eletricidade | **A PUBLICADO** |
+| 20/10/2026 | Ter | 09h | CAL0020 | como funciona o 5g | Como funciona o 5g? | Tecnologia, IA e ciência | como-funciona-o-5g | **A PUBLICADO** |
+| 20/10/2026 | Ter | 12h | CAL0021 | como funciona a gravidade | Como funciona a gravidade? | Universo e espaço | como-funciona-a-gravidade | **A PUBLICADO** |
+| 20/10/2026 | Ter | 20h | CAL0022 | como as formigas encontram comida | Como as formigas encontram comida? | Animais | como-as-formigas-encontram-comida | **A PUBLICADO** |
+| 21/10/2026 | Qua | 09h | CAL0023 | o que é corrente elétrica | O que é corrente elétrica? | Ciência e fenômenos | o-que-e-corrente-eletrica | **A PUBLICADO** |
+| 21/10/2026 | Qua | 12h | CAL0024 | como funciona o blockchain | Como funciona o blockchain? | Tecnologia, IA e ciência | como-funciona-o-blockchain | **A PUBLICADO** |
+| 21/10/2026 | Qua | 20h | CAL0025 | o que é uma galáxia | O que é uma galáxia? | Universo e espaço | o-que-e-uma-galaxia | **A PUBLICADO** |
+| 22/10/2026 | Qui | 09h | CAL0026 | como os morcegos se orientam | Como os morcegos se orientam? | Animais | como-os-morcegos-se-orientam | **A PUBLICADO** |
+| 22/10/2026 | Qui | 12h | CAL0027 | por que o arco-íris aparece | Por que o arco-íris aparece? | Ciência e fenômenos | por-que-o-arco-iris-aparece | **A PUBLICADO** |
+| 22/10/2026 | Qui | 20h | CAL0028 | como funciona um carro híbrido | Como funciona um carro híbrido? | Tecnologia, IA e ciência | como-funciona-um-carro-hibrido | **A PUBLICADO** |
+| 23/10/2026 | Sex | 09h | CAL0029 | o que é o big bang | O que é o big bang? | Universo e espaço | o-que-e-o-big-bang | **A PUBLICADO** |
 | 23/10/2026 | Sex | 12h | CAL0030 | como os golfinhos se comunicam | Como os golfinhos se comunicam? | Animais | como-os-golfinhos-se-comunicam | **A PRODUZIR** |
 | 23/10/2026 | Sex | 20h | CAL0032 | como funciona a criptografia de ponta a ponta | Como funciona a criptografia de ponta a ponta? | Tecnologia, IA e ciência | como-funciona-a-criptografia-de-ponta-a-ponta | **A PRODUZIR** |
 | 24/10/2026 | Sab | 09h | CAL0033 | o que é uma lua azul | O que é uma lua azul? | Universo e espaço | o-que-e-uma-lua-azul | **A PRODUZIR** |
