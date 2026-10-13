@@ -83,7 +83,7 @@ const updated = d.dateModified.getTime() !== d.datePublished.getTime();
         <h2 id="fontes">Fontes</h2>
         <ul>
           {d.sources.map((s) => (
-            <li><a href={s.url} rel="noopener" target="_blank">{s.title}</a></li>
+            <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.title}</a></li>
           ))}
         </ul>
       </section>
