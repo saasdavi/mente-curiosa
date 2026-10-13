@@ -27,7 +27,7 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 06/10/2026 | Ter | — | — | por que temos sonhos | Por que temos sonhos? | corpo-humano | por-que-temos-sonhos | **PUBLICADO** |
 | 07/10/2026 | Qua | — | — | como funciona a inteligência artificial | Como funciona a inteligência artificial? | tecnologia-ia-e-ciencia | como-funciona-a-inteligencia-artificial | **PUBLICADO** |
 | 07/10/2026 | Qua | — | — | o que existe no centro da Via Láctea | O que existe no centro da Via Láctea? | universo-e-espaco | o-que-existe-no-centro-da-via-lactea | **PUBLICADO** |
-| 14/10/2026 | Qua | 09h | CAL0001 | por que a Lua tem fases | Por que a lua tem fases? | Universo e espaço | por-que-a-lua-tem-fases | **A PRODUZIR** |
+| 14/10/2026 | Qua | 09h | CAL0001 | por que a Lua tem fases | Por que a lua tem fases? | Universo e espaço | por-que-a-lua-tem-fases | **PUBLICADO** |
 | 14/10/2026 | Qua | 12h | CAL0003 | como funciona um raio | Como funciona um raio? | Ciência e fenômenos | como-funciona-um-raio | **A PRODUZIR** |
 | 14/10/2026 | Qua | 20h | CAL0004 | como funciona o Wi-Fi | Como funciona o wi-fi? | Tecnologia, IA e ciência | como-funciona-o-wi-fi | **A PRODUZIR** |
 | 15/10/2026 | Qui | 09h | CAL0005 | como se formam os planetas | Como se formam os planetas? | Universo e espaço | como-se-formam-os-planetas | **A PRODUZIR** |
