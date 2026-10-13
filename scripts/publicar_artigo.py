@@ -29,8 +29,13 @@ ARTIGO_DIR = "src/content/artigos"
 IMAGENS_DIR = "public/images"
 CALENDARIO = "dados/calendario_editorial.md"
 CATEGORIAS_TS = "src/config/categories.ts"
-PEXELS_URL = "https://api.pexels.com/v1/search"
-LICENCA = {"license": "Licença Pexels", "licenseUrl": "https://www.pexels.com/license/"}
+# Ordem de tentativa para cada imagem: a primeira fonte com foto livre ainda não usada no artigo ganha.
+FONTES = ["Pexels", "Pixabay", "Unsplash"]
+LICENCAS = {
+    "Pexels": {"license": "Licença Pexels", "licenseUrl": "https://www.pexels.com/license/"},
+    "Pixabay": {"license": "Licença Pixabay", "licenseUrl": "https://pixabay.com/service/license-summary/"},
+    "Unsplash": {"license": "Licença Unsplash", "licenseUrl": "https://unsplash.com/license"},
+}
 
 
 class FalhaPublicacao(Exception):
@@ -72,23 +77,90 @@ def valida(fm, caminho):
             raise FalhaPublicacao(f"{caminho}: foto {i} com alt ou legenda curtos")
 
 
-def busca_foto(busca, usadas):
-    """Primeira foto em paisagem da Pexels que ainda não foi usada no artigo."""
-    chave = os.environ.get("PEXELS_API_KEY", "").strip()
-    r = requests.get(PEXELS_URL, headers={"Authorization": chave},
+def chave(nome):
+    return os.environ.get(nome, "").strip()
+
+
+def candidatas_pexels(busca):
+    r = requests.get("https://api.pexels.com/v1/search", headers={"Authorization": chave("PEXELS_API_KEY")},
                      params={"query": busca, "per_page": 15, "orientation": "landscape"}, timeout=30)
-    if r.status_code != 200:
-        raise FalhaPublicacao(f"Pexels HTTP {r.status_code} para '{busca}'")
-    for foto in r.json().get("photos", []):
-        if foto["id"] not in usadas:
-            usadas.add(foto["id"])
+    r.raise_for_status()
+    return [{"chave": f"Pexels-{p['id']}", "url": p["src"]["large"], "autor": p.get("photographer", "Pexels"),
+             "pagina": p.get("url")} for p in r.json().get("photos", [])]
+
+
+def candidatas_pixabay(busca):
+    r = requests.get("https://pixabay.com/api/", params={
+        "key": chave("PIXABAY_API_KEY"), "q": busca, "image_type": "photo", "orientation": "horizontal",
+        "per_page": 20, "safesearch": "true", "lang": "pt"}, timeout=30)
+    r.raise_for_status()
+    return [{"chave": f"Pixabay-{h['id']}", "url": h["largeImageURL"], "autor": h.get("user", "Pixabay"),
+             "pagina": h.get("pageURL")} for h in r.json().get("hits", [])]
+
+
+def candidatas_unsplash(busca):
+    r = requests.get("https://api.unsplash.com/search/photos",
+                     headers={"Authorization": f"Client-ID {chave('UNSPLASH_API_KEY')}", "Accept-Version": "v1"},
+                     params={"query": busca, "per_page": 20, "orientation": "landscape"}, timeout=30)
+    r.raise_for_status()
+    return [{"chave": f"Unsplash-{u['id']}", "url": u["urls"]["regular"], "autor": u["user"].get("name", "Unsplash"),
+             "pagina": u["links"].get("html"), "download": u["links"].get("download_location")}
+            for u in r.json().get("results", [])]
+
+
+BUSCAS = {"Pexels": candidatas_pexels, "Pixabay": candidatas_pixabay, "Unsplash": candidatas_unsplash}
+CHAVES = {"Pexels": "PEXELS_API_KEY", "Pixabay": "PIXABAY_API_KEY", "Unsplash": "UNSPLASH_API_KEY"}
+
+
+TERMO_GENERICO = "science nature"
+
+
+def busca_em_fontes(busca, usadas, erros):
+    """Tenta Pexels, Pixabay e Unsplash, nessa ordem, até achar foto livre ainda não usada no artigo."""
+    for fonte in FONTES:
+        if not chave(CHAVES[fonte]):
+            erros.append(f"{fonte}: sem chave")
+            continue
+        try:
+            opcoes = BUSCAS[fonte](busca)
+        except requests.RequestException as e:
+            erros.append(f"{fonte} '{busca}': {e}")
+            continue
+        for foto in opcoes:
+            if foto["chave"] not in usadas:
+                usadas.add(foto["chave"])
+                foto["fonte"] = fonte
+                if fonte == "Unsplash" and foto.get("download"):
+                    # Regra da Unsplash: avisar o download pelo link de tracking. Falha aqui não derruba a publicação.
+                    try:
+                        requests.get(foto["download"], headers={"Authorization": f"Client-ID {chave('UNSPLASH_API_KEY')}"},
+                                     timeout=15)
+                    except requests.RequestException:
+                        pass
+                return foto
+        erros.append(f"{fonte} '{busca}': sem foto livre")
+    return None
+
+
+def busca_foto(busca, usadas):
+    """Garante uma foto: termo completo, depois termo curto e, por último, termo genérico."""
+    erros = []
+    palavras = busca.split()
+    tentativas = [busca, " ".join(palavras[:2]), TERMO_GENERICO]
+    for termo in dict.fromkeys(tentativas):
+        foto = busca_em_fontes(termo, usadas, erros)
+        if foto:
             return foto
-    raise FalhaPublicacao(f"Pexels sem foto disponível para '{busca}'")
+    raise FalhaPublicacao("sem imagem para '" + busca + "': " + "; ".join(erros))
 
 
-def salva_webp(foto, caminho_base):
-    """Baixa a foto, grava em .webp (1200 px) e devolve largura e altura reais."""
-    bruta = requests.get(foto["src"]["large"], timeout=60).content
+def credito(foto):
+    return {"author": foto["autor"], "source": foto["fonte"], "url": foto["pagina"], **LICENCAS[foto["fonte"]]}
+
+
+def salva_webp(url, caminho_base):
+    """Baixa a imagem, grava em .webp (1200 px) e devolve largura e altura reais."""
+    bruta = requests.get(url, timeout=60).content
     im = Image.open(BytesIO(bruta)).convert("RGB")
     im.thumbnail((1200, 1200))
     im.save(caminho_base + ".webp", "WEBP", quality=82)
@@ -103,18 +175,17 @@ def gera_imagens(slug, plano):
 
     capa_foto = busca_foto(plano["capa"]["busca"], usadas)
     capa_src = f"/images/{slug}/{slug}.webp"
-    salva_webp(capa_foto, os.path.join(pasta, slug))
+    salva_webp(capa_foto["url"], os.path.join(pasta, slug))
     capa_pequena = Image.open(os.path.join(pasta, slug + ".webp"))
     capa_pequena.thumbnail((640, 640))
     capa_pequena.save(os.path.join(pasta, slug + "-640.webp"), "WEBP", quality=80)
-    credito_capa = {"author": capa_foto.get("photographer", "Pexels"), "source": "Pexels",
-                    "url": capa_foto.get("url"), **LICENCA}
+    credito_capa = credito(capa_foto)
 
     imagens = []
     for i, f in enumerate(plano["fotos"], 1):
         foto = busca_foto(f["busca"], usadas)
         nome = f"{slug}-foto-{i}"
-        largura, altura = salva_webp(foto, os.path.join(pasta, nome))
+        largura, altura = salva_webp(foto["url"], os.path.join(pasta, nome))
         imagens.append({
             "src": f"/images/{slug}/{nome}.webp",
             "alt": f["alt"],
@@ -122,8 +193,7 @@ def gera_imagens(slug, plano):
             "section": int(f["secao"]),
             "width": largura,
             "height": altura,
-            "credit": {"author": foto.get("photographer", "Pexels"), "source": "Pexels",
-                       "url": foto.get("url"), **LICENCA},
+            "credit": credito(foto),
         })
     return capa_src, plano["capa"]["alt"], credito_capa, imagens
 
@@ -203,8 +273,8 @@ def main():
     ap.add_argument("--arquivo", help="nome do .md em GPT ARTIGOS PRONTOS (padrão: próximo da fila)")
     args = ap.parse_args()
 
-    if not os.environ.get("PEXELS_API_KEY", "").strip():
-        print("erro: PEXELS_API_KEY não configurada", file=sys.stderr)
+    if not any(chave(c) for c in CHAVES.values()):
+        print("erro: nenhuma chave de imagem configurada (Pexels, Pixabay ou Unsplash)", file=sys.stderr)
         return 1
     nome = args.arquivo or proxima_pronta()
     if not nome:

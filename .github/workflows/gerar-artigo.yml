@@ -42,6 +42,8 @@ jobs:
       id: publicar
       env:
         PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
         ARQUIVO: ${{ github.event.inputs.arquivo }}
       run: |
         ARGS=""
