@@ -107,9 +107,3 @@ O diagnóstico cuidadoso é fundamental para descartar crises epilépticas focai
 Sentimos déjà vu devido a uma dessincronização breve nos circuitos neurais do lobo temporal medial. Essa pequena falha faz o cérebro registrar um cenário novo com a sensação de familiaridade do passado. Noites mal dormidas, estresse elevado e a juventude aumentam as chances de vivenciar essa experiência benigna. Caso o fenômeno venha associado a sensações gástricas, tonturas ou ocorra repetidas vezes na mesma semana, uma consulta com neurologista torna-se recomendável.
 
 Este conteúdo é informativo e não substitui a orientação de um profissional de saúde.
-
-## Fontes
-
-- [National Library of Medicine (PubMed)](https://pubmed.ncbi.nlm.nih.gov/15239996/): Revisão científica de referência conduzida por Alan S. Brown sobre prevalência, hipóteses neurocognitivas e dados etários do déjà vu.
-- [National Library of Medicine (PubMed)](https://pubmed.ncbi.nlm.nih.gov/22422409/): Estudo experimental da Dra. Anne Cleary demonstrando como a geometria espacial e a familiaridade gestáltica induzem o fenômeno.
-- [National Health Service (NHS)](https://www.nhs.uk/conditions/epilepsy/symptoms/): Órgão governamental de saúde britânico que documenta manifestações sensoriais e o déjà vu como sintoma de crises focais no lobo temporal.

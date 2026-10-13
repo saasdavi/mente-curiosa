@@ -103,9 +103,3 @@ O Grande Colisor de Hádrons, no CERN, também simula colisões em alta energia 
 ## Resumindo
 
 A matéria escura é uma substância invisível que representa cerca de 27% de todo o cosmos. Os astrônomos detectam sua existência ao medir a rotação veloz de galáxias e a curvatura da luz no espaço. Ela atua atraindo a matéria pela gravidade, diferentemente da energia escura que expande o cosmos em ritmo acelerado. Experimentos subterrâneos e colisores buscam identificar a partícula exata responsável por essa massa oculta.
-
-## Fontes
-
-- [NASA Science: Dark Energy, Dark Matter](https://science.nasa.gov/astrophysics/focus-areas/what-is-dark-energy): portal oficial da agência espacial que descreve a composição cósmica e a atuação gravitacional da matéria escura.
-- [CERN: Dark matter](https://home.cern/science/physics/dark-matter): página da organização europeia de física de partículas detalhando os testes laboratoriais e as hipóteses de partículas para explicar a massa invisível.
-- [ESA: Planck and the cosmic microwave background](https://www.esa.int/Science_Exploration/Space_Science/Planck/Planck_and_the_cosmic_microwave_background): missão da Agência Espacial Europeia que mediu os percentuais exatos de matéria comum, matéria escura e energia escura no cosmos.
