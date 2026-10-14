@@ -30,9 +30,8 @@ Leia o briefing (perguntas do Google, H2 dos concorrentes, lacunas, long tails, 
 - Se o texto tratar de sintoma, tratamento ou diagnóstico, inclua no fim do corpo, depois do resumo, esta frase, exatamente: "Este conteúdo é informativo e não substitui a orientação de um profissional de saúde."
 - Não escreva seção de fontes no corpo. As fontes vão só no frontmatter (ver Etapa 4).
 - Seção `## Resumindo` no fim do corpo, em lista de 3 a 5 itens. Esse trecho é o mais citado por assistentes de IA.
-- Três marcadores de imagem, um depois do primeiro parágrafo e os outros no meio do texto, neste formato:
-  `<img data-pexels="termo em inglês" alt="descrição em português, 50 a 125 caracteres, com a palavra-chave quando natural">`
-  Cada alt é único e não começa com "imagem de" nem "foto de".
+- Não escreva marcadores `<img>` no corpo. As imagens vão no frontmatter, no bloco `imagensPlano` (ver Etapa 4).
+  Capa e 1 a 3 fotos no corpo; cada alt é único, tem pelo menos 25 caracteres e não começa com "imagem de" nem "foto de".
 
 ## Etapa 3 — Autoavaliar e corrigir (interno)
 Avalie o texto da Etapa 2 com esta tabela. Escala de 0 a 10.
@@ -70,7 +69,18 @@ tags:
   - [tag 1]
   - [tag 2]
 keyword: [palavra-chave principal]
+author: Davi Burato Custódio
 datePublished: [data de publicação, AAAA-MM-DD]
+dateModified: [mesma data de publicação, AAAA-MM-DD]
+imagensPlano:
+  capa:
+    busca: "[termo em inglês, cena concreta]"
+    alt: "[descrição em português, pelo menos 25 caracteres]"
+  fotos:
+    - busca: "[termo em inglês]"
+      alt: "[descrição em português, pelo menos 25 caracteres]"
+      legenda: "[legenda que liga a foto ao texto]"
+      secao: 2
 sources:
   - title: "[quem é a instituição e o que comprova]"
     url: "[link direto]"
@@ -79,6 +89,7 @@ faq:
     answer: "[resposta em 2 a 3 frases]"
 ---
 ```
+   - `imagensPlano`: capa obrigatória e de 1 a 3 fotos no corpo, cada uma com `secao` (número do H2 onde a foto entra). Formato completo em `ARTIGO_FORMATO.md`.
    - `sources`: de 3 a 6 itens, cada um com link direto. Esses são os links que o layout mostra como "Fontes".
    - `faq`: de 3 a 5 perguntas. Cada resposta com 2 a 3 frases. As perguntas precisam sair do tema do artigo, não repetir o título.
 2. Corpo do artigo, conforme a Etapa 2. Termina no `## Resumindo` (e na frase de saúde, quando houver).
