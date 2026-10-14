@@ -20,7 +20,7 @@ description: "..."               # 70–160 caracteres; meta description e resum
 category: psicologia-e-comportamento
 tags: [medo, cérebro, emoções]   # 1–8
 keyword: por que sentimos medo   # palavra-chave principal da planilha
-author: Equipe Mente Curiosa
+author: Davi Burato Custódio     # nome exato da página de autor (ver src/config/site.ts → authorPages)
 datePublished: 2026-10-01        # data futura = agendado
 dateModified: 2026-10-01         # atualizar sempre que o conteúdo mudar
 imagensPlano:                    # OBRIGATÓRIO em artigo novo (a automação transforma em imagens)
@@ -35,6 +35,9 @@ imagensPlano:                    # OBRIGATÓRIO em artigo novo (a automação tr
 sources:                         # fontes confiáveis e verificadas
   - title: "Nome da fonte — título"
     url: https://...
+faq:                             # opcional: 1 a 5 perguntas; respostas de 2 a 3 frases; gera FAQPage
+  - question: "A Lua tem o próprio brilho?"
+    answer: "Não. A Lua não produz luz; ela reflete a luz do Sol."
 draft: false
 ---
 
