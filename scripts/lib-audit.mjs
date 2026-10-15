@@ -3,7 +3,7 @@ const HEALTH = ['corpo-humano', 'psicologia-e-comportamento'];
 const HEALTH_RE = /não substitui|profissional de saúde|médico|psicólogo|psiquiatra/i;
 const LEFTOVER_RE = /como uma ia|como um modelo de linguagem|\[inserir|lorem ipsum|\[todo/i;
 const BAD_SOURCES = /wikipedia\.org|blogspot|medium\.com|quora\.com|reddit\.com|brainly/i;
-const BANNED_PHRASES = /neste artigo|vamos explorar|mergulhar|jornada|ecossistema|desmistificar|orquestrar|tapeçaria|imersão|catalisador|farol|no cenário atual|vale ressaltar|é importante destacar|em suma|concluindo|fascinante mundo|desvendar os mistérios|milagroso|garantido|sem efeitos colaterais/i;
+const BANNED_PHRASES = /neste artigo|vamos explorar|mergulhar|jornada|ecossistema|desmistificar|orquestrar|tapeçaria|imersão|catalisador|farol|no cenário atual|\bmilagre\b|\bcura\b|vale ressaltar|é importante destacar|em suma|concluindo|fascinante mundo|desvendar os mistérios|milagroso|garantido|sem efeitos colaterais/i;
 const HEALTH_RISK_RE = /medicamento|remédio|fitoterápico|suplemento|hormônio|exame|tratamento|erva|interação medicamentosa/i;
 const CONTRA_RE = /contraindica|grupo de risco|gestante|lactante|doença renal|doença hepática|hipertens|diabet/i;
 const INTERACTION_RE = /interaç(?:ão|ões)|medicamentos de uso contínuo|remédios de uso contínuo/i;
@@ -47,17 +47,17 @@ export function auditarArtigo({ data: d, body }, keywordCount = new Map()) {
   }
 
   if (title.length + ' | Mente Curiosa'.length > 60 && !d.seoTitle) warn.push('T01 title > 60 com a marca');
-  if (!norm(title).includes(kw)) warn.push('T02 keyword fora do title/seoTitle');
-  if (d.description.length < 120 || d.description.length > 160) warn.push('T03 description fora de 120–160 caracteres');
-  if (!norm(d.description).includes(kw)) warn.push('T04 keyword fora da description');
+  if (!norm(title).includes(kw)) block.push('B12 keyword ausente no title/seoTitle');
+  if (d.description.length < 120 || d.description.length > 160) block.push('B13 description fora de 120–160 caracteres');
+  if (!norm(d.description).includes(kw)) block.push('B14 keyword ausente na description');
   if (!norm(d.slug).includes(kw.replace(/\s+/g, '-'))) warn.push('T05 keyword fora do slug');
-  if (!norm(firstPara).includes(kw)) warn.push('C01 keyword fora do 1º parágrafo');
-  if (countWords(firstPara) > 50) warn.push('C02 1º parágrafo > 50 palavras');
-  if (h2.length < 4) warn.push('C04 menos de 4 H2');
-  if (internal.length < 2) warn.push('L01 menos de 2 links internos');
+  if (!norm(firstPara).includes(kw)) block.push('B15 keyword ausente no primeiro parágrafo');
+  if (countWords(firstPara) > 50) block.push('B16 primeiro parágrafo acima de 50 palavras');
+  if (h2.length < 4) block.push('B17 menos de 4 H2');
+  if (internal.length < 2) block.push('B18 menos de 2 links internos');
   if (wc / sentences > 22) warn.push('Q01 frases longas');
   if (prose.some((p) => countWords(p.replace(/^#{1,6}\s+/, '')) > 50)) warn.push('Q02 parágrafo > 50 palavras');
-  if (density > 0.03) warn.push('Q03 densidade de keyword > 3%');
+  if (density > 0.03) block.push('B20 densidade de keyword acima de 3%');
   if ((d.images?.length ?? 0) < (wc >= 1200 ? 2 : 1) && !d.imagensPlano) warn.push('I01 plano/fotos do corpo insuficientes');
   if (d.altConferido === false) warn.push('I06 alt não conferido');
   const score = Math.max(0, 100 - warn.length * 5 - block.length * 20);
