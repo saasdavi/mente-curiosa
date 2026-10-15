@@ -39,7 +39,7 @@ jobs:
           UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
         run: |
           set -euo pipefail
-          for nome in VERCEL_DEPLOY_HOOK VERCEL_TOKEN VERCEL_PROJECT_ID VERCEL_ORG_ID; do
+          for nome in VERCEL_DEPLOY_HOOK VERCEL_TOKEN VERCEL_PROJECT_ID; do
             if [ -z "${!nome:-}" ]; then
               echo "::error::Secret obrigatório ausente: $nome"
               exit 1
@@ -133,7 +133,9 @@ jobs:
           start_ms = int(os.environ["START_MS"])
           expected_sha = os.environ["EXPECTED_COMMIT"]
           url = "https://api.vercel.com/v6/deployments"
-          params = {"projectId": project_id, "target": "production", "limit": 20, "teamId": org_id}
+          params = {"projectId": project_id, "target": "production", "limit": 20}
+          if org_id:
+              params["teamId"] = org_id
           headers = {"Authorization": f"Bearer {token}"}
           terminal = {"READY", "ERROR", "CANCELED"}
           last_seen = None
