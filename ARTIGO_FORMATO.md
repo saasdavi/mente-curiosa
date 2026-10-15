@@ -1,4 +1,6 @@
-# Formato de entrega de artigo (Claude / n8n)
+# Formato de entrega de artigo Astro (Claude / n8n)
+
+As regras editoriais comuns estão em [`DIRETRIZES_EDITORIAIS_GLOBAIS.md`](DIRETRIZES_EDITORIAIS_GLOBAIS.md). SEO, GEO e EAO não alteram o formato técnico: este projeto continua usando Markdown + frontmatter Astro.
 
 Claude entrega **dados + texto**. O template cuida de SEO técnico, schema,
 breadcrumbs, sitemap, anúncios e links relacionados. Não escrever HTML de SEO no texto.
@@ -67,7 +69,7 @@ Categorias válidas: `psicologia-e-comportamento`, `corpo-humano`, `universo-e-e
 - Links internos: sempre `/slug/` com barra final, só para artigos já publicados.
 - Nada de fatos sem fonte; nada de números inventados.
 - Temas de saúde: incluir aviso de que o conteúdo não substitui um profissional.
-- Qualidade: seguir o PADRAO_SEO.md. Rodar `npm run audit` — publicar só com nota ≥ 80 e sem bloqueantes.
+- Qualidade: seguir `DIRETRIZES_EDITORIAIS_GLOBAIS.md` e `PADRAO_SEO.md`. Rodar `npm run audit` — o build só passa com nota ≥ 85/100 e sem bloqueantes. A auditoria verifica regras mecânicas; a validação editorial ainda precisa confirmar fontes, contexto, precisão e naturalidade.
 
 ## Nunca
 
