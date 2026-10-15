@@ -56,7 +56,9 @@ def le_artigo(caminho):
 
 def valida(fm, caminho):
     faltando = [c for c in ("id", "slug", "title", "description", "category", "tags",
-                            "keyword", "datePublished", "imagensPlano", "sources") if not fm.get(c)]
+                            "keyword", "datePublished", "imagensPlano", "sources",
+                            "editorialScore", "editorialVerdict", "editorialSourcesVerified",
+                            "editorialFactsVerified") if c not in fm or fm.get(c) is None]
     if faltando:
         raise FalhaPublicacao(f"{caminho}: faltam campos {faltando}")
     if not re.fullmatch(r"ART\d{4}", str(fm["id"])):
@@ -197,7 +199,9 @@ def gera_imagens(slug, plano):
 
 
 def monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens):
-    novo = {k: v for k, v in fm.items() if k != "imagensPlano"}
+    campos_de_auditoria = {"imagensPlano", "editorialScore", "editorialVerdict",
+                           "editorialSourcesVerified", "editorialFactsVerified"}
+    novo = {k: v for k, v in fm.items() if k not in campos_de_auditoria}
     novo["featuredImage"] = capa_src
     novo["featuredImageAlt"] = capa_alt
     novo["imageCredit"] = credito_capa
