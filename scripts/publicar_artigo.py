@@ -1,14 +1,12 @@
-"""Publica um artigo pronto (escrito fora do workflow) e atualiza o calendário.
+"""Prepara artigo pronto para deploy e finaliza o calendário somente após sucesso.
 
 Uso:
-  python scripts/publicar_artigo.py              # próximo pronto na ordem do calendário
-  python scripts/publicar_artigo.py --arquivo X.md
+  python scripts/publicar_artigo.py [--arquivo X.md] --github-output "$GITHUB_OUTPUT"
+  python scripts/publicar_artigo.py --finalizar X.md
+  python scripts/publicar_artigo.py --falha X.md
 
-Sem IA de texto. As imagens (capa e fotos do corpo) vêm da API da Pexels, pelos termos
-de imagensPlano. Depois de gravar o artigo, o arquivo original vai para PUBLICADOS/ e a
-linha correspondente no calendário passa a PUBLICADO.
-
-Sai com código 0 e sem publicar quando não há artigo pronto na fila.
+A preparação grava conteúdo/imagens, mas não move a origem nem altera o calendário.
+O workflow confirma o deploy da Vercel antes de chamar --finalizar.
 """
 
 import argparse
@@ -208,87 +206,195 @@ def monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens):
     return f"---\n{cabeca}---\n\n{corpo.rstrip()}\n"
 
 
-def atualiza_calendario(slug, data_br, dia):
-    """Marca a linha do slug como PUBLICADO e põe a data real. Devolve False se não achar a linha."""
-    linhas = open(CALENDARIO, encoding="utf-8").read().split("\n")
+def atualiza_calendario(slug, status, data_br=None, dia=None):
+    """Atualiza status da pauta e os totais do resumo; não inventa linha se slug não existe."""
+    with open(CALENDARIO, encoding="utf-8") as f:
+        linhas = f.read().splitlines()
+
     achou = False
     for i, linha in enumerate(linhas):
-        if not linha.startswith("| ") or f"| {slug} |" not in linha:
+        if not linha.startswith("| ") or linha.startswith("|---"):
             continue
         partes = linha.split("|")
-        if partes[8].strip() != slug:
+        if len(partes) < 11 or partes[8].strip() != slug:
             continue
-        partes[1] = f" {data_br} "
-        partes[2] = f" {dia} "
-        partes[9] = " **PUBLICADO** "
+        if data_br:
+            partes[1] = f" {data_br} "
+        if dia:
+            partes[2] = f" {dia} "
+        partes[9] = f" **{status}** "
         linhas[i] = "|".join(partes)
         achou = True
         break
-    if achou:
-        open(CALENDARIO, "w", encoding="utf-8", newline="\n").write("\n".join(linhas))
-    return achou
 
+    if not achou:
+        return False
+
+    contagens = {"PUBLICADO": 0, "A PRODUZIR": 0, "GERAR ARTIGO": 0, "FALHA": 0}
+    for linha in linhas:
+        if not linha.startswith("| ") or linha.startswith("|---"):
+            continue
+        partes = linha.split("|")
+        if len(partes) < 11:
+            continue
+        estado = partes[9].strip().replace("**", "")
+        if estado in contagens:
+            contagens[estado] += 1
+
+    texto = "\n".join(linhas) + "\n"
+    for estado, total in contagens.items():
+        texto, n = re.subn(
+            rf"(?m)^- {re.escape(estado)}: \*\*\d+\*\*$",
+            f"- {estado}: **{total}**",
+            texto,
+            count=1,
+        )
+        if n == 0:
+            raise FalhaPublicacao(f"resumo do calendário não contém a linha para {estado}")
+
+    with open(CALENDARIO, "w", encoding="utf-8", newline="\n") as f:
+        f.write(texto)
+    return True
 
 def proxima_pronta():
-    """Próximo artigo pronto na ordem do calendário (pautas não publicadas), ou None."""
+    """Próximo artigo pronto na ordem do calendário; inclui FALHA para permitir nova tentativa."""
+    if not os.path.isdir(PRONTOS_DIR):
+        raise FalhaPublicacao(f"pasta de artigos prontos não existe: {PRONTOS_DIR}")
     prontos = {f[:-3]: f for f in os.listdir(PRONTOS_DIR) if f.endswith(".md")}
     with open(CALENDARIO, encoding="utf-8") as f:
         for linha in f:
-            if not linha.startswith("| ") or "**PUBLICADO**" in linha:
+            if not linha.startswith("| ") or linha.startswith("|---"):
                 continue
-            slug = [c.strip() for c in linha.split("|")][8]
+            partes = linha.split("|")
+            if len(partes) < 11:
+                continue
+            slug = partes[8].strip()
+            status = partes[9].strip().replace("**", "")
+            if status == "PUBLICADO":
+                continue
             if slug in prontos:
                 return prontos[slug]
     return None
 
+def escreve_github_output(caminho, valores):
+    """Expõe metadados do artigo para etapas posteriores do GitHub Actions."""
+    if not caminho:
+        return
+    with open(caminho, "a", encoding="utf-8") as f:
+        for chave_saida, valor in valores.items():
+            f.write(f"{chave_saida}={valor or ''}\n")
+
 
 def publica(nome):
+    """Prepara artigo e imagens, sem marcar status nem mover o arquivo de origem."""
     origem = os.path.join(PRONTOS_DIR, nome)
+    if not os.path.isfile(origem):
+        raise FalhaPublicacao(f"{nome} não está em {PRONTOS_DIR}")
+
     fm, corpo = le_artigo(origem)
     valida(fm, origem)
     slug = fm["slug"]
-    if os.path.exists(os.path.join(ARTIGO_DIR, slug + ".md")):
-        raise FalhaPublicacao(f"{slug}: já existe em {ARTIGO_DIR}")
+    destino = os.path.join(ARTIGO_DIR, slug + ".md")
+
+    # Se o conteúdo já foi enviado ao repositório numa tentativa anterior cujo deploy
+    # falhou, reutiliza-o e permite tentar o build/deploy novamente.
+    if os.path.exists(destino):
+        print(f"tentativa de recuperação: artigo já existe em {ARTIGO_DIR}: {slug}")
+        return slug
 
     capa_src, capa_alt, credito_capa, imagens = gera_imagens(slug, fm["imagensPlano"])
     texto = monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens)
-    with open(os.path.join(ARTIGO_DIR, slug + ".md"), "w", encoding="utf-8", newline="\n") as f:
+    os.makedirs(ARTIGO_DIR, exist_ok=True)
+    with open(destino, "w", encoding="utf-8", newline="\n") as f:
         f.write(texto)
 
-    data = fm["datePublished"]
-    if isinstance(data, str):
-        data = datetime.date.fromisoformat(data)
-    dias = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"]
-    if not atualiza_calendario(slug, data.strftime("%d/%m/%Y"), dias[data.weekday()]):
-        print(f"aviso: {slug} não está na tabela do calendário; status não atualizado")
-
-    os.makedirs(PUBLICADOS_DIR, exist_ok=True)
-    shutil.move(origem, os.path.join(PUBLICADOS_DIR, nome))
-    print(f"publicado: {slug} ({len(imagens)} fotos no corpo + capa)")
+    print(f"artigo preparado: {slug} ({len(imagens)} fotos no corpo + capa)")
     return slug
 
+
+def finalizar(nome):
+    """Marca PUBLICADO e arquiva a origem; só chamar após deploy confirmado."""
+    origem = os.path.join(PRONTOS_DIR, nome)
+    arquivada = os.path.join(PUBLICADOS_DIR, nome)
+    caminho = origem if os.path.isfile(origem) else arquivada
+    if not os.path.isfile(caminho):
+        raise FalhaPublicacao(f"não encontrei o arquivo de origem {nome} em prontos nem PUBLICADOS")
+
+    fm, _ = le_artigo(caminho)
+    slug = fm.get("slug")
+    if not slug:
+        raise FalhaPublicacao(f"{caminho}: frontmatter sem slug")
+
+    data = fm.get("datePublished")
+    data_br = dia = None
+    if data:
+        if isinstance(data, str):
+            data = datetime.date.fromisoformat(data)
+        data_br = data.strftime("%d/%m/%Y")
+        dias = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"]
+        dia = dias[data.weekday()]
+
+    if not atualiza_calendario(slug, "PUBLICADO", data_br, dia):
+        raise FalhaPublicacao(f"{slug} não foi encontrado no calendário; não foi marcado PUBLICADO")
+
+    if caminho == origem:
+        os.makedirs(PUBLICADOS_DIR, exist_ok=True)
+        shutil.move(origem, arquivada)
+    print(f"finalizado após deploy confirmado: {slug}")
+
+
+def marca_falha(nome):
+    """Registra FALHA sem mover o arquivo pronto, para preservar a possibilidade de retry."""
+    origem = os.path.join(PRONTOS_DIR, nome)
+    if not os.path.isfile(origem):
+        raise FalhaPublicacao(f"não encontrei {nome} na pasta de artigos prontos para registrar FALHA")
+    fm, _ = le_artigo(origem)
+    slug = fm.get("slug")
+    if not slug:
+        raise FalhaPublicacao(f"{origem}: frontmatter sem slug")
+    if not atualiza_calendario(slug, "FALHA"):
+        raise FalhaPublicacao(f"{slug} não foi encontrado no calendário; status FALHA não registrado")
+    print(f"status FALHA registrado para {slug}; artigo de origem preservado")
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--arquivo", help="nome do .md em GPT ARTIGOS PRONTOS (padrão: próximo da fila)")
+    ap.add_argument("--github-output", help="caminho do arquivo GITHUB_OUTPUT")
+    ap.add_argument("--finalizar", help="finaliza o artigo após confirmação de deploy")
+    ap.add_argument("--falha", help="marca FALHA sem mover o artigo pronto")
     args = ap.parse_args()
 
-    if not any(chave(c) for c in CHAVES.values()):
-        print("erro: nenhuma chave de imagem configurada (Pexels, Pixabay ou Unsplash)", file=sys.stderr)
-        return 1
-    nome = args.arquivo or proxima_pronta()
-    if not nome:
-        print("sem artigo pronto na fila: nada publicado")
-        return 0
-    if not os.path.exists(os.path.join(PRONTOS_DIR, nome)):
-        print(f"erro: {nome} não está em {PRONTOS_DIR}", file=sys.stderr)
-        return 1
     try:
+        if args.finalizar:
+            finalizar(args.finalizar)
+            return 0
+        if args.falha:
+            marca_falha(args.falha)
+            return 0
+
+        if not any(chave(c) for c in CHAVES.values()):
+            raise FalhaPublicacao("nenhuma chave de imagem configurada (Pexels, Pixabay ou Unsplash)")
+
+        nome = args.arquivo or proxima_pronta()
+        if not nome:
+            escreve_github_output(args.github_output, {"novo": "false", "slug": "", "arquivo": ""})
+            print("sem artigo pronto na fila: nada a publicar")
+            return 0
+
+        origem = os.path.join(PRONTOS_DIR, nome)
+        if not os.path.isfile(origem):
+            raise FalhaPublicacao(f"{nome} não está em {PRONTOS_DIR}")
+
+        # Registra os dados antes de validar/baixar imagens para que o workflow possa
+        # identificar a pauta e marcar FALHA caso uma etapa posterior dê erro.
+        fm, _ = le_artigo(origem)
+        slug = fm.get("slug", "")
+        escreve_github_output(args.github_output, {"novo": "true", "slug": slug, "arquivo": nome})
         publica(nome)
+        return 0
     except FalhaPublicacao as e:
         print(f"falha: {e}", file=sys.stderr)
         return 1
-    return 0
 
 
 if __name__ == "__main__":
