@@ -25,6 +25,11 @@ keyword: por que sentimos medo   # palavra-chave principal da planilha
 author: Davi Burato Custódio     # nome exato da página de autor (ver src/config/site.ts → authorPages)
 datePublished: 2026-10-01        # data futura = agendado
 dateModified: 2026-10-01         # atualizar sempre que o conteúdo mudar
+# Campos obrigatórios no arquivo da fila; a automação os remove do artigo publicado.
+editorialScore: 9.0
+editorialVerdict: APROVADO
+editorialSourcesVerified: true
+editorialFactsVerified: true
 imagensPlano:                    # OBRIGATÓRIO em artigo novo (a automação transforma em imagens)
   capa:                          # foto de fundo da capa (o título entra por cima)
     busca: "dark forest fog night"                        # em inglês, cena concreta e sem pessoas se possível
@@ -69,7 +74,7 @@ Categorias válidas: `psicologia-e-comportamento`, `corpo-humano`, `universo-e-e
 - Links internos: sempre `/slug/` com barra final, só para artigos já publicados.
 - Nada de fatos sem fonte; nada de números inventados.
 - Temas de saúde: incluir aviso de que o conteúdo não substitui um profissional.
-- Qualidade: seguir `DIRETRIZES_EDITORIAIS_GLOBAIS.md` e `PADRAO_SEO.md`. Rodar `npm run audit` — o build só passa com nota ≥ 85/100 e sem bloqueantes. A auditoria verifica regras mecânicas; a validação editorial ainda precisa confirmar fontes, contexto, precisão e naturalidade.
+- Qualidade: seguir `DIRETRIZES_EDITORIAIS_GLOBAIS.md` e `PADRAO_SEO.md`. O arquivo da fila precisa declarar `editorialScore ≥ 8.5`, `editorialVerdict: APROVADO`, `editorialSourcesVerified: true` e `editorialFactsVerified: true`. A automação bloqueia se faltarem esses campos ou falhar a nota. Esses campos são removidos do frontmatter publicado. O build também exige auditoria mecânica ≥ 85/100 e sem bloqueantes. A declaração só deve ser preenchida depois da revisão real; o código não verifica a honestidade dessa declaração.
 
 ## Nunca
 
