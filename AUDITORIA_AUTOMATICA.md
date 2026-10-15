@@ -28,7 +28,7 @@ Planilha (planejado) → [P1 pauta] → REDATOR (Claude) escreve
 | **P6** | Conteúdo exclusivo | semelhança de texto com qualquer artigo do site **abaixo de 55%**; título não quase-igual a outro; **no máximo 3% de trechos copiados** (sequências de 8 palavras) de qualquer fonte | reescreve; persistindo, não publica |
 | **P7** | Imagens | capa + fotos no corpo obtidas de banco com licença (Pexels, NASA); nenhuma foto usada em outro artigo; `alt` com 25+ caracteres; **a foto é olhada por IA e confere com o `alt`**; autor, link e licença registrados | troca de foto (até 3 candidatas); sem foto boa, não publica |
 | **P8** | Segurança | categorias de saúde (corpo humano, psicologia) têm o aviso de que não substitui profissional e **não têm** diagnóstico, dose ou tratamento; nada perigoso | não publica |
-| **P9** | Build completo | `npm run build` passa: auditoria objetiva (≥ 85/100 e nenhum bloqueante), geração Astro e checagem de links internos. A confirmação editorial de fontes e nota ≥ 8,5/10 não é provada pelo build; deve ser registrada antes de colocar o artigo na fila. | não publica |
+| **P9** | Build completo | `npm run build` passa: auditoria objetiva (≥ 85/100 e nenhum bloqueante), geração Astro e checagem de links internos. A confirmação editorial de fontes abertas e nota ≥ 8,5/10 não é provada pelo build; deve ser registrada no processo de redação/validação antes de colocar o artigo na fila. | não publica |
 
 ## Ritmo e freios (valem sempre)
 
