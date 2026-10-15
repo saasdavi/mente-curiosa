@@ -41,7 +41,7 @@ Estas regras valem para todos os redatores e modelos que produzam artigos para M
 
 ## Avaliação editorial
 Pontuação: fontes e suporte factual 2,0; segurança 2,0; precisão 1,5; intenção/profundidade/extensão 1,5; SEO on-page 1,0; estrutura/leitura 1,0; naturalidade/originalidade 1,0.
-- Aprovação editorial: **mínimo 8,5/10**, sem falha crítica de segurança, fonte inventada, afirmação importante sem suporte ou formato incompatível.
+- Aprovação editorial: **mínimo 8,5/10**, sem falha crítica de segurança, fonte inventada, afirmação importante sem suporte ou formato incompatível. Na fila Astro, registrar `editorialScore`, `editorialVerdict: APROVADO`, `editorialSourcesVerified: true` e `editorialFactsVerified: true`; a automação exige esses campos e remove-os do artigo final. Eles são declarações do processo de revisão, não prova automática de que a revisão ocorreu.
 - A avaliação deve citar trechos problemáticos, listar links não verificados e sugerir correções. Corrigir os problemas antes da entrega final.
 - Nunca declarar que um link foi verificado sem tê-lo aberto de fato.
 
