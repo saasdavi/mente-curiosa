@@ -80,6 +80,8 @@ jobs:
 
       - name: Validar o site (build)
         if: steps.publicar.outputs.novo == 'true'
+        env:
+          AUDIT_STRICT_SLUG: ${{ steps.publicar.outputs.slug }}
         run: |
           set -euo pipefail
           npm ci
