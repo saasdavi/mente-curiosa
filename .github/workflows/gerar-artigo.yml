@@ -1,87 +1,27 @@
-name: Publicar artigo pronto
+name: Deploy ativado para (Vercel)
 
-# Publica 1 artigo pronto (escrito fora daqui) e faz o deploy em seguida.
-# Disparado pelo cron externo (cron-job.org) via API, às 09h, 12h e 20h de Brasília.
-# Sem IA de texto: as imagens vêm da Pexels pelos termos de imagensPlano.
+# O deploy será acionado por cron externo ou manualmente.
+# Horários do cron externo (Brasília): 09:15, 12:15 e 20:15.
+# O deploy hook solicita à Vercel a reconstrução do site.
+
 on:
   workflow_dispatch:
-    inputs:
-      arquivo:
-        description: 'Nome do .md em GPT ARTIGOS PRONTOS (vazio = próximo da fila)'
-        required: false
-        default: ''
 
-concurrency:
-  group: artigos-diarios
-  cancel-in-progress: false
+permissions:
+  contents: read
 
 jobs:
-  publicar:
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: write
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Disparar deploy pelo deploy hook
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "Secret VERCEL_DEPLOY_HOOK não configurado"
+            exit 1
+          fi
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-
-    - name: Instalar dependências Python
-      run: pip install requests pillow pyyaml
-
-    - name: Publicar artigo
-      id: publicar
-      env:
-        PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-        PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
-        UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
-        ARQUIVO: ${{ github.event.inputs.arquivo }}
-      run: |
-        ARGS=""
-        if [ -n "$ARQUIVO" ]; then ARGS="--arquivo $ARQUIVO"; fi
-        python scripts/publicar_artigo.py $ARGS
-        if [ -n "$(git status --porcelain)" ]; then
-          echo "novo=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "novo=false" >> "$GITHUB_OUTPUT"
-        fi
-
-    - name: Validar o site (build)
-      if: steps.publicar.outputs.novo == 'true'
-      run: |
-        npm ci
-        npm run build
-
-    - name: Commit e push
-      if: steps.publicar.outputs.novo == 'true'
-      id: commit
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action Artigos"
-        git add -A src/content/artigos/ public/images/ dados/entrada/ dados/calendario_editorial.md
-        git commit -m "🤖 Publica artigo pronto"
-        git pull --rebase -q origin "$GITHUB_REF_NAME"
-        git push origin "HEAD:$GITHUB_REF_NAME"
-
-    # Commits feitos com o GITHUB_TOKEN não disparam outros workflows,
-    # então o deploy é chamado daqui, logo após o push.
-    - name: Publicar no site (Vercel)
-      if: steps.publicar.outputs.novo == 'true'
-      env:
-        VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
-      run: |
-        if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
-          echo "Secret VERCEL_DEPLOY_HOOK não configurado"
-          exit 1
-        fi
-        curl -fsS -X POST "$VERCEL_DEPLOY_HOOK" -o /dev/null
-        echo "Deploy disparado"
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK" -o /dev/null
+          echo "Solicitação de deploy enviada à Vercel"
