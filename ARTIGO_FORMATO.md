@@ -5,12 +5,12 @@ As regras editoriais comuns estão em [`DIRETRIZES_EDITORIAIS_GLOBAIS.md`](DIRET
 Claude entrega **dados + texto**. O template cuida de SEO técnico, schema,
 breadcrumbs, sitemap, anúncios e links relacionados. Não escrever HTML de SEO no texto.
 
-## Arquivo
+## Arquivo e fluxo
 
-Só `src/content/artigos/<slug>.md`. **Regra: todo artigo sobe com imagem** — quem escreve não gera imagem,
-escreve o **plano de imagens** (`imagensPlano`). No push, a automação *Imagens automáticas* (GitHub Actions)
-busca as fotos grátis, cria capa + 5 Pins + fotos do corpo, preenche `featuredImage`/`images`, apaga o plano
-e publica. Sem imagem o artigo não aparece no site.
+- **Entrada da fila de publicação:** `dados/entrada/pautas-chat_01/GPT ARTIGOS PRONTOS/<slug>.md`. O exemplo de frontmatter abaixo é para este arquivo de entrada e inclui os campos de auditoria editorial.
+- **Arquivo final do site:** `src/content/artigos/<slug>.md`. A automação valida a entrada, busca as fotos, preenche `featuredImage`/`images` e remove `imagensPlano` e os campos de auditoria editorial antes de gravar o artigo final.
+- Não coloque `editorialScore`, `editorialVerdict`, `editorialSourcesVerified` ou `editorialFactsVerified` diretamente no artigo final: são metadados de controle da fila.
+- **Todo artigo sobe com imagem.** Quem escreve não gera a imagem final; prepara o plano `imagensPlano`. Sem imagem válida, o artigo não é publicado.
 
 ```markdown
 ---
