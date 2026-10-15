@@ -1,7 +1,8 @@
-name: Publicar artigo pronto
+name: Publicar artigo pronto + deploy Vercel
 
 # Publica 1 artigo pronto (escrito fora daqui) e faz o deploy em seguida.
-# Disparado pelo cron externo (cron-job.org) via API, às 09h, 12h e 20h de Brasília.
+# Disparado pelo cron externo (cron-job.org) via API, às 09h15, 12h15 e 20h15 de Brasília.
+# Um único fluxo: processa artigo pronto, valida, faz commit/push e solicita deploy à Vercel.
 # Sem IA de texto: as imagens vêm da Pexels pelos termos de imagensPlano.
 on:
   workflow_dispatch:
