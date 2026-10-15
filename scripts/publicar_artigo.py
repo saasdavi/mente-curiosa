@@ -241,10 +241,10 @@ def atualiza_calendario(slug, status, data_br=None, dia=None):
         if estado in contagens:
             contagens[estado] += 1
 
-    texto = "\\n".join(linhas) + "\\n"
+    texto = "\n".join(linhas) + "\n"
     for estado, total in contagens.items():
         texto, n = re.subn(
-            rf"(?m)^- {re.escape(estado)}: \\*\\*\\d+\\*\\*$",
+            rf"(?m)^- {re.escape(estado)}: \*\*\\d+\*\*$",
             f"- {estado}: **{total}**",
             texto,
             count=1,
@@ -252,7 +252,7 @@ def atualiza_calendario(slug, status, data_br=None, dia=None):
         if n == 0:
             raise FalhaPublicacao(f"resumo do calendário não contém a linha para {estado}")
 
-    with open(CALENDARIO, "w", encoding="utf-8", newline="\\n") as f:
+    with open(CALENDARIO, "w", encoding="utf-8", newline="\n") as f:
         f.write(texto)
     return True
 
@@ -282,7 +282,7 @@ def escreve_github_output(caminho, valores):
         return
     with open(caminho, "a", encoding="utf-8") as f:
         for chave_saida, valor in valores.items():
-            f.write(f"{chave_saida}={valor or ''}\\n")
+            f.write(f"{chave_saida}={valor or ''}\n")
 
 
 def publica(nome):
@@ -305,7 +305,7 @@ def publica(nome):
     capa_src, capa_alt, credito_capa, imagens = gera_imagens(slug, fm["imagensPlano"])
     texto = monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens)
     os.makedirs(ARTIGO_DIR, exist_ok=True)
-    with open(destino, "w", encoding="utf-8", newline="\\n") as f:
+    with open(destino, "w", encoding="utf-8", newline="\n") as f:
         f.write(texto)
 
     print(f"artigo preparado: {slug} ({len(imagens)} fotos no corpo + capa)")
