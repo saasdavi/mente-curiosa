@@ -56,9 +56,24 @@ def le_artigo(caminho):
 
 def valida(fm, caminho):
     faltando = [c for c in ("id", "slug", "title", "description", "category", "tags",
-                            "keyword", "datePublished", "imagensPlano", "sources") if not fm.get(c)]
+                            "keyword", "datePublished", "imagensPlano", "sources",
+                            "editorialScore", "editorialVerdict", "editorialSourcesVerified",
+                            "editorialFactsVerified") if c not in fm or fm.get(c) is None]
     if faltando:
         raise FalhaPublicacao(f"{caminho}: faltam campos {faltando}")
+    try:
+        score_editorial = float(fm["editorialScore"])
+    except (TypeError, ValueError):
+        raise FalhaPublicacao(f"{caminho}: editorialScore deve ser número entre 0 e 10")
+    if not 8.5 <= score_editorial <= 10:
+        raise FalhaPublicacao(f"{caminho}: nota editorial {score_editorial}/10; mínimo obrigatório 8.5/10")
+    if str(fm["editorialVerdict"]).strip().upper() != "APROVADO":
+        raise FalhaPublicacao(f"{caminho}: editorialVerdict deve ser APROVADO")
+    if fm["editorialSourcesVerified"] is not True:
+        raise FalhaPublicacao(f"{caminho}: editorialSourcesVerified deve ser true após abrir e verificar as fontes")
+    if fm["editorialFactsVerified"] is not True:
+        raise FalhaPublicacao(f"{caminho}: editorialFactsVerified deve ser true após conferir os fatos com as fontes")
+
     if not re.fullmatch(r"ART\d{4}", str(fm["id"])):
         raise FalhaPublicacao(f"{caminho}: id deve ser ARTxxxx")
     if fm["category"] not in categorias_validas():
@@ -197,7 +212,9 @@ def gera_imagens(slug, plano):
 
 
 def monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens):
-    novo = {k: v for k, v in fm.items() if k != "imagensPlano"}
+    campos_de_auditoria = {"imagensPlano", "editorialScore", "editorialVerdict",
+                           "editorialSourcesVerified", "editorialFactsVerified"}
+    novo = {k: v for k, v in fm.items() if k not in campos_de_auditoria}
     novo["featuredImage"] = capa_src
     novo["featuredImageAlt"] = capa_alt
     novo["imageCredit"] = credito_capa

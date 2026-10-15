@@ -1,11 +1,13 @@
 # Regras de ouro — criação de artigos Mente Curiosa
 
+As diretrizes comuns de SEO, GEO, EAO, escrita natural e segurança estão em [`DIRETRIZES_EDITORIAIS_GLOBAIS.md`](DIRETRIZES_EDITORIAIS_GLOBAIS.md). O formato do projeto permanece Astro Markdown/frontmatter.
+
 Valem para **qualquer redator**: Claude hoje, Hermes (ou outro modelo) no futuro. O fluxo é sempre o mesmo:
 **um escreve, o Claude confere e valida, a auditoria automática decide se publica.**
 
 ```
 Planilha (pauta PLANEJADO) → REDATOR escreve (.md + imagensPlano)
-  → auditoria automática (npm run audit)  ── nota < 80 ou bloqueante → volta ao redator com o relatório (máx. 2 voltas)
+  → auditoria automática (npm run audit)  ── nota < 85 ou bloqueante → volta ao redator com o relatório (máx. 2 voltas)
   → VALIDADOR (Claude) confere fatos, fontes e tom ── reprovado → volta com o motivo
   → commit no GitHub → Imagens automáticas → Vercel publica
   → Claude confere as fotos e o alt → altConferido: true
@@ -17,9 +19,9 @@ Planilha (pauta PLANEJADO) → REDATOR escreve (.md + imagensPlano)
 **Conteúdo**
 1. **Uma pauta = uma intenção = uma URL.** A keyword principal não pode existir em outro artigo. Variações de cauda longa viram seções, não artigos novos.
 2. **Nunca inventar.** Todo número, nome, data e estudo precisa estar nas fontes. Na dúvida, corta.
-3. **Mínimo 2 fontes primárias** (NASA, universidades, periódicos, órgãos públicos). Nada de Wikipédia, blogs, fóruns ou Brainly.
+3. **Mínimo 3 fontes diretas e confiáveis** (NASA, universidades, periódicos, órgãos públicos). Nada de Wikipédia, blogs, fóruns ou Brainly.
 4. **Resposta no primeiro parágrafo**, em até 50 palavras, com a keyword. Quem só ler isso já sai com a resposta.
-5. **1.000 a 1.500 palavras.** Menos de 1.000 não publica. Nada de enchimento para bater número: cada seção precisa ensinar algo.
+5. **1.300 a 1.600 palavras.** Menos de 1.300 não publica. Nada de enchimento para bater número: cada seção precisa ensinar algo.
 
 **Estrutura (nesta ordem)**
 6. Resposta direta → explicado de forma simples → como acontece → o que a ciência sabe → exemplos do dia a dia → mitos e verdades → perguntas frequentes → resumindo. Mínimo 4 seções H2; nunca H1 no corpo.
@@ -39,7 +41,7 @@ Planilha (pauta PLANEJADO) → REDATOR escreve (.md + imagensPlano)
 
 **Processo**
 14. **Entrega no formato do `ARTIGO_FORMATO.md`**, com o `id` da planilha (ART0000). Artigo existente: atualizar `dateModified`, nunca o slug.
-15. **Só publica aprovado:** auditoria ≥ 80 sem bloqueante + validação do Claude. Tudo registrado na planilha (status e motivo de cada reprovação).
+15. **Só publica aprovado:** auditoria ≥ 85/100 sem bloqueante + validação do Claude. Tudo registrado na planilha (status e motivo de cada reprovação).
 
 ## Checklist do validador (Claude)
 

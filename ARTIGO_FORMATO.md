@@ -1,14 +1,16 @@
-# Formato de entrega de artigo (Claude / n8n)
+# Formato de entrega de artigo Astro (Claude / n8n)
+
+As regras editoriais comuns estão em [`DIRETRIZES_EDITORIAIS_GLOBAIS.md`](DIRETRIZES_EDITORIAIS_GLOBAIS.md). SEO, GEO e EAO não alteram o formato técnico: este projeto continua usando Markdown + frontmatter Astro.
 
 Claude entrega **dados + texto**. O template cuida de SEO técnico, schema,
 breadcrumbs, sitemap, anúncios e links relacionados. Não escrever HTML de SEO no texto.
 
-## Arquivo
+## Arquivo e fluxo
 
-Só `src/content/artigos/<slug>.md`. **Regra: todo artigo sobe com imagem** — quem escreve não gera imagem,
-escreve o **plano de imagens** (`imagensPlano`). No push, a automação *Imagens automáticas* (GitHub Actions)
-busca as fotos grátis, cria capa + 5 Pins + fotos do corpo, preenche `featuredImage`/`images`, apaga o plano
-e publica. Sem imagem o artigo não aparece no site.
+- **Entrada da fila de publicação:** `dados/entrada/pautas-chat_01/GPT ARTIGOS PRONTOS/<slug>.md`. O exemplo de frontmatter abaixo é para este arquivo de entrada e inclui os campos de auditoria editorial.
+- **Arquivo final do site:** `src/content/artigos/<slug>.md`. A automação valida a entrada, busca as fotos, preenche `featuredImage`/`images` e remove `imagensPlano` e os campos de auditoria editorial antes de gravar o artigo final.
+- Não coloque `editorialScore`, `editorialVerdict`, `editorialSourcesVerified` ou `editorialFactsVerified` diretamente no artigo final: são metadados de controle da fila.
+- **Todo artigo sobe com imagem.** Quem escreve não gera a imagem final; prepara o plano `imagensPlano`. Sem imagem válida, o artigo não é publicado.
 
 ```markdown
 ---
@@ -23,6 +25,11 @@ keyword: por que sentimos medo   # palavra-chave principal da planilha
 author: Davi Burato Custódio     # nome exato da página de autor (ver src/config/site.ts → authorPages)
 datePublished: 2026-10-01        # data futura = agendado
 dateModified: 2026-10-01         # atualizar sempre que o conteúdo mudar
+# Campos obrigatórios no arquivo da fila; a automação os remove do artigo publicado.
+editorialScore: 9.0
+editorialVerdict: APROVADO
+editorialSourcesVerified: true
+editorialFactsVerified: true
 imagensPlano:                    # OBRIGATÓRIO em artigo novo (a automação transforma em imagens)
   capa:                          # foto de fundo da capa (o título entra por cima)
     busca: "dark forest fog night"                        # em inglês, cena concreta e sem pessoas se possível
@@ -67,7 +74,7 @@ Categorias válidas: `psicologia-e-comportamento`, `corpo-humano`, `universo-e-e
 - Links internos: sempre `/slug/` com barra final, só para artigos já publicados.
 - Nada de fatos sem fonte; nada de números inventados.
 - Temas de saúde: incluir aviso de que o conteúdo não substitui um profissional.
-- Qualidade: seguir o PADRAO_SEO.md. Rodar `npm run audit` — publicar só com nota ≥ 80 e sem bloqueantes.
+- Qualidade: seguir `DIRETRIZES_EDITORIAIS_GLOBAIS.md` e `PADRAO_SEO.md`. O arquivo da fila precisa declarar `editorialScore ≥ 8.5`, `editorialVerdict: APROVADO`, `editorialSourcesVerified: true` e `editorialFactsVerified: true`. A automação bloqueia se faltarem esses campos ou falhar a nota. Esses campos são removidos do frontmatter publicado. O build também exige auditoria mecânica ≥ 85/100 e sem bloqueantes. A declaração só deve ser preenchida depois da revisão real; o código não verifica a honestidade dessa declaração.
 
 ## Nunca
 
