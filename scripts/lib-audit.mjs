@@ -56,7 +56,7 @@ export function auditarArtigo({ data: d, body }, keywordCount = new Map()) {
   if (h2.length < 4) block.push('B17 menos de 4 H2');
   if (internal.length < 2) block.push('B18 menos de 2 links internos');
   if (wc / sentences > 22) warn.push('Q01 frases longas');
-  if (prose.some((p) => countWords(p.replace(/^#{1,6}\s+/, '')) > 50)) warn.push('Q02 parágrafo > 50 palavras');
+  if (prose.some((p) => countWords(p.replace(/^#{1,6}\s+/, '')) > 50)) block.push('B19 parágrafo acima de 50 palavras');
   if (density > 0.03) block.push('B20 densidade de keyword acima de 3%');
   if ((d.images?.length ?? 0) < (wc >= 1200 ? 2 : 1) && !d.imagensPlano) warn.push('I01 plano/fotos do corpo insuficientes');
   if (d.altConferido === false) warn.push('I06 alt não conferido');
