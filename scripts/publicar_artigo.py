@@ -244,7 +244,7 @@ def atualiza_calendario(slug, status, data_br=None, dia=None):
     texto = "\n".join(linhas) + "\n"
     for estado, total in contagens.items():
         texto, n = re.subn(
-            rf"(?m)^- {re.escape(estado)}: \*\*\\d+\*\*$",
+            rf"(?m)^- {re.escape(estado)}: \*\*\d+\*\*$",
             f"- {estado}: **{total}**",
             texto,
             count=1,
