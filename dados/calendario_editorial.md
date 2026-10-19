@@ -30,7 +30,7 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 13/10/2026 | Ter | 09h | CAL0001 | por que a Lua tem fases | Por que a lua tem fases? | Universo e espaço | por-que-a-lua-tem-fases | **PUBLICADO** |
 | 14/10/2026 | Qua | 12h | CAL0003 | como funciona um raio | Como funciona um raio? | Ciência e fenômenos | como-funciona-um-raio | **PUBLICADO** |
 | 14/10/2026 | Qua | 20h | CAL0004 | como funciona o Wi-Fi | Como funciona o wi-fi? | Tecnologia, IA e ciência | como-funciona-o-wi-fi | **PUBLICADO** |
-| 15/10/2026 | Qui | 09h | CAL0005 | como se formam os planetas | Como se formam os planetas? | Universo e espaço | como-se-formam-os-planetas | **PUBLICADO** |
+| 19/10/2026 | Seg | 09h | CAL0005 | como se formam os planetas | Como se formam os planetas? | Universo e espaço | como-se-formam-os-planetas | **PUBLICADO** |
 | 14/10/2026 | Qua | 12h | CAL0006 | o que é instinto animal | O que é instinto animal? | Animais | o-que-e-instinto-animal | **A PRODUZIR** |
 | 14/10/2026 | Qua | 20h | CAL0007 | como se formam os terremotos | Como se formam os terremotos? | Ciência e fenômenos | como-se-formam-os-terremotos | **A PRODUZIR** |
 | 15/10/2026 | Qui | 09h | CAL0008 | como funciona o bluetooth | Como funciona o bluetooth? | Tecnologia, IA e ciência | como-funciona-o-bluetooth | **A PRODUZIR** |
