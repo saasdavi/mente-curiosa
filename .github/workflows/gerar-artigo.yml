@@ -2,6 +2,11 @@
 # Não configurar schedule aqui: os horários são responsabilidade do cron externo.
 on:
   workflow_dispatch:
+    inputs:
+      arquivo:
+        description: 'Nome do .md em GPT ARTIGOS PRONTOS (vazio = próximo da fila)'
+        required: false
+        default: ''
 
 concurrency:
   group: artigos-diarios
@@ -181,7 +186,7 @@ jobs:
           org_id = os.environ["VERCEL_ORG_ID"]
           start_ms = int(os.environ["START_MS"])
           expected_sha = os.environ["EXPECTED_COMMIT"]
-          url = "https://vercel.com"
+          url = "https://api.vercel.com/v6/deployments"
           params = {"projectId": project_id, "target": "production", "limit": 20}
           if org_id:
               params["teamId"] = org_id
@@ -239,3 +244,12 @@ jobs:
           python scripts/publicar_artigo.py --finalizar "$ARQUIVO"
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Artigos"
+          # Sem este commit, o calendário e a mudança de pasta se perdem com o runner.
+          git add -A -- dados/
+          if git diff --cached --quiet; then
+            echo "Calendário já estava atualizado."
+          else
+            git commit -m "Marca artigo como publicado"
+            git pull --rebase -q origin main
+            git push origin HEAD:main
+          fi
