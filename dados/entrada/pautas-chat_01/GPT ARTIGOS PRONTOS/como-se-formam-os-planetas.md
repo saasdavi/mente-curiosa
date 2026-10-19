@@ -2,7 +2,7 @@
 id: ART0457
 title: Como se formam os planetas?
 slug: como-se-formam-os-planetas
-description: "Como se formam os planetas? Eles nascem do gás e da poeira em volta de uma estrela jovem. Veja como os grãos se juntam, por que os planetas rochosos ficam perto do Sol e os gigantes, longe."
+description: "Como se formam os planetas: do disco protoplanetário aos planetesimais, entenda como grãos e gás se agregam e geram mundos rochosos e gigantes."
 category: universo-e-espaco
 tags:
   - planetas
@@ -31,6 +31,8 @@ sources:
     url: https://www.spitzer.caltech.edu/news/ssc2007-02-gas-giants-form-quickly
   - title: "Universidade do Arizona — Lecture: Overview of the Solar System (G. Rieke)"
     url: https://ircamera.as.arizona.edu/Astr2016/lectures/solarsysovervw.htm
+  - title: "Scientific American — How Planets Form"
+    url: https://www.scientificamerican.com/article/how-planets-form/
 draft: false
 # Campos editoriais exigidos pela validação
 editorialScore: 9.0
@@ -60,6 +62,10 @@ Esse disco não é uniforme. A temperatura muda com a distância da estrela, e i
 A poeira do disco é formada por partículas minúsculas. Quando elas colidem em regiões densas do disco, algumas grudam umas nas outras e crescem. Esse processo é lento, e depende de choques suaves e agregação.
 
 Com o tempo, essas partículas viram pedras, depois corpos de quilômetros de diâmetro, chamados planetesimais. Eles são os blocos de construção dos planetas.
+
+Pesquisas recentes e simulações mostram que, além da simples colisão e adesão, mecanismos como a "instabilidade de streaming" e a "accreção de seixos" (pebble accretion) podem acelerar bastante a formação de núcleos. Na instabilidade de streaming, partículas de poeira se agrupam por efeito da interação com o gás, formando concentrações densas que colapsam em planetesimais. Na accreção de seixos, partículas pequenas são rapidamente capturadas por núcleos maiores graças ao arrasto do gás, permitindo que esses núcleos cresçam rápido o bastante para começar a atrair gás em torno deles.
+
+Observações com radiotelescópios como o ALMA têm mostrado discos com anéis e lacunas que correspondem a concentrações de poeira — sinais diretos de que esses processos estão ocorrendo em sistemas jovens. Essas imagens ajudam a relacionar modelos teóricos com o que realmente acontece nas regiões onde planetas nascem.
 
 ## A linha de gelo
 
@@ -139,3 +145,4 @@ Veja também como [nascem as estrelas](/como-nascem-as-estrelas/) e [por que a L
 
 - NASA Spitzer, Gas Giants Form Quickly (comunicado de 2007): https://www.spitzer.caltech.edu/news/ssc2007-02-gas-giants-form-quickly
 - Universidade do Arizona, Lecture: Overview of the Solar System (G. Rieke): https://ircamera.as.arizona.edu/Astr2016/lectures/solarsysovervw.htm
+- Scientific American, How Planets Form: https://www.scientificamerican.com/article/how-planets-form/
