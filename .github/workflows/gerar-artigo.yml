@@ -2,11 +2,6 @@
 # Não configurar schedule aqui: os horários são responsabilidade do cron externo.
 on:
   workflow_dispatch:
-    inputs:
-      arquivo:
-        description: 'Nome do .md em GPT ARTIGOS PRONTOS (vazio = próximo da fila)'
-        required: false
-        default: ''
 
 concurrency:
   group: artigos-diarios
