@@ -87,6 +87,16 @@ Observações com radiotelescópios como o ALMA mostram discos com anéis e lacu
 
 As imagens do ALMA ajudam a relacionar modelos teóricos com o que realmente acontece nas regiões onde planetas nascem.
 
+## Como os cientistas confirmam isso
+
+Os astrônomos não observam planetas se formando em tempo real como em um filme. O que eles fazem é correlacionar pistas indiretas e modelos físicos.
+
+Discos protoplanetários em torno de estrelas jovens mostram anéis, lacunas e variações de densidade que sempre aparecem perto do local onde planetas em formação exercem gravidade sobre o gás e a poeira.
+
+Simulações computacionais ajudam a testar hipóteses. Quando um modelo consegue reproduzir os discos observados, ele ganha força como explicação plausível para o crescimento de planetesimais e de núcleos maiores.
+
+A combinação de observação e teoria é o que torna a ideia de formação planetária aceita pela maioria dos especialistas.
+
 ## A linha de gelo
 
 Existe uma fronteira decisiva no disco: a linha de gelo, também chamada de linha de neve.
