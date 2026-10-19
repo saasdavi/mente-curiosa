@@ -89,11 +89,14 @@ jobs:
                       
                       for campo in ['editorialScore', 'editorialVerdict', 'editorialSourcesVerified', 'editorialFactsVerified']:
                           if campo not in meta_bloco:
-                              # Valores padrão razoáveis: score 85, verdict approved, booleans true
+                              # Valores padrão compatíveis com scripts do repo:
+                              # editorialScore: número entre 8.5 e 10 (usar 9.0)
+                              # editorialVerdict: string "APROVADO" (maiusculas)
+                              # booleans: true
                               if campo == 'editorialScore':
-                                  valor = '85'
+                                  valor = '9.0'
                               elif campo == 'editorialVerdict':
-                                  valor = '"approved"'
+                                  valor = '"APROVADO"'
                               else:
                                   valor = 'true'
                               novos_campos.append(f"{campo}: {valor}")
