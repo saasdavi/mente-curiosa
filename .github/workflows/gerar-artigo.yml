@@ -2,11 +2,6 @@
 # Não configurar schedule aqui: os horários são responsabilidade do cron externo.
 on:
   workflow_dispatch:
-    inputs:
-      arquivo:
-        description: "Nome do .md em GPT ARTIGOS PRONTOS (vazio = próximo da fila)"
-        required: false
-        default: ""
 
 concurrency:
   group: artigos-diarios
@@ -94,7 +89,13 @@ jobs:
                       
                       for campo in ['editorialScore', 'editorialVerdict', 'editorialSourcesVerified', 'editorialFactsVerified']:
                           if campo not in meta_bloco:
-                              valor = "5" if "Score" in campo else '"Approved"' if "Verdict" in campo else "true"
+                              # Valores padrão razoáveis: score 85, verdict approved, booleans true
+                              if campo == 'editorialScore':
+                                  valor = '85'
+                              elif campo == 'editorialVerdict':
+                                  valor = '"approved"'
+                              else:
+                                  valor = 'true'
                               novos_campos.append(f"{campo}: {valor}")
                       
                       if novos_campos:
