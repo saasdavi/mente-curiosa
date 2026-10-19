@@ -11,8 +11,8 @@ tags:
 - astronomia
 keyword: como se formam os planetas
 author: Equipe Mente Curiosa
-datePublished: 2026-10-15
-dateModified: 2026-10-15
+datePublished: 2026-10-19
+dateModified: 2026-10-19
 sources:
 - title: NASA Spitzer — Gas Giants Form Quickly (comunicado de 2007)
   url: https://www.spitzer.caltech.edu/news/ssc2007-02-gas-giants-form-quickly

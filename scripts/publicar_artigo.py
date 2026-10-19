@@ -15,6 +15,7 @@ import os
 import re
 import shutil
 import sys
+import zoneinfo
 from io import BytesIO
 
 import requests
@@ -211,6 +212,11 @@ def gera_imagens(slug, plano):
     return capa_src, plano["capa"]["alt"], credito_capa, imagens
 
 
+def hoje_brasilia():
+    """Data real da publicação (fuso de Brasília), não a data planejada do arquivo."""
+    return datetime.datetime.now(zoneinfo.ZoneInfo("America/Sao_Paulo")).date()
+
+
 def monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens):
     campos_de_auditoria = {"imagensPlano", "editorialScore", "editorialVerdict",
                            "editorialSourcesVerified", "editorialFactsVerified"}
@@ -219,6 +225,8 @@ def monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens):
     novo["featuredImageAlt"] = capa_alt
     novo["imageCredit"] = credito_capa
     novo["images"] = imagens
+    novo["datePublished"] = hoje_brasilia()
+    novo["dateModified"] = hoje_brasilia()
     cabeca = yaml.safe_dump(novo, allow_unicode=True, sort_keys=False, default_flow_style=False, width=1000)
     return f"---\n{cabeca}---\n\n{corpo.rstrip()}\n"
 
