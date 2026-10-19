@@ -61,61 +61,6 @@ jobs:
       - name: Instalar dependências Python
         run: pip install requests pillow pyyaml
 
-      # NOVA ETAPA: Garante que o arquivo possua as tags que o script exige antes de quebrar
-      - name: Injetar metadados editoriais automaticamente
-        env:
-          ARQUIVO: ${{ github.event.inputs.arquivo }}
-        run: |
-          python - <<'PY'
-          import os
-          import glob
-
-          arquivo_input = os.environ.get("ARQUIVO", "").strip()
-          pasta = "dados/entrada/pautas-chat_01/GPT ARTIGOS PRONTOS"
-          
-          if arquivo_input:
-              caminho = os.path.join(pasta, arquivo_input)
-              arquivos = [caminho] if os.path.exists(caminho) else []
-          else:
-              arquivos = sorted(glob.glob(os.path.join(pasta, "*.md")))
-
-          if arquivos:
-              alvo = arquivos[0]
-              print(f"Inspecionando metadados de: {alvo}")
-              with open(alvo, "r", encoding="utf-8") as f:
-                  conteudo = f.read()
-              
-              # Verifica se o arquivo usa frontmatter delimitado por ---
-              if conteudo.startswith("---"):
-                  partes = conteudo.split("---", 2)
-                  if len(partes) >= 3:
-                      meta_bloco = partes[1]
-                      novos_campos = []
-                      
-                      for campo in ['editorialScore', 'editorialVerdict', 'editorialSourcesVerified', 'editorialFactsVerified']:
-                          if campo not in meta_bloco:
-                              # Valores padrão compatíveis com scripts do repo:
-                              # editorialScore: número entre 8.5 e 10 (usar 9.0)
-                              # editorialVerdict: string "APROVADO" (maiusculas)
-                              # booleans: true
-                              if campo == 'editorialScore':
-                                  valor = '9.0'
-                              elif campo == 'editorialVerdict':
-                                  valor = '"APROVADO"'
-                              else:
-                                  valor = 'true'
-                              novos_campos.append(f"{campo}: {valor}")
-                      
-                      if novos_campos:
-                          print("Campos ausentes detectados. Injetando automaticamente...")
-                          partes[1] = meta_bloco + "\n" + "\n".join(novos_campos) + "\n"
-                          novo_conteudo = "---".join(partes)
-                          with open(alvo, "w", encoding="utf-8") as f:
-                              f.write(novo_conteudo)
-          else:
-              print("Nenhum arquivo markdown encontrado para corrigir.")
-          PY
-
       - name: Preparar artigo pronto
         id: publicar
         env:
@@ -133,8 +78,6 @@ jobs:
 
       - name: Validar o site (build)
         if: steps.publicar.outputs.novo == 'true'
-        env:
-          AUDIT_STRICT_SLUG: ${{ steps.publicar.outputs.slug }}
         run: |
           set -euo pipefail
           npm ci
