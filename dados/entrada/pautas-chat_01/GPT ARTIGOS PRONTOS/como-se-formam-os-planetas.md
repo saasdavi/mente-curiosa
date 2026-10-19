@@ -20,7 +20,7 @@ imagensPlano:
   fotos:
     - busca: "dust particles clumping space illustration"
       alt: "Ilustração de pequenos grãos de poeira se juntando no espaço"
-      legenda: "Grãos minúsculos de poeira se unem e formam pedras cada vez maiores"
+      legenda: "Grãos minúsculos de poeia se unem e formam pedras cada vez maiores"
       secao: 2
     - busca: "gas giant planet rocky planet comparison"
       alt: "Comparação entre um planeta rochoso pequeno e um planeta gigante de gás"
@@ -174,6 +174,8 @@ Em 2006 a União Astronômica Internacional retirou Plutão da lista de planetas
 Eles combinam observações de discos em volta de estrelas jovens, medidas da composição dos planetas e simulações em computador.
 
 Nenhuma fonte sozinha conta toda a história; pesquisas e imagens complementam o quadro.
+
+Estudar como os planetas se formam também ajuda a entender sistemas ao redor de outras estrelas: as observações de discos e as simulações permitem relacionar formação e diversidade de exoplanetas, dando pistas sobre quais sistemas podem abrigar mundos com condições favoráveis à vida.
 
 ## Resumindo
 
