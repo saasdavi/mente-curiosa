@@ -3,13 +3,9 @@ name: Enriquecer pautas com SERP
 # Disparo manual. Processa as próximas N pautas planejadas ainda não enriquecidas
 # e grava os briefings em dados/briefings/ e a planilha em dados/.
 on:
-  # 4 execuções por dia, 1 pauta cada (10h, 13h, 16h e 19h de Brasília).
-  # 4 pautas × 2 buscas × 30 dias = 240 buscas no mês.
+  # 1 execução por dia, 5 pautas (10h de Brasília).
   schedule:
     - cron: '0 13 * * *'
-    - cron: '0 16 * * *'
-    - cron: '0 19 * * *'
-    - cron: '0 22 * * *'
   workflow_dispatch:
 
 # Mesmo grupo da geração de artigos: nunca gravam em main ao mesmo tempo
