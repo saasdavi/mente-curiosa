@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "prebuild": "node scripts/build-redirects.mjs",
-    "build": "node scripts/audit-seo.mjs > /dev/null && astro build && node scripts/check-build.mjs",
+    "build": "astro build && node scripts/check-build.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "audit": "node scripts/audit-seo.mjs",
