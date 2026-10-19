@@ -3,9 +3,10 @@ name: Enriquecer pautas com SERP
 # Disparo manual. Processa as próximas N pautas planejadas ainda não enriquecidas
 # e grava os briefings em dados/briefings/ e a planilha em dados/.
 on:
-  # 1 execução por dia, 5 pautas (10h de Brasília).
+  # 2 execuções por dia, 3 pautas cada (10h e 19h de Brasília).
   schedule:
     - cron: '0 13 * * *'
+    - cron: '0 22 * * *'
   workflow_dispatch:
 
 # Mesmo grupo da geração de artigos: nunca gravam em main ao mesmo tempo
@@ -34,7 +35,7 @@ jobs:
       - name: Enriquecer pautas
         env:
           SERP_API_KEY: ${{ secrets.SERP_API_KEY }}
-          LIMITE: '5'
+          LIMITE: '3'
         run: python scripts/enriquecer_serp.py
 
       - name: Commit e push
