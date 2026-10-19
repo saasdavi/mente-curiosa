@@ -203,6 +203,25 @@ def hoje_brasilia():
     return datetime.datetime.now(zoneinfo.ZoneInfo("America/Sao_Paulo")).date()
 
 
+DESCRICAO_MIN = 70
+DESCRICAO_MAX = 160
+
+
+def ajusta_descricao(texto):
+    """Encurta a descrição para o limite do schema do site (70 a 160 caracteres), cortando em frase ou palavra."""
+    if len(texto) <= DESCRICAO_MAX:
+        return texto
+    corte = texto[:DESCRICAO_MAX]
+    for fim in (". ", "? ", "! "):
+        posicao = corte.rfind(fim)
+        if posicao + 1 >= DESCRICAO_MIN:
+            return corte[:posicao + 1]
+    posicao = corte.rfind(" ")
+    if posicao >= DESCRICAO_MIN:
+        return corte[:posicao].rstrip(",;:") + "…"
+    return corte[:DESCRICAO_MAX - 1] + "…"
+
+
 def monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens):
     campos_de_auditoria = {"imagensPlano", "editorialScore", "editorialVerdict",
                            "editorialSourcesVerified", "editorialFactsVerified"}
@@ -211,6 +230,8 @@ def monta_artigo(fm, corpo, capa_src, capa_alt, credito_capa, imagens):
     novo["featuredImageAlt"] = capa_alt
     novo["imageCredit"] = credito_capa
     novo["images"] = imagens
+    if "description" in novo:
+        novo["description"] = ajusta_descricao(str(novo["description"]))
     novo["datePublished"] = hoje_brasilia()
     novo["dateModified"] = hoje_brasilia()
     cabeca = yaml.safe_dump(novo, allow_unicode=True, sort_keys=False, default_flow_style=False, width=1000)
