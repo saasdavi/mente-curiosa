@@ -5,8 +5,8 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 ## Resumo
 
 - Total: **1015**
-- PUBLICADO: **28**
-- A PRODUZIR: **22**
+- PUBLICADO: **29**
+- A PRODUZIR: **21**
 - GERAR ARTIGO: **965**
 - FALHA: **0**
 
@@ -35,7 +35,7 @@ Gerado por `scripts/gerar_calendario_editorial.py`. Não editar à mão.
 | 15/10/2026 | Qui | 20h | CAL0007 | como se formam os terremotos | Como se formam os terremotos? | Ciência e fenômenos | como-se-formam-os-terremotos | **PUBLICADO** |
 | 16/10/2026 | Sex | 09h | CAL0008 | como funciona o bluetooth | Como funciona o bluetooth? | Tecnologia, IA e ciência | como-funciona-o-bluetooth | **PUBLICADO** |
 | 16/10/2026 | Sex | 12h | CAL0009 | o que é um cometa | O que é um cometa? | Universo e espaço | o-que-e-um-cometa | **PUBLICADO** |
-| 15/10/2026 | Qui | 20h | CAL0010 | o que é a extinção de espécies | O que é a extinção de espécies? | Animais | o-que-e-a-extincao-de-especies | **A PRODUZIR** |
+| 17/10/2026 | Sab | 20h | CAL0010 | o que é a extinção de espécies | O que é a extinção de espécies? | Animais | o-que-e-a-extincao-de-especies | **PUBLICADO** |
 | 16/10/2026 | Sex | 09h | CAL0011 | como se forma a chuva | Como se forma a chuva? | Ciência e fenômenos | como-se-forma-a-chuva | **A PRODUZIR** |
 | 16/10/2026 | Sex | 12h | CAL0012 | como funciona um carro elétrico | Como funciona um carro elétrico? | Tecnologia, IA e ciência | como-funciona-um-carro-eletrico | **A PRODUZIR** |
 | 16/10/2026 | Sex | 20h | CAL0013 | o que é um planeta | O que é um planeta? | Universo e espaço | o-que-e-um-planeta | **A PRODUZIR** |
