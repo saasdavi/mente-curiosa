@@ -30,7 +30,7 @@ DIAS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"]
 
 # Ritmo de publicação: 3 artigos por dia, a partir de INICIO_AGENDA.
 # Vale para as pautas pendentes (A PRODUZIR e FALHA). Os PUBLICADO mantêm a data real.
-INICIO_AGENDA = datetime.date(2026, 10, 14)
+INICIO_AGENDA = datetime.date(2026, 10, 21)
 HORARIOS = ["09h", "12h", "20h"]
 
 # Índices das colunas do CSV (não há cabeçalho)
