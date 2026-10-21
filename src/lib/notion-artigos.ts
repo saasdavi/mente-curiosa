@@ -129,25 +129,42 @@ function fontes(texto: string) {
 
 type Credito = { author: string; source: 'Pexels' | 'Pixabay' | 'Unsplash'; url: string; license: string; licenseUrl: string };
 
-// Primeira foto encontrada, na ordem Pexels, Pixabay, Unsplash. Sem chave, a fonte é pulada.
-async function buscaFoto(termo: string): Promise<{ url: string; credito: Credito } | undefined> {
-  const pexels = process.env.PEXELS_API_KEY;
-  if (pexels) {
-    const r = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(termo)}&per_page=1&orientation=landscape`, { headers: { Authorization: pexels } });
+type Foto = { url: string; credito: Credito };
+
+// Cada provedor: sem chave, sem foto, limite estourado ou erro de rede -> null, e a busca segue.
+const provedores: ((termo: string) => Promise<Foto | null>)[] = [
+  async (termo) => {
+    const chave = process.env.PEXELS_API_KEY;
+    if (!chave) return null;
+    const r = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(termo)}&per_page=1&orientation=landscape`, { headers: { Authorization: chave } });
     const f = r.ok ? (await r.json()).photos?.[0] : undefined;
-    if (f) return { url: f.src.large2x, credito: { author: f.photographer, source: 'Pexels', url: f.url, license: 'Licença Pexels', licenseUrl: 'https://www.pexels.com/license/' } };
-  }
-  const pixabay = process.env.PIXABAY_API_KEY;
-  if (pixabay) {
-    const r = await fetch(`https://pixabay.com/api/?key=${pixabay}&q=${encodeURIComponent(termo)}&image_type=photo&orientation=horizontal&per_page=3&safesearch=true`);
+    return f ? { url: f.src.large2x, credito: { author: f.photographer, source: 'Pexels', url: f.url, license: 'Licença Pexels', licenseUrl: 'https://www.pexels.com/license/' } } : null;
+  },
+  async (termo) => {
+    const chave = process.env.PIXABAY_API_KEY;
+    if (!chave) return null;
+    const r = await fetch(`https://pixabay.com/api/?key=${chave}&q=${encodeURIComponent(termo)}&image_type=photo&orientation=horizontal&per_page=3&safesearch=true`);
     const f = r.ok ? (await r.json()).hits?.[0] : undefined;
-    if (f) return { url: f.largeImageURL, credito: { author: f.user, source: 'Pixabay', url: f.pageURL, license: 'Licença Pixabay', licenseUrl: 'https://pixabay.com/service/license-summary/' } };
-  }
-  const unsplash = process.env.UNSPLASH_ACCESS_KEY;
-  if (unsplash) {
-    const r = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(termo)}&per_page=1&orientation=landscape`, { headers: { Authorization: `Client-ID ${unsplash}` } });
+    return f ? { url: f.largeImageURL, credito: { author: f.user, source: 'Pixabay', url: f.pageURL, license: 'Licença Pixabay', licenseUrl: 'https://pixabay.com/service/license-summary/' } } : null;
+  },
+  async (termo) => {
+    const chave = process.env.UNSPLASH_ACCESS_KEY;
+    if (!chave) return null;
+    const r = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(termo)}&per_page=1&orientation=landscape`, { headers: { Authorization: `Client-ID ${chave}` } });
     const f = r.ok ? (await r.json()).results?.[0] : undefined;
-    if (f) return { url: f.urls.regular, credito: { author: f.user.name, source: 'Unsplash', url: f.links.html, license: 'Licença Unsplash', licenseUrl: 'https://unsplash.com/license' } };
+    return f ? { url: f.urls.regular, credito: { author: f.user.name, source: 'Unsplash', url: f.links.html, license: 'Licença Unsplash', licenseUrl: 'https://unsplash.com/license' } } : null;
+  },
+];
+
+// Pexels primeiro; se não achar ou falhar, Pixabay; depois Unsplash.
+async function buscaFoto(termo: string): Promise<Foto | undefined> {
+  for (const provedor of provedores) {
+    try {
+      const foto = await provedor(termo);
+      if (foto) return foto;
+    } catch {
+      // erro de rede ou resposta inesperada: tenta o próximo provedor
+    }
   }
   return undefined;
 }
