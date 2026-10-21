@@ -29,11 +29,14 @@ async function notion<T>(path: string, init: { method?: string; body?: unknown }
 
 async function todasPaginas<T>(path: string, body: Record<string, unknown> = {}): Promise<T[]> {
   const out: T[] = [];
+  const consulta = path.includes('/query');
   let cursor: string | undefined;
   do {
-    const page: { results: T[]; has_more: boolean; next_cursor: string | null } = await notion(path, {
-      method: path.includes('/query') ? 'POST' : 'GET',
-      body: { ...body, page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) },
+    // GET não aceita corpo: nas listagens, paginação vai na URL.
+    const url = consulta ? path : `${path}?page_size=100${cursor ? `&start_cursor=${cursor}` : ''}`;
+    const page: { results: T[]; has_more: boolean; next_cursor: string | null } = await notion(url, {
+      method: consulta ? 'POST' : 'GET',
+      body: consulta ? { ...body, page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) } : undefined,
     });
     out.push(...page.results);
     cursor = page.has_more ? (page.next_cursor ?? undefined) : undefined;
