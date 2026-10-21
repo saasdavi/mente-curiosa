@@ -13,10 +13,11 @@ import { CAPA_PADRAO, notionArtigosLoader } from './lib/notion-artigos';
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+// Imagem: link https (fornecedor, guardado no Notion) ou arquivo local em public/images/.
 const imagePath = z
   .string()
-  .regex(/^\/images\/(?:[a-z0-9-]+\/)?[a-z0-9-]+\.webp$/, 'imagem: /images/<slug>/<nome-descritivo>.webp')
-  .refine((p) => existsSync(`public${p}`), 'arquivo da imagem não encontrado em public/');
+  .regex(/^(https:\/\/.+|\/images\/(?:[a-z0-9-]+\/)?[a-z0-9-]+\.webp)$/, 'imagem: link https ou /images/<slug>/<nome>.webp')
+  .refine((p) => p.startsWith('https://') || existsSync(`public${p}`), 'arquivo da imagem não encontrado em public/');
 
 const credit = z.object({
   author: z.string(),
@@ -116,7 +117,7 @@ const artigos = defineCollection({
       message: 'featuredImageAlt é obrigatório quando há capa',
       path: ['featuredImageAlt'],
     })
-    .refine((d) => [d.featuredImage, ...(d.images ?? []).map((i) => i.src)].filter(Boolean).every((p) => p!.startsWith(`/images/${d.slug}/`) || p === CAPA_PADRAO), {
+    .refine((d) => [d.featuredImage, ...(d.images ?? []).map((i) => i.src)].filter(Boolean).every((p) => p!.startsWith('https://') || p!.startsWith(`/images/${d.slug}/`) || p === CAPA_PADRAO), {
       message: 'as imagens devem ficar na pasta do próprio artigo: /images/<slug>/',
       path: ['featuredImage'],
     })

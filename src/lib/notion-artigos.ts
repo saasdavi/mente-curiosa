@@ -1,7 +1,4 @@
-import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
 import type { Loader, LoaderContext } from 'astro/loaders';
-import sharp from 'sharp';
 
 // Fonte dos artigos em produção: a database "Artigos Mente Curiosa" no Notion.
 // Só entra o que está com Status = "Publicado". O build lê o Notion a cada deploy.
@@ -127,82 +124,45 @@ function fontes(texto: string) {
     .filter((f) => /^https?:\/\//.test(f.url));
 }
 
-type Credito = { author: string; source: 'Pexels' | 'Pixabay' | 'Unsplash'; url: string; license: string; licenseUrl: string };
+// Imagens: o Notion guarda o link da foto (Capa URL) e o crédito (Capa crédito, JSON).
+// Fotos do corpo: JSON com até 3 itens {src, alt, caption, section, width, height, credit}.
+// O build só lê esses campos. Não chama API de imagem e não baixa arquivo.
+type Credito = { author: string; source: string; url?: string; license: string; licenseUrl?: string };
 
-type Foto = { url: string; credito: Credito };
-
-// Cada provedor: sem chave, sem foto, limite estourado ou erro de rede -> null, e a busca segue.
-const provedores: ((termo: string) => Promise<Foto | null>)[] = [
-  async (termo) => {
-    const chave = process.env.PEXELS_API_KEY;
-    if (!chave) return null;
-    const r = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(termo)}&per_page=1&orientation=landscape`, { headers: { Authorization: chave } });
-    const f = r.ok ? (await r.json()).photos?.[0] : undefined;
-    return f ? { url: f.src.large2x, credito: { author: f.photographer, source: 'Pexels', url: f.url, license: 'Licença Pexels', licenseUrl: 'https://www.pexels.com/license/' } } : null;
-  },
-  async (termo) => {
-    const chave = process.env.PIXABAY_API_KEY;
-    if (!chave) return null;
-    const r = await fetch(`https://pixabay.com/api/?key=${chave}&q=${encodeURIComponent(termo)}&image_type=photo&orientation=horizontal&per_page=3&safesearch=true`);
-    const f = r.ok ? (await r.json()).hits?.[0] : undefined;
-    return f ? { url: f.largeImageURL, credito: { author: f.user, source: 'Pixabay', url: f.pageURL, license: 'Licença Pixabay', licenseUrl: 'https://pixabay.com/service/license-summary/' } } : null;
-  },
-  async (termo) => {
-    const chave = process.env.UNSPLASH_ACCESS_KEY;
-    if (!chave) return null;
-    const r = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(termo)}&per_page=1&orientation=landscape`, { headers: { Authorization: `Client-ID ${chave}` } });
-    const f = r.ok ? (await r.json()).results?.[0] : undefined;
-    return f ? { url: f.urls.regular, credito: { author: f.user.name, source: 'Unsplash', url: f.links.html, license: 'Licença Unsplash', licenseUrl: 'https://unsplash.com/license' } } : null;
-  },
-];
-
-// Pexels primeiro; se não achar ou falhar, Pixabay; depois Unsplash.
-async function buscaFoto(termo: string): Promise<Foto | undefined> {
-  for (const provedor of provedores) {
-    try {
-      const foto = await provedor(termo);
-      if (foto) return foto;
-    } catch {
-      // erro de rede ou resposta inesperada: tenta o próximo provedor
-    }
-  }
-  return undefined;
-}
-
-// Baixa a foto, redimensiona para 1200x675 em WebP e grava em public/images/<slug>/.
-async function baixaFoto(slug: string, nome: string, busca: string) {
-  const foto = await buscaFoto(busca);
-  if (!foto) return undefined;
-  const caminho = `/images/${slug}/${nome}.webp`;
-  const bytes = Buffer.from(await (await fetch(foto.url)).arrayBuffer());
-  mkdirSync(dirname(`public${caminho}`), { recursive: true });
-  await sharp(bytes).resize(1200, 675, { fit: 'cover' }).webp({ quality: 82 }).toFile(`public${caminho}`);
-  if (nome === 'capa') await sharp(bytes).resize(640, 360, { fit: 'cover' }).webp({ quality: 80 }).toFile(`public/images/${slug}/capa-640.webp`);
-  return { caminho, credito: foto.credito };
-}
-
-// Capa e fotos do corpo. Qualquer falha cai na capa padrão, sem derrubar o artigo.
-async function imagensDoArtigo(slug: string, p: Record<string, any>, alt: string, titulo: string) {
-  const padrao = { featuredImage: CAPA_PADRAO, featuredImageAlt: alt.length >= 10 ? alt : `Ilustração sobre o tema: ${titulo}` };
+const jsonSeguro = (s: string): any => {
   try {
-    const plano = JSON.parse(texto(p['Plano de imagens']) || '{}');
-    const capa = await baixaFoto(slug, 'capa', texto(p['Busca da capa']) || plano.capa?.busca || titulo);
-    if (!capa) return padrao;
-    const images: { src: string; alt: string; caption: string; section: number; width: number; height: number; credit: Credito }[] = [];
-    for (const [i, f] of ((plano.fotos ?? []) as any[]).slice(0, 3).entries()) {
-      if (!f?.busca || typeof f.alt !== 'string' || f.alt.length < 25 || typeof f.legenda !== 'string' || f.legenda.length < 10 || !Number.isInteger(f.secao)) continue;
-      const foto = await baixaFoto(slug, `foto-${i + 1}`, f.busca);
-      if (foto) images.push({ src: foto.caminho, alt: f.alt, caption: f.legenda, section: f.secao, width: 1200, height: 675, credit: foto.credito });
-    }
-    return {
-      featuredImage: capa.caminho,
-      featuredImageAlt: alt.length >= 10 ? alt : (plano.capa?.alt ?? padrao.featuredImageAlt),
-      imageCredit: capa.credito,
-      ...(images.length ? { images } : {}),
-    };
+    return JSON.parse(s);
   } catch {
-    return padrao;
+    return undefined;
   }
+};
+
+const ehLinkHttps = (s: unknown): s is string => typeof s === 'string' && /^https:\/\//.test(s);
+
+function imagensDoArtigo(p: Record<string, any>, alt: string, titulo: string) {
+  const padrao = { featuredImage: CAPA_PADRAO, featuredImageAlt: alt.length >= 10 ? alt : `Ilustração sobre o tema: ${titulo}` };
+  const capaUrl: string = p['Capa URL']?.url ?? '';
+  if (!ehLinkHttps(capaUrl)) return padrao;
+
+  const credito = jsonSeguro(texto(p['Capa crédito']));
+  const corpo: any[] = jsonSeguro(texto(p['Fotos do corpo'])) ?? [];
+  const images = corpo
+    .filter(
+      (f) =>
+        ehLinkHttps(f?.src) &&
+        typeof f.alt === 'string' && f.alt.length >= 25 &&
+        typeof f.caption === 'string' && f.caption.length >= 10 &&
+        Number.isInteger(f.section) && f.credit,
+    )
+    .slice(0, 3)
+    .map((f) => ({ src: f.src, alt: f.alt, caption: f.caption, section: f.section, width: f.width ?? 1200, height: f.height ?? 675, credit: f.credit as Credito }));
+
+  return {
+    featuredImage: capaUrl,
+    featuredImageAlt: padrao.featuredImageAlt,
+    ...(credito ? { imageCredit: credito as Credito } : {}),
+    ...(images.length ? { images } : {}),
+  };
 }
 
 // Página do Notion -> dados no formato do schema de artigos.
@@ -228,7 +188,7 @@ async function paraDados(page: Page) {
     keyword: texto(p['Palavra-chave']),
     datePublished: new Date(publicado),
     dateModified: new Date(editado > publicado ? editado : publicado),
-    ...(await imagensDoArtigo(texto(p['Slug']), p, alt, titulo)),
+    ...imagensDoArtigo(p, alt, titulo),
     sources: lista.length ? lista : undefined,
     draft: false,
   };
