@@ -4,15 +4,18 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { CATEGORY_SLUGS } from './config/categories';
 import { RESERVED_SLUGS } from './config/site';
+import { CAPA_PADRAO, notionArtigosLoader } from './lib/notion-artigos';
 
 // Contrato de cada artigo. Se algo obrigatório faltar ou estiver fora do padrão,
 // o build falha e nada é publicado.
+// Com NOTION_API_KEY definida, os artigos vêm do Notion (Status = Publicado).
+// Sem ela (desenvolvimento local), valem os arquivos em src/content/artigos/.
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const imagePath = z
   .string()
-  .regex(/^\/images\/[a-z0-9-]+\/[a-z0-9-]+\.webp$/, 'imagem: /images/<slug>/<nome-descritivo>.webp')
+  .regex(/^\/images\/(?:[a-z0-9-]+\/)?[a-z0-9-]+\.webp$/, 'imagem: /images/<slug>/<nome-descritivo>.webp')
   .refine((p) => existsSync(`public${p}`), 'arquivo da imagem não encontrado em public/');
 
 const credit = z.object({
@@ -24,12 +27,14 @@ const credit = z.object({
 });
 
 const artigos = defineCollection({
-  loader: glob({
-    pattern: '**/*.md',
-    base: './src/content/artigos',
-    // A URL vem do campo slug, nunca do nome do arquivo.
-    generateId: ({ data, entry }) => String(data.slug ?? entry),
-  }),
+  loader: process.env.NOTION_API_KEY
+    ? notionArtigosLoader()
+    : glob({
+        pattern: '**/*.md',
+        base: './src/content/artigos',
+        // A URL vem do campo slug, nunca do nome do arquivo.
+        generateId: ({ data, entry }) => String(data.slug ?? entry),
+      }),
   schema: z
     .object({
       id: z.string().regex(/^ART\d{4}$/, 'id deve seguir o banco editorial: ART0001'),
@@ -111,7 +116,7 @@ const artigos = defineCollection({
       message: 'featuredImageAlt é obrigatório quando há capa',
       path: ['featuredImageAlt'],
     })
-    .refine((d) => [d.featuredImage, ...(d.images ?? []).map((i) => i.src)].filter(Boolean).every((p) => p!.startsWith(`/images/${d.slug}/`)), {
+    .refine((d) => [d.featuredImage, ...(d.images ?? []).map((i) => i.src)].filter(Boolean).every((p) => p!.startsWith(`/images/${d.slug}/`) || p === CAPA_PADRAO), {
       message: 'as imagens devem ficar na pasta do próprio artigo: /images/<slug>/',
       path: ['featuredImage'],
     })
