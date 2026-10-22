@@ -225,6 +225,89 @@ export function notionArtigosLoader(): Loader {
           logger.error(`Notion: artigo "${dados.title || page.id}" ficou de fora: ${(erro as Error).message}`);
         }
       }
+      // Padrão 40+: o Calendário editorial manda. Entra depois, para vencer o mesmo slug da base antiga.
+      await carregarDoCalendario(context);
     },
   };
+}
+
+// ---------------------------------------------------------------------------
+// Padrão 40+: Calendário editorial (Status Publicado ou Publicando) + texto na Fila de Artigos.
+// Texto da Fila: linhas KEY: valor, uma linha "---" e o corpo em Markdown.
+// Chaves: PALAVRA_CHAVE, TITLE, DESCRIPTION, SLUG, CATEGORIA, TAGS, CAPA_ALT, FONTE (repetível).
+const CALENDARIO_ID = '7d04c4ab3bfc4ea8b30bdb7489c7cf9a';
+const FILA_CAMPO_TEXTO = 'Conteúdo TXT completo';
+
+const slugify = (valor: string) => valor.toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+function cabecalhoDoTexto(raw: string) {
+  const texto = raw.replace(/\r\n/g, '\n');
+  const i = texto.search(/^---\s*$/m);
+  if (i < 0) return null;
+  const header = new Map<string, string[]>();
+  for (const linha of texto.slice(0, i).split('\n')) {
+    const m = linha.match(/^([A-Z_]+):\s*(.*)$/);
+    if (m) header.set(m[1], [...(header.get(m[1]) ?? []), m[2].trim()]);
+  }
+  const corpo = texto.slice(i).replace(/^---\s*\n?/, '').trim();
+  return { header, corpo };
+}
+
+async function carregarDoCalendario(context: LoaderContext) {
+  const { store, parseData, renderMarkdown, generateDigest, logger } = context;
+  const linhas = await todasPaginas<Page>(`/databases/${CALENDARIO_ID}/query`, {
+    filter: {
+      or: [
+        { property: 'Status', select: { equals: 'Publicado' } },
+        { property: 'Status', select: { equals: 'Publicando' } },
+      ],
+    },
+    sorts: [{ property: 'Data', direction: 'ascending' }],
+  });
+  logger.info(`Notion (calendário): ${linhas.length} slot(s) publicado(s) ou publicando.`);
+
+  for (const linha of linhas) {
+    const p = linha.properties;
+    const link: string = p['Artigo na Fila']?.url ?? '';
+    const id = link.match(/([0-9a-f]{32})/i)?.[1];
+    if (!id) {
+      logger.warn(`Notion (calendário): slot sem "Artigo na Fila" ficou de fora: ${texto(p['Slot'])}`);
+      continue;
+    }
+    try {
+      const fila = await notion<Page>(`/pages/${id}`);
+      const cab = cabecalhoDoTexto(texto(fila.properties?.[FILA_CAMPO_TEXTO]));
+      if (!cab || !cab.corpo) throw new Error('texto da Fila sem cabeçalho, linha --- ou corpo');
+      const h = cab.header;
+      const um = (chave: string) => h.get(chave)?.[0] ?? '';
+      const keyword = um('PALAVRA_CHAVE');
+      const title = um('TITLE') || keyword;
+      const slug = um('SLUG') || slugify(keyword);
+      const dia = data(p['Data']);
+      const hora = select(p['Horário']) || '00:00';
+      if (!dia || !slug) throw new Error('sem Data ou slug');
+      const publicado = new Date(`${dia}T${hora}:00-03:00`);
+      const dados = {
+        id: slug,
+        title,
+        slug,
+        description: um('DESCRIPTION') || title,
+        category: um('CATEGORIA'),
+        tags: um('TAGS').split(',').map((t) => t.trim()).filter((t) => t.length >= 2).slice(0, 8),
+        keyword,
+        datePublished: publicado,
+        dateModified: publicado,
+        ...imagensDoArtigo(p, um('CAPA_ALT') || title, title),
+        sources: fontes((h.get('FONTE') ?? []).join('\n')).length ? fontes((h.get('FONTE') ?? []).join('\n')) : undefined,
+        draft: false,
+      };
+      const parsed = await parseData({ id: slug, data: dados });
+      const rendered = await renderMarkdown(cab.corpo);
+      store.set({ id: slug, data: parsed, body: cab.corpo, rendered, digest: generateDigest({ ...dados, corpo: cab.corpo }) });
+    } catch (erro) {
+      logger.error(`Notion (calendário): slot "${texto(p['Slot'])}" ficou de fora: ${(erro as Error).message}`);
+    }
+  }
 }
